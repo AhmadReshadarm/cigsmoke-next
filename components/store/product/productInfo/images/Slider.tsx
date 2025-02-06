@@ -1,13 +1,12 @@
-import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import color from 'components/store/lib/ui.colors';
 import variants from 'components/store/lib/variants';
-import { MagnifieHelper } from './helpers';
-import { SliderImage } from '../../common';
 import { handleDragEnd } from './helpers';
 import { SWIPE_CONFIDENCE_THRESHOLD } from '../../constants';
-
+import { useEffect, useState } from 'react';
+import ZoomFullScreen from 'ui-kit/ZoomFullScreen';
+import Image from 'next/image';
+// import { Dispatch, SetStateAction } from 'react';
+import styles from '../../styles/images.module.css';
 type Props = {
   images: string[];
   selectedIndex: number;
@@ -16,6 +15,8 @@ type Props = {
   page: number;
   paginateImage: any;
   alt: any;
+  base64Image: any;
+  zoomEnabeld: boolean;
 };
 
 const Slider: React.FC<Props> = ({
@@ -26,37 +27,46 @@ const Slider: React.FC<Props> = ({
   page,
   paginateImage,
   alt,
+  base64Image,
+  zoomEnabeld,
 }) => {
-  const [lensDisplay, setLensDisplay] = useState('none');
-  const [imgRef, lensRef, setMagnifiedImage] = MagnifieHelper(
-    images[selectedIndex],
-  );
+  const [zoomImgSrc, setZoomImgSrc] = useState(images[selectedIndex]);
+  const [zoom, setZoom] = useState(false);
 
-  useEffect(
-    // TODO add api data and selectedIndex inside of it ie:data[selectedIndex]
-    () => setMagnifiedImage(selectedIndex),
-    [selectedIndex],
-  );
+  // --------------------------------------------
+  useEffect(() => {
+    function hideOnClickOutside(element1, element2) {
+      const outsideClickListener = (event) => {
+        if (
+          !element1.contains(event.target) &&
+          !element2.contains(event.target) &&
+          isVisible(element1) &&
+          isVisible(element2)
+        ) {
+          setZoom(false);
+        }
+      };
+      document.addEventListener('click', outsideClickListener);
+    }
+
+    const isVisible = (elem) =>
+      !!elem &&
+      !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
+
+    setTimeout(() => {
+      if (zoom) {
+        let zoomImg = document.querySelector('.ant-image-preview-img');
+        let zoomCtr = document.querySelector('.ant-image-preview-operations');
+        hideOnClickOutside(zoomImg, zoomCtr);
+      }
+    }, 300);
+  }, [zoom]);
 
   return (
-    <SliderWrapper
-      key="slider-product-page"
-      custom={0.3}
-      initial="init"
-      animate="animate"
-      exit={{ y: -80, opacity: 0, transition: { delay: 0.1 } }}
-      variants={variants.fadInSlideUp}
-      onMouseOver={() => setLensDisplay('flex')}
-      onMouseLeave={() => setLensDisplay('none')}
-    >
-      <Lens ref={lensRef} style={{ display: lensDisplay }}></Lens>
-
-      <AnimatePresence initial={false} custom={direction}>
-        <SliderImage
-          ref={imgRef}
+    <div className={styles.SliderWrapper} id="image-zoom-controller">
+      <AnimatePresence mode="wait" initial={false} custom={direction}>
+        <motion.div
           key={page}
-          src={`/api/images/${images[selectedIndex]}`}
-          alt={alt}
           custom={direction}
           variants={variants.slider}
           initial="enter"
@@ -76,38 +86,78 @@ const Slider: React.FC<Props> = ({
             setSelectedIndex,
             selectedIndex,
           )}
-          onError={({ currentTarget }) => {
-            currentTarget.onerror = null;
-            currentTarget.src = '/assets/images/no_photo.png';
-          }}
-        />
+          draggable={true}
+          className={styles.SliderSlide}
+        >
+          <Image
+            src={images[selectedIndex]}
+            alt={alt}
+            itemProp="contentUrl"
+            width={1080}
+            height={1080}
+            priority={true}
+            placeholder="blur"
+            blurDataURL={base64Image}
+            className={styles.SliderImage}
+          />
+        </motion.div>
       </AnimatePresence>
-    </SliderWrapper>
+
+      <ul className={styles.image_indecator_mobile}>
+        {images.map((image, index) => {
+          return (
+            <li
+              key={index}
+              className={styles.indecator}
+              style={{
+                backgroundColor:
+                  selectedIndex == index ? '#000000' : 'transparent',
+              }}
+            ></li>
+          );
+        })}
+      </ul>
+      {zoomEnabeld ? (
+        <>
+          <div className={styles.ImageZoomInfo}>
+            <span>Нажмите здесь, чтобы увеличить изображение</span>
+          </div>
+          <div className={styles.ImageZoomInfoPointer} />
+        </>
+      ) : (
+        <></>
+      )}
+      <div className={styles.ImageZoomButtonWrapper}>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setZoom(true);
+            setZoomImgSrc(images[selectedIndex]);
+            setTimeout(() => {
+              const btnImg: any = document.querySelector('.hidden-image-zoom');
+              btnImg.click();
+            }, 300);
+          }}
+          className={styles.ImageZoomButton}
+          title="Увеличить до полного экрана"
+          type="button"
+        >
+          <svg
+            viewBox="64 64 896 896"
+            focusable="false"
+            data-icon="zoom-in"
+            width="1em"
+            height="1em"
+            fill="white"
+            aria-hidden="true"
+          >
+            <path d="M637 443H519V309c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8v134H325c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h118v134c0 4.4 3.6 8 8 8h60c4.4 0 8-3.6 8-8V519h118c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8zm284 424L775 721c122.1-148.9 113.6-369.5-26-509-148-148.1-388.4-148.1-537 0-148.1 148.6-148.1 389 0 537 139.5 139.6 360.1 148.1 509 26l146 146c3.2 2.8 8.3 2.8 11 0l43-43c2.8-2.7 2.8-7.8 0-11zM696 696c-118.8 118.7-311.2 118.7-430 0-118.7-118.8-118.7-311.2 0-430 118.8-118.7 311.2-118.7 430 0 118.7 118.8 118.7 311.2 0 430z"></path>
+          </svg>
+        </button>
+      </div>
+      {zoom ? <ZoomFullScreen zoomImgSrc={zoomImgSrc} /> : ''}
+    </div>
   );
 };
-
-const SliderWrapper = styled(motion.div)`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  background-color: ${color.textPrimary};
-  border-radius: 25px;
-  box-shadow: 0px 2px 6px ${color.boxShadowBtn};
-  position: relative;
-  overflow: hidden;
-`;
-
-const Lens = styled(motion.div)`
-  z-index: 2;
-  position: absolute;
-  height: 200px;
-  width: 200px;
-  border-radius: 50%;
-  background-repeat: no-repeat;
-  cursor: none;
-`;
 
 export default Slider;

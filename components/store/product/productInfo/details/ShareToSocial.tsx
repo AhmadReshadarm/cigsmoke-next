@@ -1,42 +1,21 @@
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
-import color from 'components/store/lib/ui.colors';
-import variants from 'components/store/lib/variants';
-import {
-  VKShareButton,
-  WhatsappShareButton,
-  TelegramShareButton,
-  TwitterShareButton,
-} from 'next-share';
 import { outsideClickListner } from 'components/store/storeLayout/helpers';
-import { useCopyToClipboard, handleMobileShare } from './helpers';
-import Share from '../../../../../assets/share.svg';
-import Copy from '../../../../../assets/copy.svg';
-import Telegram from '../../../../../assets/telegram.svg';
-import Vk from '../../../../../assets/vk.svg';
-import Whatsapp from '../../../../../assets/whatsapp.svg';
-import Twitter from '../../../../../assets/twitter.svg';
+import { handleMobileShare } from './helpers';
 import { PopupDisplay } from 'components/store/storeLayout/constants';
-import { devices } from 'components/store/lib/Devices';
+import { useInViewportNoDelay } from 'components/store/storeLayout/useInViewport';
+import styles from '../../styles/shareToSocial.module.css';
+import dynamic from 'next/dynamic';
+const ShareToSocialContent = dynamic(() => import('./ShareToSocialContent'));
 
 type Props = {
   productId?: string;
-  image?: string;
   title?: string;
-  description?: string;
+  artical?: string;
 };
 
-const ShareToSocial: React.FC<Props> = ({
-  productId,
-  image,
-  title,
-  description,
-}) => {
+const ShareToSocial: React.FC<Props> = ({ title, artical }) => {
   const router = useRouter();
-  const [isCopied, setCopied, copy] = useCopyToClipboard();
   // _______________socila menu hooks _______________
   const [isOpen, setOpen] = useState(false);
   const [display, setDisplay] = useState(PopupDisplay.None);
@@ -76,268 +55,71 @@ const ShareToSocial: React.FC<Props> = ({
 
   const shareData = {
     title: title,
-    // text: description,
     url: `${baseUrl}${router.asPath}`,
   };
 
+  const { isInViewport, ref } = useInViewportNoDelay();
+
   return (
-    <SocialParent
-      key="social-product-page"
-      custom={0.2}
-      initial="init"
-      animate="animate"
-      exit={{ y: -30, opacity: 0, transition: { delay: 0.2 } }}
-      variants={variants.fadInSlideUp}
-    >
-      <span id="product-code">{`Код товара: ${productId}`}</span>
-      <motion.button
-        className="share-btn-pc"
+    <div className={styles.SocialParent}>
+      <div className={styles.product_artical_wrapper}>
+        <span>{`Артикул товара: ${artical?.toLocaleUpperCase()}`}</span>
+      </div>
+      <button
+        className={styles.share_btn_pc}
         ref={btnNode}
-        custom={1.05}
-        whileHover="hover"
-        whileTap="tap"
-        variants={variants.grow}
         onClick={() => closeHandler()}
+        title="Поделиться в социальных сетях"
+        type="button"
       >
-        <Share />
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 21 21"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M9.8107 11.3975L11.7704 17.7666C11.9827 18.5159 12.26 19.1221 12.6002 19.5382C12.9426 19.9569 13.4115 20.2483 13.964 20.1574C14.4828 20.0721 14.8966 19.6734 15.2143 19.164C15.5392 18.643 15.8199 17.9196 16.0452 17.006L20.7918 1.01729C20.8572 0.797135 20.7642 0.560762 20.5663 0.444192C20.4881 0.398121 20.4014 0.375446 20.3153 0.374989C20.2443 0.364174 20.1703 0.368548 20.098 0.39001L4.10819 5.13547C3.19452 5.36068 2.47101 5.64132 1.95002 5.96615C1.44058 6.28378 1.04189 6.69747 0.956497 7.21622C0.865553 7.76871 1.15715 8.23761 1.57583 8.57985C1.9919 8.91994 2.59813 9.19718 3.34748 9.40941L9.8107 11.3975ZM3.63606 8.45194L9.85185 10.3639L18.4551 1.92069L4.38137 6.0975C4.37374 6.09976 4.36607 6.10185 4.35834 6.10374C3.49616 6.31544 2.87978 6.5649 2.47909 6.81472C2.06465 7.07312 1.95939 7.28037 1.94322 7.37865C1.93259 7.4432 1.9418 7.58742 2.20871 7.80559C2.47719 8.02505 2.93935 8.25497 3.625 8.44868L3.62504 8.44855L3.63606 8.45194ZM12.7279 17.478L10.8155 11.2627L19.2611 2.65972L15.0832 16.7327C15.0818 16.7373 15.0805 16.742 15.0792 16.7467C15.0784 16.7497 15.0777 16.7527 15.0769 16.7557C14.8652 17.6178 14.6157 18.2342 14.3658 18.6348C14.1073 19.0492 13.9 19.1545 13.8016 19.1707C13.7369 19.1813 13.5926 19.172 13.3744 18.9052C13.1549 18.6367 12.9249 18.1746 12.7312 17.489L12.7313 17.489L12.7279 17.478Z"
+            fill="#AAB4BD"
+          />
+        </svg>
         <span>Поделиться</span>
-      </motion.button>
-      <motion.button
-        className="share-btn-mobile"
-        custom={1.05}
-        whileHover="hover"
-        whileTap="tap"
-        variants={variants.grow}
+      </button>
+      <button
+        className={styles.share_btn_mobile}
         onClick={() => handleMobileShare(shareData)}
         onTouchStart={() => handleMobileShare(shareData)}
+        title="Поделиться в социальных сетях"
+        type="button"
       >
-        <Share />
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 21 21"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M9.8107 11.3975L11.7704 17.7666C11.9827 18.5159 12.26 19.1221 12.6002 19.5382C12.9426 19.9569 13.4115 20.2483 13.964 20.1574C14.4828 20.0721 14.8966 19.6734 15.2143 19.164C15.5392 18.643 15.8199 17.9196 16.0452 17.006L20.7918 1.01729C20.8572 0.797135 20.7642 0.560762 20.5663 0.444192C20.4881 0.398121 20.4014 0.375446 20.3153 0.374989C20.2443 0.364174 20.1703 0.368548 20.098 0.39001L4.10819 5.13547C3.19452 5.36068 2.47101 5.64132 1.95002 5.96615C1.44058 6.28378 1.04189 6.69747 0.956497 7.21622C0.865553 7.76871 1.15715 8.23761 1.57583 8.57985C1.9919 8.91994 2.59813 9.19718 3.34748 9.40941L9.8107 11.3975ZM3.63606 8.45194L9.85185 10.3639L18.4551 1.92069L4.38137 6.0975C4.37374 6.09976 4.36607 6.10185 4.35834 6.10374C3.49616 6.31544 2.87978 6.5649 2.47909 6.81472C2.06465 7.07312 1.95939 7.28037 1.94322 7.37865C1.93259 7.4432 1.9418 7.58742 2.20871 7.80559C2.47719 8.02505 2.93935 8.25497 3.625 8.44868L3.62504 8.44855L3.63606 8.45194ZM12.7279 17.478L10.8155 11.2627L19.2611 2.65972L15.0832 16.7327C15.0818 16.7373 15.0805 16.742 15.0792 16.7467C15.0784 16.7497 15.0777 16.7527 15.0769 16.7557C14.8652 17.6178 14.6157 18.2342 14.3658 18.6348C14.1073 19.0492 13.9 19.1545 13.8016 19.1707C13.7369 19.1813 13.5926 19.172 13.3744 18.9052C13.1549 18.6367 12.9249 18.1746 12.7312 17.489L12.7313 17.489L12.7279 17.478Z"
+            fill="#AAB4BD"
+          />
+        </svg>
         <span>Поделиться</span>
-      </motion.button>
-      <ShareToSocialWrapper
+      </button>
+      <div
         ref={menuNode}
         style={{ display: display }}
-        animate={isOpen ? 'open' : 'close'}
-        variants={variants.fadeInReveal}
+        className={styles.ShareToSocialWrapper}
       >
-        <ul>
-          <li
-            onTouchStart={() => {
-              copy(`${baseUrl}${router.asPath}`);
-              setTimeout(() => {
-                setCopied(false);
-              }, 800);
-            }}
-            onClick={() => {
-              copy(`${baseUrl}${router.asPath}`);
-              setTimeout(() => {
-                setCopied(false);
-              }, 800);
-            }}
-          >
-            <span style={{ width: '20px' }}>
-              <Copy />
-            </span>
-            <button className="copy-url-btn">
-              <motion.span
-                animate={!isCopied ? 'animate' : 'exit'}
-                variants={variants.fadeOutSlideOut}
-              >
-                Скопировать ссылку
-              </motion.span>
-              <motion.span
-                animate={isCopied ? 'animate' : 'exit'}
-                variants={variants.fadeInSlideIn}
-                style={{ color: color.ok }}
-              >
-                Ссылка скопирована
-              </motion.span>
-            </button>
-          </li>
-          <li>
-            <VKShareButton
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                gap: '15px',
-              }}
-              url={`${baseUrl}${router.asPath}`}
-              image={image}
-            >
-              <span>
-                <Vk />
-              </span>
-              <span className="social-name">ВКонтакте</span>
-            </VKShareButton>
-          </li>
-          <li>
-            <Link href="/">
-              <WhatsappShareButton
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  gap: '15px',
-                }}
-                url={`${baseUrl}${router.asPath}`}
-                title={title}
-                separator=":: "
-              >
-                <span>
-                  <Whatsapp />
-                </span>
-                <span className="social-name">Whatsapp</span>
-              </WhatsappShareButton>
-            </Link>
-          </li>
-          <li>
-            <Link href="/">
-              <TelegramShareButton
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  gap: '15px',
-                }}
-                url={`${baseUrl}${router.asPath}`}
-                title={title}
-              >
-                <span>
-                  <Telegram />
-                </span>
-                <span className="social-name">Telegram</span>
-              </TelegramShareButton>
-            </Link>
-          </li>
-          <li>
-            <Link href="/">
-              <TwitterShareButton
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignItems: 'center',
-                  gap: '15px',
-                }}
-                url={`${baseUrl}${router.asPath}`}
-                title={title}
-              >
-                <span>
-                  <Twitter />
-                </span>
-                <span className="social-name">Twitter</span>
-              </TwitterShareButton>
-            </Link>
-          </li>
-        </ul>
-      </ShareToSocialWrapper>
-    </SocialParent>
+        <ul ref={ref}>{isInViewport ? <ShareToSocialContent /> : ''}</ul>
+      </div>
+    </div>
   );
 };
-
-const SocialParent = styled(motion.div)`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 20px;
-  position: relative;
-  #product-code {
-    color: ${color.textSecondary};
-  }
-  .share-btn-pc {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    color: ${color.yellow};
-    cursor: pointer;
-  }
-
-  .share-btn-mobile {
-    display: none;
-  }
-  @media ${devices.mobileL} {
-    margin-bottom: -40px;
-    justify-content: space-between;
-    .share-btn-pc {
-      display: none;
-    }
-    .share-btn-mobile {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      gap: 5px;
-      color: ${color.yellow};
-      cursor: pointer;
-    }
-  }
-`;
-
-const ShareToSocialWrapper = styled(motion.div)`
-  position: absolute;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  top: 35px;
-  right: 0;
-  padding: 20px;
-  border-radius: 15px;
-  background-color: ${color.textPrimary};
-  box-shadow: 0px 2px 6px ${color.boxShadowBtn};
-  z-index: 9;
-  ul {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 10px;
-    li {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 15px;
-      padding: 5px 0;
-      cursor: pointer;
-      .social-name {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 15px;
-        color: ${color.textTertiary};
-        &:hover {
-          color: ${color.hover};
-        }
-      }
-      .copy-url-btn {
-        width: 140px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        color: ${color.textTertiary};
-        span {
-          position: absolute;
-          cursor: pointer;
-          &:hover {
-            color: ${color.hover};
-          }
-        }
-      }
-    }
-  }
-`;
 
 export default ShareToSocial;

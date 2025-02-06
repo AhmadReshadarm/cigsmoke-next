@@ -10,18 +10,26 @@ import StoreLayout from 'components/store/storeLayout/layouts';
 import styled from 'styled-components';
 import Link from 'next/link';
 import SEOstatic from 'components/store/SEO/SEOstatic';
+import { baseUrl } from 'common/constant';
+
 const Copyrights = () => {
   return (
     <>
       <SEOstatic
         page={{
-          name: 'Правила использования контента сайта',
-          url: '/copyright-terms',
-          desc: 'Интернет-магазин Wuluxe',
-          keywords: 'Интернет-магазин Wuluxe',
+          realName:
+            'NBHOZ - интернет магазин хозтовары оптом. по выгодным ценам',
+          name: 'NBHOZ - интернет магазин хозтовары оптом. по выгодным ценам',
+          url: '/',
+          desc: `NBHOZ, Дешевые хозтовары оптом в интернет магазине nbhoz в Москве и все Россия`,
+          keywords:
+            'nbhoz, nbhoz.ru, Товары для сервировки стола,купить Кухонная утварь, Товары для ванной комнаты, Дешевые хозтовары',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         }}
-        image="https://wuluxe.ru/wuluxe.svg"
+        image={`${baseUrl}/static/logo_800x800.png`}
       />
+
       <Container
         variants={variants.fadInOut}
         key="profile-page"
@@ -43,10 +51,8 @@ const Copyrights = () => {
             <Headers>Правила использования контента сайта</Headers>
             <Contents>
               Содержимое сайта{' '}
-              <Link href="https://wuluxe.ru">
-                <a>
-                  <Links>wuluxe.ru</Links>
-                </a>
+              <Link href="https://nbhoz.ru">
+                <Links>nbhoz.ru</Links>
               </Link>{' '}
               (далее — Сайт), в том числе любая текстовая информация и
               графические изображения (далее — Контент), являются собственностью
@@ -62,10 +68,8 @@ const Copyrights = () => {
             <Contents>
               Чтобы запросить разрешение у Интернет Решения необходимо направить
               электронное письмо на{' '}
-              <Link href="mailto:help@wuluxe.ru">
-                <a>
-                  <Links>help@wuluxe.ru</Links>
-                </a>
+              <Link href="mailto:help@nbhoz.ru">
+                <Links>help@nbhoz.ru</Links>
               </Link>{' '}
               с обязательным указанием следующей информации:
             </Contents>
@@ -87,10 +91,8 @@ const Copyrights = () => {
               <li>
                 использование Контента должно сопровождаться указанием на
                 источник их публикации —{' '}
-                <Link href="https://wuluxe.ru">
-                  <a>
-                    <Links>wuluxe.ru</Links>
-                  </a>
+                <Link href="https://nbhoz.ru">
+                  <Links>nbhoz.ru</Links>
                 </Link>
                 , иных источников информации, упомянутых в Контенте (при
                 наличии);
@@ -127,10 +129,8 @@ const Copyrights = () => {
             <Contents>
               Если вы считаете, что размещённый на Сайте Контент нарушает ваши
               права, сообщите об этом, направив электронное письмо на адрес{' '}
-              <Link href="mailto:help@wuluxe.ru">
-                <a>
-                  <Links>help@wuluxe.ru</Links>
-                </a>
+              <Link href="mailto:help@nbhoz.ru">
+                <Links>help@nbhoz.ru</Links>
               </Link>{' '}
               с обязательным указанием следующей информации:
             </Contents>
@@ -187,7 +187,6 @@ const Copyrights = () => {
 const Headers = styled.h1`
 width:100%:
 text-align:start;
-font-family:'intro';
 `;
 
 const Contents = styled.span`
@@ -195,15 +194,21 @@ const Contents = styled.span`
   text-align: start;
   line-height: 1.5rem;
   font-size: 1rem;
+  @media ${devices.tabletL} {
+    width: 100%;
+  }
+  @media ${devices.tabletS} {
+    width: 100%;
+  }
   @media ${devices.mobileL} {
     width: 100%;
   }
 `;
 
 const Links = styled.span`
-  color: ${color.yellow};
+  color: ${color.hoverBtnBg};
   &:hover {
-    color: ${color.hover};
+    color: ${color.ok};
   }
 `;
 
@@ -215,6 +220,12 @@ const ListsDots = styled.ul`
   font-size: 1rem;
   li {
     list-style-type: circle;
+  }
+  @media ${devices.tabletL} {
+    width: 100%;
+  }
+  @media ${devices.tabletS} {
+    width: 100%;
   }
   @media ${devices.mobileL} {
     width: 100%;
@@ -228,6 +239,12 @@ const ListNumbers = styled.ol`
   font-size: 1rem;
   li {
     list-style-type: number;
+  }
+  @media ${devices.tabletL} {
+    width: 100%;
+  }
+  @media ${devices.tabletS} {
+    width: 100%;
   }
   @media ${devices.mobileL} {
     width: 100%;

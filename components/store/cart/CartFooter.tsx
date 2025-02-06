@@ -1,168 +1,263 @@
 import Link from 'next/link';
 import styled from 'styled-components';
-import { Basket } from 'swagger/services';
-import { devices } from '../lib/Devices';
 import { motion } from 'framer-motion';
-import { getDiscount } from '../checkout/totalDeliveryDate/helpers';
-import {
-  getTotalDiscount,
-  getTotalPrice,
-  getTotalQuantity,
-  findTotalWheight,
-} from './helpers';
+import { getTotalPrice } from './helpers';
 import color from 'components/store/lib/ui.colors';
 import variants from '../lib/variants';
-import { useAppSelector } from 'redux/hooks';
-import { TAuthState } from 'redux/types';
-import { Role } from 'common/enums/roles.enum';
+import { useAppDispatch, useAppSelector } from 'redux/hooks';
+import { TAuthState, TCartState } from 'redux/types';
+import { devices } from '../lib/Devices';
+import { setOneClickBy } from 'redux/slicers/store/cartSlicer';
 
-type Props = {
-  cart: Basket | null;
-};
+const CartFooter = () => {
+  const dispatch = useAppDispatch();
+  const { cart } = useAppSelector<TCartState>((state) => state.cart);
 
-const CartFooter: React.FC<Props> = ({ cart }) => {
   const { user } = useAppSelector<TAuthState>((state) => state.auth);
+  const handleGoToCart = () => {
+    dispatch(setOneClickBy(false));
+  };
+
   return (
     <Wrapper>
-      <CartCol>
-        <CartTitle>Ваша корзина</CartTitle>
-        <CartColBody>
-          <ProductInfo>
-            {getTotalQuantity(cart?.orderProducts!)} товар /
-          </ProductInfo>
-          <ProductInfo>
-            {cart?.orderProducts!.length} вида товаров /
-          </ProductInfo>
-          <ProductInfo>
-            {findTotalWheight(cart).totalWeight.toFixed(2)}{' '}
-            {findTotalWheight(cart).in == 'gram' ? 'гр' : 'кг'} общий вес
-          </ProductInfo>
-        </CartColBody>
-      </CartCol>
-      <CartCol>
-        <CartTitle>Общая сумма</CartTitle>
-        <CartTotalPrice>
-          {getTotalPrice(cart?.orderProducts!, user)} ₽
-        </CartTotalPrice>
-        <CartDiscount>
-          <DiscountTitle>
-            {user?.role === Role.SuperUser ? '' : `Скидка`}
-          </DiscountTitle>
-          <DiscountPrice>
-            {/* {getTotalDiscount(cart?.orderProducts!)} ₽ */}
-            {user?.role === Role.SuperUser ? '' : `${getDiscount(cart)} ₽`}
-          </DiscountPrice>
-        </CartDiscount>
-      </CartCol>
-      <CartCol>
-        <Link href={'/checkout'}>
+      <CartTotalPrice
+        style={{
+          display: Number(cart?.orderProducts?.length) > 0 ? 'flex' : 'none',
+        }}
+      >
+        <span className="total-text">Ваша корзина</span>
+        <span>Итого: {getTotalPrice(cart?.orderProducts!, user)} ₽</span>
+      </CartTotalPrice>
+      <div className="footer-spliter">
+        <div className="footer-no-border"></div>
+        <div className="footer-border"></div>
+      </div>
+      <CheckoutBtnWrapper>
+        <Link
+          style={{
+            display: Number(cart?.orderProducts?.length) > 0 ? 'flex' : 'none',
+          }}
+          href={cart?.totalAmount == 0 ? '/cart' : '/checkout'}
+        >
           <CheckoutBtn
             whileHover="hover"
             whileTap="tap"
             variants={variants.boxShadow}
+            onClick={handleGoToCart}
           >
-            Перейти к оформлению
+            <span>Перейти к оформлению заказа</span>
+            <svg
+              width="9"
+              height="14"
+              viewBox="0 0 9 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M2.3125 1.875L7.25 6.9375L2.3125 11.875"
+                stroke="white"
+                stroke-width="3.1"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </CheckoutBtn>
         </Link>
-      </CartCol>
+        <Link href="/catalog">
+          <CheckoutBtn
+            whileHover="hover"
+            whileTap="tap"
+            variants={variants.boxShadow}
+            style={{ backgroundColor: '#e2dad0', color: '#000000e3' }}
+          >
+            Продолжить покупки
+          </CheckoutBtn>
+        </Link>
+      </CheckoutBtnWrapper>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
-  background: #fff;
+  width: 100%;
   display: flex;
-  padding: 40px 54px;
-  border-radius: 15px;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
-
-  @media ${devices.laptopS} {
-    display: block;
-  }
-
-  @media ${devices.mobileL} {
-    display: block;
-    padding: 15px;
-  }
-`;
-
-const CartTitle = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-`;
-
-const CartColBody = styled.span`
-  @media ${devices.laptopS} {
+  .footer-spliter {
+    width: 100%;
     display: flex;
-    gap: 5px;
+    .footer-border {
+      width: 95%;
+      border-top: 1px solid;
+    }
+    .footer-no-border {
+      width: 5%;
+    }
   }
 `;
 
-const CartTotalPrice = styled.h3`
-  font-size: 14px;
-  font-weight: bold;
-`;
+const CartTotalPrice = styled.div`
+  width: 100%;
+  max-width: 1500px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px 30px;
+  gap: 50px;
+  span {
+    font-family: ver(--font-Jost);
+    font-size: 2.5rem;
+  }
 
-const CartCol = styled.div`
-  @media ${devices.laptopS} {
-    display: flex;
+  @media ${devices.tabletL} {
+    padding: 10px 20px;
+    gap: 10px;
     justify-content: space-between;
-    margin-bottom: 10px;
+    .total-text {
+      font-size: 1.5rem;
+    }
+    span {
+      font-size: 1.5rem;
+    }
   }
-
-  @media ${devices.mobileL} {
-    display: flex;
+  @media ${devices.tabletS} {
+    padding: 10px 20px;
+    gap: 10px;
     justify-content: space-between;
-    margin-bottom: 10px;
+
+    .total-text {
+      font-size: 1.5rem;
+    }
+    span {
+      font-size: 1.5rem;
+    }
   }
-`;
-
-const ProductInfo = styled.div`
-  font-size: 14px;
-  color: #989898;
-`;
-
-const CartDiscount = styled.div`
-  margin-top: 10px;
-
-  @media ${devices.laptopS} {
-    margin-top: 0;
-  }
-
   @media ${devices.mobileL} {
-    margin-top: 0;
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    align-items: flex-start;
+    padding: 0 0 0 20px;
+    .total-text {
+      font-size: 1.5rem;
+    }
+    span {
+      font-size: 1.5rem;
+    }
+  }
+  @media ${devices.mobileM} {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    align-items: flex-start;
+    padding: 0 0 0 20px;
+    .total-text {
+      font-size: 1.5rem;
+    }
+    span {
+      font-size: 1.5rem;
+    }
+  }
+  @media ${devices.mobileS} {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    align-items: flex-start;
+    padding: 0 0 0 20px;
+    .total-text {
+      font-size: 1.5rem;
+    }
+    span {
+      font-size: 1.5rem;
+    }
   }
 `;
 
-const DiscountTitle = styled.span`
-  font-size: 14px;
-`;
-
-const DiscountPrice = styled.span`
-  font-size: 14px;
-  color: ${color.ok};
-  margin-left: 10px;
+const CheckoutBtnWrapper = styled.div`
+  width: 100%;
+  max-width: 1500px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 30px;
+  gap: 50px;
+  @media ${devices.tabletL} {
+    flex-direction: column;
+    gap: 20px;
+    a {
+      width: 100%;
+    }
+  }
+  @media ${devices.tabletS} {
+    flex-direction: column;
+    gap: 20px;
+    a {
+      width: 100%;
+    }
+  }
+  @media ${devices.mobileL} {
+    flex-direction: column;
+    gap: 20px;
+    a {
+      width: 100%;
+    }
+  }
+  @media ${devices.mobileM} {
+    flex-direction: column;
+    gap: 20px;
+    a {
+      width: 100%;
+    }
+  }
+  @media ${devices.mobileS} {
+    flex-direction: column;
+    gap: 20px;
+    a {
+      width: 100%;
+    }
+  }
 `;
 
 const CheckoutBtn = styled(motion.button)`
+  height: 50px;
   background: ${color.btnPrimary};
   color: ${color.textPrimary};
-  font-size: 18px;
-  padding: 12px 81px;
-  border-radius: 8px;
+  font-size: 1.2rem;
+  padding: 0px 20px;
+  border-radius: 30px;
   cursor: pointer;
-
-  @media ${devices.laptopS} {
-    margin-top: 10px;
-  }
-
-  @media ${devices.mobileL} {
-    margin-top: 10px;
-    padding: 12px 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  @media ${devices.tabletL} {
     width: 100%;
-    text-align: center;
+    padding: 10px;
+    font-size: 1rem;
+  }
+  @media ${devices.tabletS} {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+  }
+  @media ${devices.mobileL} {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.8rem;
+  }
+  @media ${devices.mobileM} {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.8rem;
+  }
+  @media ${devices.mobileS} {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.8rem;
   }
 `;
 

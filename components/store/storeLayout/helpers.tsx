@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import { PopupDisplay } from './constants';
+import {
+  clearSearchProducts,
+  clearSearchQuery,
+} from 'redux/slicers/store/globalSlicer';
+import { AppDispatch } from 'redux/store';
+
 const paginateHandler = () => {
   const widthOrHeightRef = useRef<any>();
 
@@ -78,7 +84,59 @@ const outsideClickListner = (
     });
   };
 };
+// ---------------------- menu handlers and hooks -----------------------------
+const outsideClickListnerRedux = (
+  listening: boolean,
+  setListening: Dispatch<SetStateAction<boolean>>,
+  menuRef: HTMLDivElement | any,
+  btnRef: HTMLDivElement | any,
+  dispatch: AppDispatch,
+  ChangeIsOpenState: any,
+  ChangeDisplayState: any,
+) => {
+  return () => {
+    if (listening) return;
+    if (!menuRef || !btnRef) return;
 
+    setListening(true);
+
+    [`click`, `touchstart`].forEach((type) => {
+      document.addEventListener(`click`, (evt) => {
+        const node = evt.target;
+        if (menuRef.contains(node) || btnRef.contains(node)) return;
+        dispatch(ChangeIsOpenState(false));
+
+        setTimeout(() => {
+          dispatch(ChangeDisplayState(PopupDisplay.None));
+        }, 100);
+      });
+    });
+  };
+};
+
+const handleMenuStateRedux =
+  (
+    dispatch: AppDispatch,
+    ChangeIsOpenState: any,
+    ChangeDisplayState: any,
+    isOpenState: boolean,
+    displayState: PopupDisplay,
+  ) =>
+  () => {
+    dispatch(ChangeIsOpenState(!isOpenState));
+
+    setTimeout(() => {
+      dispatch(
+        ChangeDisplayState(
+          displayState == PopupDisplay.None
+            ? PopupDisplay.Flex
+            : PopupDisplay.None,
+        ),
+      );
+    }, 100);
+  };
+
+// ------------------------- end of menu state hooks and handlers ------------------------
 const handleMenuState =
   (
     setIsOpened: Dispatch<SetStateAction<boolean>>,
@@ -158,15 +216,23 @@ const handleCookiesClick = (setOpen: any) => {
   setOpen(false);
 };
 
+const handleSearchclosed = (dispatch: AppDispatch) => {
+  dispatch(clearSearchProducts());
+  dispatch(clearSearchQuery());
+};
+
 declare const window: any;
 declare const opera: any;
 export {
   paginateHandler,
   UseImagePaginat,
   outsideClickListner,
+  outsideClickListnerRedux,
   handleDragEnd,
   handleMenuState,
+  handleMenuStateRedux,
   overrideDefaultIOSZoom,
   acceptedCookies,
   handleCookiesClick,
+  handleSearchclosed,
 };

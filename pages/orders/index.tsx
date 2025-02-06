@@ -1,80 +1,81 @@
-import variants from 'components/store/lib/variants';
-import color from 'components/store/lib/ui.colors';
-import {
-  Container,
-  Wrapper,
-  Content,
-} from 'components/store/storeLayout/common';
-import Order from 'components/store/order';
 import StoreLayout from 'components/store/storeLayout/layouts';
-import styled from 'styled-components';
 import Head from 'next/head';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
-import { TStoreCheckoutState } from 'redux/types';
-import Loading from 'ui-kit/Loading';
-import { useEffect } from 'react';
+import { TAuthState, TStoreCheckoutState } from 'redux/types';
+import { useEffect, useState } from 'react';
 import { fetchCheckouts } from 'redux/slicers/store/checkoutSlicer';
+import { baseUrl } from 'common/constant';
+import dynamic from 'next/dynamic';
+import { LoaderMask } from 'ui-kit/generalLoaderMask';
+import Authorization from 'components/store/storeLayout/utils/HeaderAuth/authorize';
+import { UsePagination } from 'components/store/storeLayout/utils/HeaderAuth/authorize/helpers';
+import styles from '../../components/store/order/styles/main.module.css';
+const Order = dynamic(() => import('components/store/order'), {
+  ssr: false,
+  loading: () => <LoaderMask />,
+});
 
 const Orders = () => {
   const dispatch = useAppDispatch();
-  const { checkouts, loading } = useAppSelector<TStoreCheckoutState>(
+  const { checkouts } = useAppSelector<TStoreCheckoutState>(
     (state) => state.storeCheckout,
   );
+  const { user } = useAppSelector<TAuthState>((state) => state.auth);
 
   useEffect(() => {
     dispatch(fetchCheckouts());
   }, []);
 
+  const [activeUI, setActiveUI] = useState('auth');
+  const [direction, authType, paginate] = UsePagination();
+  useEffect(() => {
+    if (user) {
+      setActiveUI('userData');
+      dispatch(fetchCheckouts());
+    }
+    if (!user) {
+      setActiveUI('auth');
+    }
+  }, [user]);
+
   return (
     <>
       <Head>
-        <title>Мои заказы | Wuluxe</title>
+        <title>Мои заказы | NBHOZ</title>
+        <meta
+          property="og:image"
+          name="og:image"
+          content={`${baseUrl}/static/logo_800x800.png`}
+        />
       </Head>
-      <Container
-        variants={variants.fadInOut}
-        key="order-page"
-        initial="start"
-        animate="middle"
-        exit="end"
-        flex_direction="column"
-        justify_content="center"
-        align_items="center"
-        padding="150px"
-        bg_color={color.textPrimary}
+
+      <div
+        style={{
+          display: activeUI == 'auth' ? 'flex' : 'none',
+        }}
+        className={styles.AuthContainer}
       >
-        <Wrapper>
-          <Content
-            flex_direction="column"
-            justify_content="flex-start"
-            gap="30px"
-          >
-            <PageTitle>Заказы</PageTitle>
-            {checkouts.length && !loading ? (
-              <Order checkouts={checkouts} />
-            ) : loading ? (
-              <Loading />
-            ) : (
-              <NoOreder>
-                <h2>У вас пока нет заказов</h2>
-              </NoOreder>
-            )}
-          </Content>
-        </Wrapper>
-      </Container>
+        <div className={styles.AuthWrapper}>
+          <Authorization
+            direction={direction}
+            authType={authType}
+            paginate={paginate}
+          />
+        </div>
+      </div>
+
+      {/* --------------------------------------------------------- */}
+      <div
+        className={styles.ContainerOrders}
+        style={{
+          display: activeUI == 'userData' ? 'flex' : 'none',
+        }}
+      >
+        <Order checkouts={checkouts} />
+      </div>
     </>
   );
 };
-const PageTitle = styled.h3`
-  font-size: 2rem;
-  font-family: 'intro';
-`;
-const NoOreder = styled.div`
-  width: 100%;
-  height: 70vh;
-  h2 {
-    font-family: 'intro';
-  }
-`;
 
 Orders.PageLayout = StoreLayout;
 

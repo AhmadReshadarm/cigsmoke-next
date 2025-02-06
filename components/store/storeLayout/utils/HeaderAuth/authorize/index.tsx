@@ -1,118 +1,121 @@
 import { paginateTo } from 'components/store/checkout/constant';
-import color from 'components/store/lib/ui.colors';
-import variants from 'components/store/lib/variants';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import { useAppSelector } from 'redux/hooks';
 import { TAuthState } from 'redux/types';
-import styled from 'styled-components';
 import { PopupDisplay } from '../../../constants';
-import { AuthBtns, Content, Loading } from './common';
 import SignIn from './signin';
 import SignUp from './signup';
-
+import { useState } from 'react';
+import styles from '../../../styles/headerAuth.module.css';
 type Props = {
   direction: number;
   authType: string;
   paginate: (newDirection: number, newType: any) => void;
-  onAfterAuthorized?: () => void;
 };
-const Authorization: React.FC<Props> = ({
-  direction,
-  authType,
-  paginate,
-  onAfterAuthorized,
-}) => {
-  const [isCap, setCap] = useState(false);
-  const { serverErr, loading } = useAppSelector<TAuthState>(
-    (state) => state.auth,
-  );
+
+const Authorization: React.FC<Props> = ({ direction, authType, paginate }) => {
+  const { loading } = useAppSelector<TAuthState>((state) => state.auth);
+  const [isHelperActive, setIshelperActive] = useState(true);
 
   return (
     <>
-      <Content
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        custom={direction}
-        variants={variants.authorizeSlideX}
-        animate={authType == 'selection' ? 'center' : 'enter'}
-      >
-        <AuthMessege
-          custom={0.1}
-          initial="init"
-          whileInView="animate"
-          variants={variants.fadInSlideUp}
-        >
-          <h3>Wuluxe</h3>
-          <h4>Войдите или зарегистрируйтесь для оформления заказа</h4>
-          <span>
-            Для регистрации мы вышлем вам ссылку для подтверждения на ваш
-            почтовый ящик
-          </span>
-          <span>это разовое подтверждение</span>
-        </AuthMessege>
-        <AuthBtns
-          whileHover="hover"
-          whileTap="tap"
-          variants={variants.boxShadow}
-          bgcolor={color.btnPrimary}
-          onClick={() => paginate(paginateTo.forward, 'signin')}
-        >
-          Войти
-        </AuthBtns>
-        <span style={{ fontFamily: 'intro' }}>или</span>
-        <AuthBtns
-          whileHover="hover"
-          whileTap="tap"
-          variants={variants.boxShadow}
-          bgcolor={color.btnPrimary}
-          onClick={() => paginate(paginateTo.forward, 'signup')}
-        >
-          Зарегистрироваться
-        </AuthBtns>
-      </Content>
+      <div className={styles.AuthorizationWrapper}>
+        <div className={styles.auth_intial_image_wrapper}>
+          <img src="/singin-static.jpg" alt="sofa" />
+        </div>
+        <div className={styles.auth_parrent_wrapper}>
+          <div className={styles.AuthHeader}>
+            <div className={styles.AuthTabWrapper}>
+              <motion.div
+                animate={authType == 'selection' ? 'init' : 'animate'}
+                variants={{ init: { x: 0 }, animate: { x: 100 } }}
+                className={styles.auth_page_indecator}
+              ></motion.div>
 
-      <SignIn
-        direction={direction}
-        authType={authType}
-        serverErr={serverErr}
-        isCap={isCap}
-        setCap={setCap}
-        paginate={paginate}
-        onAfterAuthorized={onAfterAuthorized}
-      />
-      <SignUp
-        direction={direction}
-        authType={authType}
-        paginate={paginate}
-        serverErr={serverErr}
-        isCap={isCap}
-        setCap={setCap}
-      />
-      <Loading
-        style={{
-          display: loading ? PopupDisplay.Flex : PopupDisplay.None,
-        }}
-      />
+              <div className={styles.auth_buttons_row}>
+                <div
+                  style={{
+                    display:
+                      authType !== 'signup' && isHelperActive ? 'flex' : 'none',
+                  }}
+                  className={styles.helper_box_wrapper}
+                >
+                  <div className={`${styles.box} ${styles.arrow_top}`}>
+                    <span
+                      className={styles.helper_close_btn}
+                      onClick={() => setIshelperActive(false)}
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 21 22"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <line
+                          x1="1"
+                          y1="-1"
+                          x2="26.3541"
+                          y2="-1"
+                          transform="matrix(0.683484 -0.729965 0.681649 0.731679 1.52267 21.0312)"
+                          stroke="white"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                        />
+                        <line
+                          x1="1"
+                          y1="-1"
+                          x2="26.3044"
+                          y2="-1"
+                          transform="matrix(0.680786 0.732483 -0.684345 0.729158 0.21875 1.03125)"
+                          stroke="white"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </span>
+                    <span>
+                      Если у вас нет аккаунт, нажмите здесь чтобы создать новую
+                      аккаунт
+                    </span>
+                  </div>
+                </div>
+                <h2
+                  className={`${
+                    authType == 'selection' ? styles.sign_in_tab : ''
+                  } `}
+                  onClick={() => paginate(paginateTo.forward, 'selection')}
+                >
+                  ВХОД
+                </h2>
+                <span>/</span>
+                <h2
+                  className={`${
+                    authType == 'signup' ? styles.sign_up_tab : ''
+                  }`}
+                  onClick={() => paginate(paginateTo.back, 'signup')}
+                >
+                  РЕГИСТРАЦИЯ
+                </h2>
+              </div>
+            </div>
+          </div>
+          <SignIn direction={direction} authType={authType} />
+          <SignUp
+            direction={direction}
+            authType={authType}
+            paginate={paginate}
+          />
+          <div
+            className={styles.Loading}
+            style={{
+              display: loading ? PopupDisplay.Flex : PopupDisplay.None,
+            }}
+          />
+        </div>
+      </div>
     </>
   );
 };
-
-const AuthMessege = styled(motion.div)`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 5px;
-  h3 {
-    font-family: 'intro';
-    font-size: 1.3rem;
-    margin: 0;
-  }
-  span {
-    color: ${color.textSecondary};
-  }
-`;
 
 export default Authorization;

@@ -5,29 +5,41 @@ import {
   editProduct,
 } from 'redux/slicers/productsSlicer';
 import { AppDispatch } from 'redux/store';
-import { navigateTo } from '../../../common/helpers';
+import {
+  hasWhiteSpace,
+  navigateTo,
+  openErrorNotification,
+} from '../../../common/helpers';
 import { NextRouter } from 'next/router';
 import { Page, paths } from 'routes/constants';
 import { TableProps } from 'antd';
 import { DataType } from 'common/interfaces/data-type.interface';
-import { Category, Image, ParameterProduct, Product } from 'swagger/services';
+import {
+  Category,
+  ParameterProduct,
+  Product,
+  ProductVariant,
+} from 'swagger/services';
 import { Dispatch, SetStateAction } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { ManageProductFields } from './ManageProductsFields.enum';
-
+import { createImage } from 'redux/slicers/imagesSlicer';
+import { onLocationChange } from 'components/store/catalog/helpers';
 const handleDeleteProduct =
   (id: string, dispatch: AppDispatch, setVisible: any, offset: number) =>
   async () => {
+    const handleLocationChange = onLocationChange(dispatch);
     const isSaved: any = await dispatch(deleteProduct(id));
     if (!isSaved.error) {
       dispatch(
         fetchProducts({
           offset: String(offset),
-          limit: '20',
+          limit: '12',
         }),
       );
       setVisible((prev) => !prev);
     }
+    handleLocationChange();
   };
 
 const handleDataConvertation = (
@@ -50,8 +62,9 @@ const handleDataConvertation = (
     const id: string = form[`id[${index}]`];
     const price: number = form[`${ManageProductFields.Price}[${index}]`];
     const oldPrice: number = form[`${ManageProductFields.OldPrice}[${index}]`];
-    const wholeSalePrice: number =
-      form[`${ManageProductFields.wholeSalePrice}[${index}]`];
+    const artical: string = form[`${ManageProductFields.Artical}[${index}]`];
+    // const wholeSalePrice: number =
+    //   form[`${ManageProductFields.wholeSalePrice}[${index}]`];
     const available: boolean =
       form[`${ManageProductFields.Available}[${index}]`];
     const color: number = form[`${ManageProductFields.Color}[${index}]`];
@@ -59,7 +72,8 @@ const handleDataConvertation = (
       id,
       price,
       oldPrice,
-      wholeSalePrice,
+      // wholeSalePrice,
+      artical,
       available,
       color,
       images: null,
@@ -82,6 +96,17 @@ const handleDataConvertation = (
   return newForm;
 };
 
+const checkForEmptyColorFieldInVariant = (variants: ProductVariant[]) => {
+  let isEmpty = false;
+  let emptyVariant;
+  variants.map((variant) => {
+    if (!variant.color) {
+      isEmpty = true;
+      emptyVariant = variant;
+    }
+  });
+  return { isEmpty, emptyVariant };
+};
 const handleFormSubmitProduct =
   (
     router: NextRouter,
@@ -89,14 +114,43 @@ const handleFormSubmitProduct =
     imagesMap: Object,
     parameterProducts: ParameterProduct[],
     variantsLength: number,
+    // desc: string,
   ) =>
   async (form) => {
+    // form.desc = desc;
+
     const convertedForm = handleDataConvertation(
       form,
       imagesMap,
       parameterProducts,
       variantsLength,
     );
+
+    if (hasWhiteSpace(form.url)) {
+      openErrorNotification(
+        'В URL-адресе не допускается использование пробелов.',
+      );
+      return;
+    }
+    if (convertedForm.productVariants.length == 0) {
+      openErrorNotification('Установить вариант товара');
+      return;
+    }
+    if (convertedForm.productVariants[0].price == undefined) {
+      openErrorNotification('Установить цену товара');
+      return;
+    }
+    if (
+      checkForEmptyColorFieldInVariant(convertedForm.productVariants).isEmpty
+    ) {
+      openErrorNotification(
+        `Выберите цвет для ${
+          checkForEmptyColorFieldInVariant(convertedForm.productVariants)
+            .emptyVariant.artical
+        }`,
+      );
+      return;
+    }
 
     if (router.query.id) {
       const isSaved: any = await dispatch(
@@ -130,7 +184,7 @@ const handleTableChange: TableProps<DataType>['onChange'] = (
   sorter,
   extra,
 ) => {
-  console.log('params', pagination, filters, sorter, extra);
+  // console.log('params', pagination, filters, sorter, extra);
 };
 
 const multipleItemsConverter = (items) => {
@@ -156,11 +210,11 @@ const initialValuesConverter = (product: Product) => {
   const newProduct: any & Product = { ...product };
   newProduct.available = newProduct.available?.toString();
   newProduct.category = newProduct.category?.id;
-  newProduct.brand = newProduct.brand?.id;
+  // newProduct.brand = newProduct.brand?.id;
 
   // newProduct.colors = multipleItemsConverter(newProduct.colors);
   newProduct.tags = multipleItemsConverter(newProduct.tags);
-  newProduct.sizes = multipleItemsConverter(newProduct.sizes);
+  // newProduct.sizes = multipleItemsConverter(newProduct.sizes);
 
   // newProduct.images = imagesConverter(newProduct.images);
   for (let index = 0; index < product?.productVariants?.length!; index++) {
@@ -168,8 +222,7 @@ const initialValuesConverter = (product: Product) => {
     newProduct[`id[${index}]`] = variant.id;
     newProduct[`${ManageProductFields.Price}[${index}]`] = variant.price;
     newProduct[`${ManageProductFields.OldPrice}[${index}]`] = variant.oldPrice;
-    newProduct[`${ManageProductFields.wholeSalePrice}[${index}]`] =
-      variant.wholeSalePrice;
+    newProduct[`${ManageProductFields.Artical}[${index}]`] = variant.artical;
     newProduct[`${ManageProductFields.Available}[${index}]`] =
       variant.available;
     newProduct[`${ManageProductFields.Color}[${index}]`] = variant.color?.id;
@@ -211,6 +264,23 @@ const handleCategoryChange =
     );
   };
 
+async function uploadImage(file, dispatch) {
+  const config = {
+    headers: { 'content-type': 'multipart/form-data' },
+  };
+
+  const image = await dispatch(
+    createImage({
+      config,
+      file,
+    }),
+  );
+
+  return new Promise((resolve, reject) => {
+    resolve({ data: { link: `/api/images/${image.payload}` } });
+  });
+}
+
 export {
   handleDeleteProduct,
   handleFormSubmitProduct,
@@ -219,4 +289,5 @@ export {
   initialValuesConverter,
   handleParameterChange,
   handleCategoryChange,
+  uploadImage,
 };

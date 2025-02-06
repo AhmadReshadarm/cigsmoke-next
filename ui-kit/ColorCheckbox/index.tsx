@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import styled, { css, CSSProp } from 'styled-components';
+import { useEffect, useRef, useState } from 'react';
+import styled, { css } from 'styled-components';
 
 type Props = {
   label: string;
@@ -31,9 +31,17 @@ const ColorCheckbox: React.FC<Props> = ({
     setStateChecked(e.target.checked);
   };
 
+  useEffect(() => {
+    setStateChecked(checked);
+  }, [checked]);
+
   return (
     <CheckboxWrapper style={style} onClick={handleClick}>
-      <Checkbox active={!!stateChecked} style={{ backgroundColor: color }}>
+      <Checkbox
+        active={!!stateChecked}
+        style={{ backgroundColor: color, border: '1px solid' }}
+        title={label}
+      >
         <input
           ref={nativeCheckboxRef}
           checked={stateChecked}
@@ -42,7 +50,6 @@ const ColorCheckbox: React.FC<Props> = ({
           hidden
         />
       </Checkbox>
-      <CheckboxLabel>{label}</CheckboxLabel>
     </CheckboxWrapper>
   );
 };
@@ -56,8 +63,8 @@ const CheckboxWrapper = styled.div`
 const Checkbox = styled.div<{
   active: boolean;
 }>`
-  width: 19px;
-  height: 19px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   background: #ccc;
 
@@ -66,12 +73,13 @@ const Checkbox = styled.div<{
       return css`
         &::before {
           content: '✓';
-          color: #fff;
+          color: #000;
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 20px;
-          height: 20px;
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
           background: #ffffff59;
         }
       `;
@@ -81,11 +89,6 @@ const Checkbox = styled.div<{
       `;
     }
   }}
-`;
-
-const CheckboxLabel = styled.div`
-  font-size: 14px;
-  margin-left: 11px;
 `;
 
 export default ColorCheckbox;

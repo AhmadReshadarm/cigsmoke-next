@@ -1,118 +1,92 @@
-import color from 'components/store/lib/ui.colors';
 import variants from 'components/store/lib/variants';
 import { motion } from 'framer-motion';
 import { useState, useCallback, useEffect } from 'react';
-import { outsideClickListner } from 'components/store/storeLayout/helpers';
+import { outsideClickListnerRedux } from 'components/store/storeLayout/helpers';
 import { useAppSelector, useAppDispatch } from 'redux/hooks';
-import { TAuthState } from 'redux/types';
-import styled from 'styled-components';
-import { PopupDisplay } from '../../constants';
-import AuthBtn from './AuthBtn';
-import Authorization from './authorize';
+import { TAuthState, TGlobalUIState } from 'redux/types';
 import { UsePagination } from './authorize/helpers';
-import { handleAfterAuthorized } from './helpers';
-import { Profile } from './Profile';
-import { fetchUserById } from 'redux/slicers/authSlicer';
-import { getAccessToken } from 'common/helpers/jwtToken.helpers';
+import { session } from 'redux/slicers/authSlicer';
+import {
+  changeAuthFormDisplayState,
+  changeAuthFormState,
+} from 'redux/slicers/store/globalUISlicer';
+import styles from '../../styles/headerAuth.module.css';
+import dynamic from 'next/dynamic';
+const Authorization = dynamic(() => import('./authorize'), {
+  ssr: false,
+});
+const Profile = dynamic(() => import('./Profile').then((mod) => mod.Profile), {
+  ssr: false,
+});
 
-const Authorize = () => {
+type Props = {
+  authButtonRef: HTMLDivElement | any;
+  windowWidth: number;
+};
+
+const Authorize: React.FC<Props> = ({ authButtonRef, windowWidth }) => {
+  const dispatch = useAppDispatch();
+
+  // ---------------------- UI hooks ------------------------
   const [direction, authType, paginate] = UsePagination();
-  const [isOpened, setIsOpened] = useState(false);
-  const [display, setDisplay] = useState(PopupDisplay.None);
-  const [menuRef, setMenuRef] = useState(null);
-  const [btnRef, setBtnRef] = useState(null);
+  const { isAuthFormOpen, authDisplay } = useAppSelector<TGlobalUIState>(
+    (state) => state.globalUI,
+  );
+
+  const [authMenuRef, setAuthMenuRef] = useState(null);
   const [listening, setListening] = useState(false);
-  const menuNode = useCallback((node: any) => {
-    setMenuRef(node);
-  }, []);
-  const btnNode = useCallback((node: any) => {
-    setBtnRef(node);
+  const authMenuNode = useCallback((node: any) => {
+    setAuthMenuRef(node);
   }, []);
 
   useEffect(
-    outsideClickListner(
+    outsideClickListnerRedux(
       listening,
       setListening,
-      menuRef,
-      btnRef,
-      setIsOpened,
-      setDisplay,
+      authMenuRef,
+      authButtonRef,
+      dispatch,
+      changeAuthFormState,
+      changeAuthFormDisplayState,
     ),
   );
-  const dispatch = useAppDispatch();
+
+  //  ------------------------ end of UI hooks ----------------------------------
   const { user } = useAppSelector<TAuthState>((state) => state.auth);
 
   useEffect(() => {
-    const accessToken = getAccessToken();
-    if (accessToken && user?.id) dispatch(fetchUserById({ userId: user?.id! }));
-  }, [isOpened]);
-
+    if (!user) {
+      dispatch(session());
+    }
+  }, [isAuthFormOpen]);
   return (
     <>
-      <AuthBtn
-        user={user}
-        isSignedIn={!!user}
-        setIsOpened={setIsOpened}
-        setDisplay={setDisplay}
-        paginate={paginate}
-        btnNode={btnNode}
-      />
-      <PopupWrapper
-        ref={menuNode}
-        style={{ display }}
-        animate={isOpened ? 'open' : 'close'}
+      <motion.div
+        ref={authMenuNode}
+        style={{ display: windowWidth < 1024 ? 'none' : authDisplay }}
+        animate={isAuthFormOpen ? 'open' : 'close'}
         variants={variants.fadeInReveal}
+        className={styles.PopupWrapper}
       >
-        <AuthContent>
-          {user ? (
-            <Profile
-              user={user}
-              direction={direction}
-              setDisplay={setDisplay}
-              setIsOpened={setIsOpened}
-            />
-          ) : (
-            <Authorization
-              direction={direction}
-              authType={authType}
-              paginate={paginate}
-              onAfterAuthorized={handleAfterAuthorized(setDisplay, setIsOpened)}
-            />
-          )}
-        </AuthContent>
-      </PopupWrapper>
+        {isAuthFormOpen && (
+          <>
+            <div className={styles.header_authorization_form_background} />
+            <motion.div className={styles.AuthContent}>
+              {user ? (
+                <Profile user={user} direction={direction} />
+              ) : (
+                <Authorization
+                  direction={direction}
+                  authType={authType}
+                  paginate={paginate}
+                />
+              )}
+            </motion.div>
+          </>
+        )}
+      </motion.div>
     </>
   );
 };
-
-const PopupWrapper = styled(motion.div)`
-  width: 400px;
-  height: 412px;
-  position: absolute;
-  top: 70px;
-  border-radius: 25px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  background-color: ${color.textPrimary};
-  box-shadow: 0px 2px 10px ${color.boxShadowBtn};
-  overflow: hidden;
-`;
-
-const AuthContent = styled(motion.div)`
-  width: 85%;
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center;
-  p {
-    text-align: center;
-  }
-  span {
-    color: ${color.hover};
-  }
-`;
 
 export default Authorize;

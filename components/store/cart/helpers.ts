@@ -1,5 +1,8 @@
-import { OrderProduct, User } from 'swagger/services';
+import { OrderProduct, Product, Basket } from 'swagger/services';
 import { Role } from 'common/enums/roles.enum';
+import { updateCart, clearCart } from 'redux/slicers/store/cartSlicer';
+import { AppDispatch } from 'redux/store';
+
 const getTotalQuantity = (orderProducts: OrderProduct[]) => {
   return orderProducts?.reduce((accum, orderProduct) => {
     return accum + Number(orderProduct.qty);
@@ -60,4 +63,58 @@ const findTotalWheight = (cart: any) => {
   return { totalWeight, in: 'gram' };
 };
 
-export { getTotalQuantity, getTotalPrice, getTotalDiscount, findTotalWheight };
+const handleItemRemove = async (
+  product: Product,
+  dispatch: AppDispatch,
+  cart: Basket,
+) => {
+  if (!product) return;
+  await dispatch(
+    updateCart({
+      orderProducts: cart?.orderProducts
+        ?.filter((orderProduct) => orderProduct.product?.id != product.id)
+        .map((orderProduct) => ({
+          productId: orderProduct.product?.id?.toString(),
+          qty: orderProduct.qty,
+          productVariantId: orderProduct.productVariant?.id,
+        })),
+    }),
+  );
+};
+
+const handleItemCountChange = (
+  counter: number,
+  product: Product,
+  dispatch: AppDispatch,
+  cart: Basket,
+) => {
+  dispatch(
+    updateCart({
+      orderProducts: cart?.orderProducts
+        ?.filter((orderProduct) => orderProduct.product?.id != product.id)
+        ?.concat({ product: { id: product.id }, qty: counter })
+        .map((orderProduct) => ({
+          productId: orderProduct.product?.id,
+          qty: orderProduct.qty,
+          productVariantId: orderProduct.productVariant?.id,
+        })),
+    }),
+  );
+};
+
+const handleRemoveClick = (dispatch: AppDispatch) => {
+  const basketId = localStorage.getItem('basketId');
+  if (basketId) {
+    dispatch(clearCart(basketId!));
+  }
+};
+
+export {
+  getTotalQuantity,
+  getTotalPrice,
+  getTotalDiscount,
+  findTotalWheight,
+  handleItemRemove,
+  handleItemCountChange,
+  handleRemoveClick,
+};

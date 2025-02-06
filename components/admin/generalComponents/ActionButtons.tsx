@@ -58,7 +58,7 @@ const ActionButtons: React.FC<Props> = ({
       </span>
       <Modal
         title="Подтвердите действие."
-        visible={visible}
+        open={visible}
         onOk={handleDelete(id, dispatch, setVisible, offset)}
         confirmLoading={isLoading}
         onCancel={showOrDontModal}

@@ -59,7 +59,7 @@ const LoginForm: React.FC<Props> = ({ isLoading }) => {
           <Checkbox>Запомнить меня</Checkbox>
         </Form.Item>
 
-        <a className={styles['login-form__forgot']} href="/">
+        <a className={styles['login-form__forgot']} href="/profile/pswreset">
           Забыли пароль
         </a>
       </Form.Item>

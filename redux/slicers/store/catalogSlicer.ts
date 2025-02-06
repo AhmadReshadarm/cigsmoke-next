@@ -163,6 +163,24 @@ export const fetchSizes = createAsyncThunk<
   },
 );
 
+// export const fetchProductsInExcelFile = createAsyncThunk<
+//   any,
+//   undefined,
+//   { rejectValue: string }
+// >(
+//   'tags/fetchProductsInExcelFile',
+//   async function (_, { rejectWithValue }): Promise<any> {
+//     try {
+//       const response = (await ProductService.getProducts({
+//         limit: 10000,
+//       })) as unknown as { rows: Product[]; length: number };
+//       return response;
+//     } catch (error: any) {
+//       return rejectWithValue(getErrorMassage(error.response.status));
+//     }
+//   },
+// );
+
 const initialState: TCatalogState = {
   categories: [],
   subCategories: [],
@@ -175,10 +193,17 @@ const initialState: TCatalogState = {
     maxPrice: 0,
   },
   products: [],
+  productsLoading: false,
   productsLength: 0,
   filters: {},
   loading: false,
   page: 1,
+  uiPriceRang: {
+    minPrice: 0,
+    maxPrice: 0,
+  },
+  selectedProducts: [],
+  isCheckBoxEnabled: false,
 };
 
 const cartSlicer = createSlice({
@@ -203,6 +228,19 @@ const cartSlicer = createSlice({
     setPage(state, action) {
       state.page = action.payload;
     },
+    setUIPriceRange(state, action) {
+      state.uiPriceRang = action.payload;
+    },
+    clearProducts(state) {
+      state.products = initialState.products;
+      state.productsLength = initialState.productsLength;
+    },
+    addSelectedProducts(state, action) {
+      state.selectedProducts = action.payload;
+    },
+    handleCheckBoxEnabled(state, action) {
+      state.isCheckBoxEnabled = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -211,7 +249,6 @@ const cartSlicer = createSlice({
       .addCase(fetchParentCategories.fulfilled, (state, action) => {
         state.categories = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchParentCategories.rejected, handleError)
       //fetchSubCategories
@@ -219,7 +256,6 @@ const cartSlicer = createSlice({
       .addCase(fetchSubCategories.fulfilled, (state, action) => {
         state.subCategories = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchSubCategories.rejected, handleError)
       //fetchBrands
@@ -227,7 +263,6 @@ const cartSlicer = createSlice({
       .addCase(fetchBrands.fulfilled, (state, action) => {
         state.brands = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchBrands.rejected, handleError)
       //fetchColors
@@ -235,7 +270,6 @@ const cartSlicer = createSlice({
       .addCase(fetchColors.fulfilled, (state, action) => {
         state.colors = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchColors.rejected, handleError)
       //fetchPriceRange
@@ -243,16 +277,16 @@ const cartSlicer = createSlice({
       .addCase(fetchPriceRange.fulfilled, (state, action) => {
         state.priceRange = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchPriceRange.rejected, handleError)
       //fetchProducts
-      .addCase(fetchProducts.pending, handlePending)
+      .addCase(fetchProducts.pending, (state: { productsLoading: boolean }) => {
+        state.productsLoading = true;
+      })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.products = action.payload.rows;
         state.productsLength = action.payload.length;
-        state.loading = false;
-        console.log('fulfilled');
+        state.productsLoading = false;
       })
       .addCase(fetchProducts.rejected, handleError)
       //fetchTags
@@ -260,7 +294,6 @@ const cartSlicer = createSlice({
       .addCase(fetchTags.fulfilled, (state, action) => {
         state.tags = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchTags.rejected, handleError)
       //fetchSizes
@@ -268,9 +301,21 @@ const cartSlicer = createSlice({
       .addCase(fetchSizes.fulfilled, (state, action) => {
         state.sizes = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchSizes.rejected, handleError);
+    // fetchProductsInExcelFile
+    // .addCase(
+    //   fetchProductsInExcelFile.pending,
+    //   (state: { loadingProgress: any; loading: boolean }, action) => {
+    //     state.loading = true;
+    //     state.loadingProgress = action.payload;
+    //   },
+    // )
+    // .addCase(fetchProductsInExcelFile.fulfilled, (state, action) => {
+    //   state.loadingProgress = action.payload;
+    //   state.loading = false;
+    // })
+    // .addCase(fetchProductsInExcelFile.rejected, handleError);
   },
 });
 
@@ -280,7 +325,11 @@ export const {
   clearColors,
   clearTags,
   clearSizes,
+  clearProducts,
   setPage,
+  setUIPriceRange,
+  addSelectedProducts,
+  handleCheckBoxEnabled,
 } = cartSlicer.actions;
 
 export default cartSlicer.reducer;

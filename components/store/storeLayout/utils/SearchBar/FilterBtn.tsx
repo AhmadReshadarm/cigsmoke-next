@@ -4,8 +4,7 @@ import variants from 'components/store/lib/variants';
 import { motion } from 'framer-motion';
 import { Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
-import { Category, CategoryInTree } from 'swagger/services';
-import Filter from '../../../../../assets/filter.svg';
+import { CategoryInTree } from 'swagger/services';
 import { PopupDisplay } from '../../constants';
 import { handleMenuState } from '../../helpers';
 import { Path } from '../paths';
@@ -34,7 +33,7 @@ const FilterBtn: React.FC<Props> = ({
   };
 
   return (
-    <>
+    <FilterBtnWrapper>
       <FilterSelected
         animate={selectedCategory ? 'animate' : 'init'}
         variants={variants.fadeInSlideIn}
@@ -42,10 +41,10 @@ const FilterBtn: React.FC<Props> = ({
         onClick={(e) => e.preventDefault()}
       >
         {getShortedCategoryName(selectedCategory?.name!)}
-        <svg
+        <CustomSVG
           style={{ cursor: 'pointer' }}
           width="20"
-          height="14"
+          height="20"
           viewBox="0 0 21 15"
           stroke="white"
           onClick={handleResetSelected}
@@ -54,15 +53,17 @@ const FilterBtn: React.FC<Props> = ({
             d="M5.5 7.40295L20.5 7.40295"
             animate={{ rotate: selectedCategory ? 45 : 0 }}
             transition={{ delay: 0.1 }}
+            transform="55% 50%"
           />
           <Path
             d="M5.5 7.40295L20.5 7.40295"
             animate={{ rotate: selectedCategory ? -45 : 0 }}
             transition={{ delay: 0.1 }}
+            transform="65% 55%"
           />
-        </svg>
+        </CustomSVG>
       </FilterSelected>
-      <Button
+      <FilterNotSelected
         ref={btnNode}
         animate={!selectedCategory ? 'animate' : 'init'}
         variants={variants.fadeOutSlideOut}
@@ -72,12 +73,35 @@ const FilterBtn: React.FC<Props> = ({
         }}
       >
         <span>
-          <Filter />
+          <svg
+            width="20"
+            height="21"
+            viewBox="0 0 20 21"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M11.7955 9.36331L18.5076 2.22995V0.884033H1.60071V2.22995L8.31279 9.36331M11.7955 9.36331V19.2558L8.31279 16.7658V9.36331M11.7955 9.36331H8.31279"
+              stroke="black"
+              stroke-width="1.4"
+            />
+          </svg>
         </span>
-      </Button>
-    </>
+      </FilterNotSelected>
+    </FilterBtnWrapper>
   );
 };
+
+const FilterBtnWrapper = styled.div`
+  position: relative;
+  width: 45px;
+  height: 45px;
+  z-index: 1;
+`;
+
+const CustomSVG = styled.svg`
+  transform-origin: 50% 50% !important;
+`;
 
 const FilterSelected = styled(motion.button)`
   width: 90px;
@@ -94,15 +118,13 @@ const FilterSelected = styled(motion.button)`
   align-items: center;
   color: ${color.textPrimary};
   background: ${(props) => props.color || 'transparent'};
-  z-index: 200;
 `;
 
-const Button = styled(motion.button)`
+const FilterNotSelected = styled(motion.button)`
   cursor: pointer;
   position: absolute;
   top: 13px;
   left: 5px;
-  z-index: 200;
   height: 22px;
   width: 35px;
 

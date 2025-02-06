@@ -17,6 +17,7 @@ export const createImage = createAsyncThunk<any, any, { rejectValue: string }>(
   ): Promise<any> {
     try {
       const formData = new FormData();
+
       formData.append('files', payload.file as any);
       const resp = await axiosInstance.post(
         '/images',
@@ -71,7 +72,6 @@ const multipleImagesSlicer = createSlice({
           file.name = action.payload.file;
         }
         openSuccessNotification('Изображение успешно загружено');
-        console.log('fulfilled');
       })
       .addCase(createImage.rejected, handleError);
   },

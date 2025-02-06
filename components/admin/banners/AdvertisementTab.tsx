@@ -1,68 +1,83 @@
-import { Col, Row, Spin } from 'antd';
-import { useEffect } from 'react';
+import { Spin } from 'antd';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
-import AdvertisementDescList from './AdvertisementDescList';
-
-import AdvertisementImage from './AdvertisementImage';
 import styles from './index.module.scss';
+import styled from 'styled-components';
+import { useEffect } from 'react';
+import { fetchAdvertisement, clearBanners } from 'redux/slicers/bannersSlicer';
 
-interface Props {
-  isLoading: boolean;
-}
+const AdvertisementTab = () => {
+  const dispatch = useAppDispatch();
+  const data = useAppSelector((state) => state.banners.advertisement);
+  const loading = useAppSelector((state) => state.banners.advertisementLoading);
 
-const AdvertisementTab = ({ isLoading }: Props) => {
+  useEffect(() => {
+    dispatch(fetchAdvertisement());
+    return () => {
+      dispatch(clearBanners());
+    };
+  }, []);
   return (
     <>
-      {isLoading ? (
+      {loading ? (
         <Spin className={styles.spinner} size="large" />
       ) : (
-        <Row
-          gutter={[
-            {
-              xs: 8,
-              sm: 16,
-              md: 24,
-              lg: 32,
-              xl: 40,
-              xxl: 48,
-            },
-            {
-              xs: 8,
-              sm: 16,
-              md: 24,
-              lg: 32,
-              xl: 40,
-              xxl: 48,
-            },
-          ]}
-          className={styles.bannersTab}
-        >
-          <Col
-            xs={{ span: 24 }}
-            sm={{ span: 24 }}
-            md={{ span: 12 }}
-            lg={{ span: 10 }}
-            xl={{ span: 10 }}
-            xxl={{ span: 12 }}
-            className={styles.bannersTab__advertisementImageContainer}
-          >
-            <AdvertisementImage />
-          </Col>
-          <Col
-            xs={{ span: 24 }}
-            sm={{ span: 24 }}
-            md={{ span: 12 }}
-            lg={{ span: 14 }}
-            xl={{ span: 14 }}
-            xxl={{ span: 12 }}
-            className={styles.bannersTab__descriptionListContainer}
-          >
-            <AdvertisementDescList />
-          </Col>
-        </Row>
+        <Wrapper>
+          {data.map((banner, index) => {
+            return (
+              <div key={index}>
+                <div className="title-wrapper">
+                  <h1>{banner.title}</h1>
+                </div>
+                <div className="description-wrapper">
+                  <p>{banner.description}</p>
+                </div>
+              </div>
+            );
+          })}
+        </Wrapper>
       )}
     </>
   );
 };
+
+const Wrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 50px;
+  div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    gap: 50px;
+    .title-wrapper {
+      width: 65%;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      h1 {
+        width: 100%;
+        text-align: left;
+      }
+    }
+    .description-wrapper {
+      width: 50%;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+
+      p {
+        width: 100%;
+        text-align: left;
+      }
+    }
+  }
+`;
 
 export default AdvertisementTab;

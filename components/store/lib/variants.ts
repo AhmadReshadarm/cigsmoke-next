@@ -1,3 +1,4 @@
+import color from './ui.colors';
 const variants = {
   fadInOut: {
     start: {
@@ -27,7 +28,7 @@ const variants = {
   },
   boxShadow: {
     hover: {
-      boxShadow: '0px 0px 4px 2px rgba(0, 0, 0, 0.25)',
+      boxShadow: `0px 5px 10px 0px ${color.boxShadowBtn}`,
 
       transition: { duration: 0.2 },
     },
@@ -37,7 +38,7 @@ const variants = {
   },
   fadeInSlideIn: {
     init: {
-      y: 25,
+      y: 60,
       opacity: 0,
     },
     animate: {
@@ -45,13 +46,13 @@ const variants = {
       opacity: 1,
     },
     exit: {
-      y: 25,
+      y: 60,
       opacity: 0,
     },
   },
   fadeOutSlideOut: {
     init: {
-      y: -25,
+      y: -60,
       opacity: 0,
     },
     animate: {
@@ -59,7 +60,7 @@ const variants = {
       opacity: 1,
     },
     exit: {
-      y: -25,
+      y: -60,
       opacity: 0,
     },
   },
@@ -85,7 +86,7 @@ const variants = {
     enter: (direction: number) => {
       return {
         x: direction > 0 ? 200 : -200,
-        opacity: 0,
+        opacity: 0.01,
         zIndex: 0,
       };
     },
@@ -98,7 +99,7 @@ const variants = {
       return {
         zIndex: 0,
         x: direction < 0 ? 200 : -200,
-        opacity: 0,
+        opacity: 0.01,
       };
     },
   },
@@ -243,7 +244,7 @@ const variants = {
   authorizeSlideX: {
     enter: (direction: number) => {
       return {
-        x: direction > 0 ? -400 : 400,
+        x: direction > 0 ? -550 : 550,
         opacity: 0,
       };
     },

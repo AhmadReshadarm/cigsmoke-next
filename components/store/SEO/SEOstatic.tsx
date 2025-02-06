@@ -37,6 +37,9 @@ const socialTags = ({
     { name: 'og:type', content: openGraphType },
     { name: 'og:url', content: url },
     { name: 'og:image', content: image },
+    { name: 'og:image:type', content: 'image/png' },
+    { name: 'og:image:width', content: '800' },
+    { name: 'og:image:height', content: '800' },
     { name: 'og:description', content: description },
     {
       name: 'og:site_name',
@@ -56,11 +59,11 @@ const socialTags = ({
 };
 
 const SEOstatic = ({ page, image }) => {
-  const url = `https://wuluxe.ru${page.url}`;
+  const url = `https://nbhoz.ru${page.url}`; // no need to add / it will be provided by router
 
   return (
     <Head>
-      <title>{page?.name} | Wuluxe</title>
+      <title>{page?.realName}</title>
       <meta name="robots" content="index, follow" />
       <meta name="title" content={page?.name} />
       <meta name="description" content={page?.desc} />
@@ -75,7 +78,9 @@ const SEOstatic = ({ page, image }) => {
         createdAt: page?.createdAt,
         updatedAt: page?.updatedAt,
       }).map(({ name, content }) => {
-        return <meta key={name} name={name} content={content} />;
+        return (
+          <meta key={name} property={name} name={name} content={content} />
+        );
       })}
     </Head>
   );

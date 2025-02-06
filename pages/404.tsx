@@ -1,52 +1,34 @@
-import styled from 'styled-components';
 import StoreLayout from 'components/store/storeLayout/layouts';
-import variants from 'components/store/lib/variants';
-import color from 'components/store/lib/ui.colors';
-import {
-  Container,
-  Wrapper,
-  Content,
-} from 'components/store/storeLayout/common';
 import Head from 'next/head';
-import NotFoundSvg from 'components/store/404';
+import { baseUrl } from 'common/constant';
+import styles from '../genral-styles/404.module.css';
 
 const NotFound = (): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Страница не найдена | Wuluxe</title>
+        <title>Страница не найдена | NBHOZ 404</title>
+        <meta
+          property="og:image"
+          name="og:image"
+          content={`${baseUrl}/static/logo_800x800.png`}
+        />
       </Head>
-      <Container
-        variants={variants.fadInOut}
-        key="profile-page"
-        initial="start"
-        animate="middle"
-        exit="end"
-        flex_direction="column"
-        justify_content="center"
-        align_items="center"
-        padding="200px 0"
-        bg_color={color.textPrimary}
-      >
-        <Wrapper>
-          <Content
-            flex_direction="column"
-            justify_content="flex-start"
-            align_items="center"
-            gap="30px"
-            style={{ userSelect: 'none' }}
-          >
-            <NotFoundSvg />
-          </Content>
-        </Wrapper>
-      </Container>
+      <div className={styles.Container}>
+        <div className={styles.ContentBackground} />
+        <div className={styles.Wrapper}>
+          <div className={styles.Content}>
+            <h1 className={styles.Error}>404 ОШИБКА</h1>
+            <div className={styles.ContentWrapper}>
+              <h2>Упс.. Кажется, такой страницы не существует</h2>
+              <h4>Пожалуйста, перезагрузите страницу</h4>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
-
-const NotFoundWrapper = styled.span`
-  width: 90%;
-`;
 
 NotFound.PageLayout = StoreLayout;
 export default NotFound;

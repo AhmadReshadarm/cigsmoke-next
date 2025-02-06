@@ -16,6 +16,7 @@ import {
   fetchCategories,
 } from '../../../redux/slicers/categoriesSlicer';
 import styles from './index.module.scss';
+import Head from 'next/head';
 
 const CategoriesPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -57,6 +58,9 @@ const CategoriesPage = () => {
 
   return (
     <>
+      <Head>
+        <title>Администрирование {`>`} Категории | NBHOZ</title>
+      </Head>
       <div className={styles.categoriesHeader}>
         <h1 className={styles.categoriesHeader__title}>Категории</h1>
         <Button
@@ -72,12 +76,13 @@ const CategoriesPage = () => {
       ) : (
         <Table
           scroll={{
-            x: 1366,
+            // x: 1366,
             y: 768,
           }}
           pagination={{
             pageSize: 20,
             current: currentPage,
+            locale: { items_per_page: '/ странице' },
           }}
           columns={
             columns as (ColumnGroupType<DataType> | ColumnType<DataType>)[]

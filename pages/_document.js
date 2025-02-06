@@ -1,6 +1,5 @@
-import { GoogleAnalytics } from 'components/metrics/google-analytics';
-import { YandexMetrics } from 'components/metrics/yandex-metrics';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
+import { useEffect } from 'react';
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -9,35 +8,32 @@ class MyDocument extends Document {
   }
 
   render() {
+    let isMetrics = false;
+    useEffect(() => {
+      setTimeout(() => {
+        isMetrics = true;
+      }, 15000);
+    }, []);
+
     return (
       <Html>
         <Head>
           <link rel="shortcut icon" href="/favicon.svg" />
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin=""
-          />
 
           <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-            rel="stylesheet"
-          ></link>
-          <script src="https://yookassa.ru/checkout-widget/v1/checkout-widget.js"></script>
-          {/* <script src="https://static.yoomoney.ru/checkout-js/v1/checkout.js"></script> */}
+            rel="preload"
+            href="/fonts/tt-ricordi-marmo-trial-variable.woff"
+            as="font"
+            type="font/woff"
+            crossOrigin="anonymous"
+          />
+          {/* microsoft bing verification */}
+          <meta
+            name="msvalidate.01"
+            content="C34B962949690979DF0ADC0147270090"
+          />
         </Head>
         <body>
-          {/* <div
-            dangerouslySetInnerHTML={{
-              __html: GoogleAnalytics(),
-            }}
-          />
-          <div
-            dangerouslySetInnerHTML={{
-              __html: YandexMetrics(),
-            }}
-          /> */}
           <Main />
           <NextScript />
         </body>

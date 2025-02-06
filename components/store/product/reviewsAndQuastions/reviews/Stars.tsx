@@ -4,16 +4,15 @@ import { Rating } from '@mui/material';
 import color from 'components/store/lib/ui.colors';
 import variants from 'components/store/lib/variants';
 import { getTotalReviewsNumber, progressBarCalc } from './helpers';
-import { useAppSelector } from 'redux/hooks';
-import { TProductInfoState } from 'redux/types';
 import React from 'react';
+import { TProductInfoState } from 'redux/types';
+import { useAppSelector } from 'redux/hooks';
 
 const Stars = () => {
   const { product }: TProductInfoState = useAppSelector(
     (state) => state.productInfo,
   );
   const totalReviews = getTotalReviewsNumber(product?.rating);
-
   return (
     <>
       {!!product?.rating && (
@@ -62,7 +61,7 @@ const Stars = () => {
                           transition={{ delay: index * 0.15 }}
                         ></ProgressBar>
                       </ProgressBarWrapper>
-                      <span style={{ fontFamily: 'intro' }}>{number}</span>
+                      <span>{number}</span>
                     </ProgressBarContaier>
                   )}
                 </React.Fragment>
@@ -95,9 +94,6 @@ const StarWrapper = styled(motion.div)`
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid #e2e7ec;
-  span {
-    font-family: 'intro';
-  }
 `;
 
 const ProgressBarContaier = styled(motion.div)`

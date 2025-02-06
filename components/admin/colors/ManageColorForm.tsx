@@ -1,4 +1,4 @@
-import { InfoCircleOutlined, BgColorsOutlined } from '@ant-design/icons';
+import { BgColorsOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Spin } from 'antd';
 import { navigateTo } from 'common/helpers/navigateTo.helper';
 import { useRouter } from 'next/router';
@@ -8,11 +8,10 @@ import { Color } from 'swagger/services';
 import styles from './colors.module.scss';
 import { handleFormSubmitColors } from './helpers';
 import { ManageColorFields } from './ManageColorFields.enum';
-import { Colorpicker, ColorPickerValue } from 'antd-colorpicker';
+import { Colorpicker } from 'antd-colorpicker';
 import { useEffect, useState } from 'react';
 import FormItem from '../generalComponents/FormItem';
-import {handleCheckFalsyValues} from "../banners/helpers";
-import {handleFalsyValuesCheck} from "../../../common/helpers/handleFalsyValuesCheck.helper";
+import { handleFalsyValuesCheck } from '../../../common/helpers/handleFalsyValuesCheck.helper';
 
 const { Option } = Select;
 
@@ -45,14 +44,14 @@ const ManageColorForm = ({
   const [openCP, setOpenCP] = useState(false);
   const [currColor, setCurrColor] = useState<string | null>(null);
 
-  const [name, setName] = useState<string>()
-  const [url, setUrl] = useState<string>()
+  const [name, setName] = useState<string>();
+  const [url, setUrl] = useState<string>();
 
   useEffect(() => {
-    if(color) {
+    if (color) {
       setCurrColor(color.code!);
-      setName(color.name)
-      setUrl(color.url)
+      setName(color.name);
+      setUrl(color.url);
     }
 
     return () => {
@@ -68,7 +67,7 @@ const ManageColorForm = ({
     setCurrColor(e.hex);
   };
 
-  const isDisabled = handleFalsyValuesCheck(name, url, currColor)
+  const isDisabled = handleFalsyValuesCheck(name, url, currColor);
 
   return (
     <>
@@ -88,15 +87,24 @@ const ManageColorForm = ({
         >
           <FormItem
             option={ManageColorFields.Name}
-            children={<Input required={true} placeholder="Введите имя цвета"
-            onChange={e => setName(e.target.value)}
-            />}
+            children={
+              <Input
+                required={true}
+                placeholder="Введите имя цвета"
+                onChange={(e) => setName(e.target.value)}
+              />
+            }
           />
           <FormItem
             option={ManageColorFields.Url}
-            children={<Input required={true} placeholder="Введите URL цвета"
-            onChange={e => setUrl(e.target.value)}
-            />}
+            children={
+              <Input
+                required={true}
+                placeholder="Введите URL цвета"
+                onChange={(e) => setUrl(e.target.value)}
+                disabled={editMode}
+              />
+            }
           />
           <Button
             type="default"

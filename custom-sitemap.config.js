@@ -1,4 +1,4 @@
-const siteUrl = 'https://wuluxe.ru';
+const siteUrl = 'https://nbhoz.ru';
 
 module.exports = {
   siteUrl,
@@ -7,67 +7,39 @@ module.exports = {
     policies: [
       {
         userAgent: '*',
-        disallow: '/admin',
-      },
-      {
-        userAgent: '*',
-        disallow: '/admin/*',
-      },
-      {
-        userAgent: '*',
-        disallow: '/checkout',
-      },
-      {
-        userAgent: '*',
-        disallow: '/checkout/*',
-      },
-      {
-        userAgent: '*',
-        disallow: '/cart',
-      },
-      {
-        userAgent: '*',
-        disallow: '/cart/*',
-      },
-      {
-        userAgent: '*',
-        disallow: '/profile',
-      },
-      {
-        userAgent: '*',
-        disallow: '/profile/*',
-      },
-      {
-        userAgent: '*',
-        disallow: '/orders',
-      },
-      {
-        userAgent: '*',
-        disallow: '/orders/*',
-      },
-      {
-        userAgent: '*',
-        disallow: '/wishlist',
-      },
-      {
-        userAgent: '*',
-        disallow: '/wishlist/*',
-      },
-      {
-        userAgent: '*',
-        disallow: '/after-payment',
-      },
-      {
-        userAgent: '*',
-        disallow: '/after-payment/*',
-      },
-      {
-        userAgen: '*',
-        disallow: '/rekvizity-ep-d',
-      },
-      {
-        userAgent: '*',
-        allow: '/',
+        disallow: [
+          '/admin',
+          '/admin/*',
+          '/checkout',
+          '/checkout/*',
+          '/cart',
+          '/cart/*',
+          '/profile',
+          '/profile/*',
+          '/orders',
+          '/orders/*',
+          '/wishlist',
+          '/wishlist/*',
+          '/after-payment',
+          '/after-payment/*',
+          '/rekvizity-ep-d',
+          '/help',
+          '/return-policy',
+          '/dilevery',
+          '/how-to-buy',
+          '/discount',
+          '/guarantee',
+          '/offerta',
+          '/info-refund',
+          '/user-agreement',
+          '/privacy',
+          '/news',
+          '/news/*',
+          // '/api/images',
+          // '/api/images/*',
+          '\nClean-param: categories&subCategories&tags&colors&minPrice&maxPrice&page&limit /catalog',
+        ],
+        allow: ['/', '/*'],
       },
     ],
     additionalSitemaps: [
@@ -91,5 +63,8 @@ module.exports = {
     '/after-payment',
     '/after-payment/*',
     '/rekvizity-ep-d',
+    '/help',
+    '/api',
+    '/api/*',
   ],
 };

@@ -1,11 +1,13 @@
 import { Button, Form, Input, List, Select, Spin } from 'antd';
+import { InsertRowLeftOutlined } from '@ant-design/icons';
+import TextArea from 'antd/lib/input/TextArea';
 import { navigateTo } from 'common/helpers/navigateTo.helper';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import {
   clearImageList,
-  setDefaultImageList,
+  setDefaultSingleImageList,
 } from 'redux/slicers/imagesSlicer';
 import { Page } from 'routes/constants';
 import { Category, Parameter } from 'swagger/services';
@@ -20,7 +22,9 @@ import {
   handleRemoveParameter,
 } from './helpers';
 import { ManageCategoryFields } from './ManageCategoryFields.enum';
-import { handleFalsyValuesCheck } from '../../../common/helpers/handleFalsyValuesCheck.helper';
+import DatabaseImages from 'ui-kit/DatabaseImages';
+import styled from 'styled-components';
+// import { handleFalsyValuesCheck } from 'common/helpers/handleFalsyValuesCheck.helper';
 
 const { Option } = Select;
 
@@ -49,20 +53,22 @@ const ManageCategoryForm = ({
   const imageList = useAppSelector((state) => state.images.imageList);
   const initialValues = {
     name: category?.name,
+    desc: category?.desc,
     url: category?.url,
     image: category?.image,
     parent: category?.parent?.id?.toString(),
   };
 
-  const [name, setName] = useState<string>();
-  const [url, setUrl] = useState<string>();
+  // const [name, setName] = useState<string>();
+  // const [url, setUrl] = useState<string>();
+  // const [desc, setDesc] = useState<string>();
 
-  useEffect(() => {
-    if (category) {
-      setName(category?.name);
-      setUrl(category?.url);
-    }
-  }, [category]);
+  // useEffect(() => {
+  //   if (category) {
+  //     setName(category?.name);
+  //     setUrl(category?.url);
+  //   }
+  // }, [category]);
 
   useEffect(() => {
     dispatch(clearImageList());
@@ -71,7 +77,7 @@ const ManageCategoryForm = ({
   useEffect(() => {
     if (category?.image) {
       dispatch(
-        setDefaultImageList({
+        setDefaultSingleImageList({
           name: category.image,
           url: `/api/images/${category?.image}`,
         }),
@@ -81,7 +87,13 @@ const ManageCategoryForm = ({
     setParameters(category?.parameters! ? [...category?.parameters!] : []);
   }, [category]);
 
-  // const isDisabled: boolean = handleFalsyValuesCheck(name, url, imageList)
+  // const isDisabled: boolean = handleFalsyValuesCheck(
+  //   name,
+  //   url,
+  //   desc,
+  //   imageList,
+  // );
+  const [isOpen, setOpen] = useState(false);
 
   return (
     <>
@@ -105,7 +117,18 @@ const ManageCategoryForm = ({
               <Input
                 required={true}
                 placeholder="Введите имя категории"
-                onChange={(e) => setName(e.target.value)}
+                // onChange={(e) => setName(e.target.value)}
+              />
+            }
+          />
+          <FormItem
+            option={ManageCategoryFields.Desc}
+            children={
+              <TextArea
+                required={true}
+                rows={4}
+                placeholder="Краткое описание"
+                // onChange={(e) => setDesc(e.target.value)}
               />
             }
           />
@@ -115,13 +138,38 @@ const ManageCategoryForm = ({
               <Input
                 required={true}
                 placeholder="Введите URL категории"
-                onChange={(e) => setUrl(e.target.value)}
+                disabled={editMode}
+                // onChange={(e) => setUrl(e.target.value)}
               />
             }
           />
           <FormItem
             option={ManageCategoryFields.Image}
-            children={<ImageUpload fileList={imageList} />}
+            children={
+              <>
+                <ImageUpload fileList={imageList} />
+                <ButtonDevider>
+                  {imageList.length < 1 && (
+                    <Button
+                      onClick={() => setOpen(true)}
+                      icon={<InsertRowLeftOutlined />}
+                    >
+                      Выбрать из базы данных
+                    </Button>
+                  )}
+                </ButtonDevider>
+
+                {isOpen ? (
+                  <DatabaseImages
+                    isProducts={false}
+                    setOpen={setOpen}
+                    isOpen={isOpen}
+                  />
+                ) : (
+                  ''
+                )}
+              </>
+            }
           />
           <Form.Item
             name={ManageCategoryFields.Parent}
@@ -130,6 +178,7 @@ const ManageCategoryForm = ({
             <Select
               onChange={handleChangeParent(setHasParent)}
               defaultValue="Не выбрано"
+              disabled={editMode}
             >
               <Option value="">Не выбрано</Option>
               {categories?.map((category) => (
@@ -200,5 +249,15 @@ const ManageCategoryForm = ({
     </>
   );
 };
+
+const ButtonDevider = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 40px;
+  padding: 20px 0;
+`;
 
 export default ManageCategoryForm;

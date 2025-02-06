@@ -1,161 +1,53 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { UserSelectWrapper } from './common';
-import color from 'components/store/lib/ui.colors';
-import variants from 'components/store/lib/variants';
-import Cart from '../../../../../assets/added_to_cart.svg';
-import CartWhite from '../../../../../assets/cartWhiteEmpty.svg';
-import HeartWhite from '../../../../../assets/heartWhiteEmpty.svg';
-import HeartFull from '../../../../../assets/heartFullWhite.svg';
-import { OrderProduct, Product } from 'swagger/services';
-import ItemCounter from 'ui-kit/ItemCounter';
-import SwitchBtn from './SwitchBtn';
+import { Basket, Product } from 'swagger/services';
 import React from 'react';
 import Link from 'next/link';
-import { devices } from 'components/store/lib/Devices';
-
+import { useAppSelector } from 'redux/hooks';
+import { TCartState } from 'redux/types';
+import { clearVariant } from 'redux/slicers/store/cartSlicer';
+import { AddToCart, AddToWishlist } from 'ui-kit/ProductActionBtns';
+import { findCartQTY } from 'ui-kit/HeaderProductItems/helpers';
+import { checkIfItemInCart } from 'ui-kit/ProductActionBtns/helpers';
+import styles from '../../styles/detail.module.css';
 type Props = {
-  orderProduct?: OrderProduct;
-  isInCart: boolean;
-  isInWishlist: boolean;
-  onCartBtnClick: () => void;
-  onWishBtnClick: (product: any) => void;
-  onCountChange: (counter: number, product: Product) => void;
+  cart: Basket;
+  product: Product;
 };
 
-const ActionBtns: React.FC<Props> = ({
-  orderProduct,
-  isInCart,
-  isInWishlist,
-  onCartBtnClick,
-  onWishBtnClick,
-  onCountChange,
-}) => {
-  const handleCartClick = () => {
-    !isInCart ? onCartBtnClick() : '';
+const ActionBtns: React.FC<Props> = ({ cart, product }) => {
+  const { variant } = useAppSelector<TCartState>((state) => state.cart);
+
+  const handleGoToCart = () => {
+    clearVariant();
   };
 
   return (
-    <UserSelectWrapper margintop="-35px">
-      <ActionBtnsWrapper
-        key="action-btns-product-page"
-        custom={0.3}
-        initial="init"
-        animate="animate"
-        exit={{ y: -20, opacity: 0, transition: { delay: 0.2 } }}
-        variants={variants.fadInSlideUp}
-      >
-        <SwitchBtn
-          defaultContent={
-            <React.Fragment>
-              <CartWhite />
-              <span>В корзину</span>
-            </React.Fragment>
-          }
-          activatedContent={
-            <React.Fragment>
-              <Cart />
-              <span>В корзине</span>
-            </React.Fragment>
-          }
-          active={isInCart}
-          onClick={handleCartClick}
+    <div className={styles.ActionBtnContainer}>
+      <div className={styles.ActionBtnsWrapper}>
+        <AddToWishlist product={product!} />
+        <AddToCart
+          product={product!}
+          qty={findCartQTY(product, cart!)}
+          variant={variant ?? product?.productVariants![0]}
         />
-        <SwitchBtn
-          defaultContent={
-            <React.Fragment>
-              <HeartWhite />
-              <span>В избранное</span>
-            </React.Fragment>
-          }
-          activatedContent={
-            <React.Fragment>
-              <HeartFull />
-              <span>В избранном</span>
-            </React.Fragment>
-          }
-          active={isInWishlist}
-          onClick={onWishBtnClick}
-        />
-      </ActionBtnsWrapper>
-      {!!orderProduct && (
-        <CounterAndGotoCartWrapper
-          animate={isInCart ? 'animate' : 'exit'}
-          variants={variants.fadeInSlideIn}
-        >
-          <ItemCounter
-            qty={orderProduct?.qty!}
-            product={orderProduct?.product!}
-            onCountChange={onCountChange}
-          />
-
-          <Link href="/cart">
-            <GoToCartLink laptopSWidth={'150px!important'}>
-              <ActionBtn
-                whileHover="hover"
-                whileTap="tap"
-                variants={variants.boxShadow}
+      </div>
+      {checkIfItemInCart(product, cart!) && (
+        <div className={styles.CounterAndGotoCartWrapper}>
+          <Link href="/cart" prefetch={false}>
+            <div className={styles.AddtoCartWrapper}>
+              <button
+                onClick={handleGoToCart}
+                className={styles.in_cart}
+                type="button"
+                title="ПЕРЕЙТИ В КОРЗИНУ"
               >
-                <span style={{ color: color.textPrimary }}>
-                  Перейти в корзину
-                </span>
-              </ActionBtn>
-            </GoToCartLink>
+                <span>ПЕРЕЙТИ В КОРЗИНУ</span>
+              </button>
+            </div>
           </Link>
-        </CounterAndGotoCartWrapper>
+        </div>
       )}
-      <Link href="/checkout">
-        <a onClick={handleCartClick} style={{ justifySelf: 'flex-end' }}>
-          <ActionBtn
-            whileHover="hover"
-            whileTap="tap"
-            variants={variants.boxShadow}
-          >
-            Купить в один клик
-          </ActionBtn>
-        </a>
-      </Link>
-    </UserSelectWrapper>
+    </div>
   );
 };
-
-const ActionBtnsWrapper = styled(motion.div)`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-`;
-
-const CounterAndGotoCartWrapper = styled(motion.div)`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  a {
-    width: 170px;
-    justify-self: flex-end;
-  }
-`;
-
-const ActionBtn = styled(motion.button)<any>`
-  width: 100%;
-  height: 45px;
-  background: ${color.btnPrimary};
-  color: ${color.textPrimary};
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-`;
-
-const GoToCartLink = styled.a<any>`
-  @media ${devices.laptopS} {
-    width: ${(props) => props.laptopSWidth ?? '100%'};
-  }
-`;
 
 export default ActionBtns;

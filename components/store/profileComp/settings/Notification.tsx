@@ -5,18 +5,69 @@ import isEmail from 'validator/lib/isEmail';
 import color from 'components/store/lib/ui.colors';
 import variants from 'components/store/lib/variants';
 import { devices } from 'components/store/lib/Devices';
-import { useState } from 'react';
-import MailSVg from '../../../../assets/mail.svg';
+import { useEffect, useState } from 'react';
 import { handleEmailChange } from './helpers';
+import { useAppDispatch, useAppSelector } from 'redux/hooks';
+import { TSubscribers } from 'redux/types';
+import {
+  createSubscriber,
+  deleteSubscriber,
+  fetchSubscriberByEmail,
+} from 'redux/slicers/subscriberSlicer';
+import { User } from 'swagger/services';
+import Loading from 'ui-kit/Loading';
 
-const Notifactions = ({ user }) => {
+type Props = {
+  user: User;
+};
+
+const Notifactions: React.FC<Props> = ({ user }) => {
   const [editNotify, setEditNotify] = useState(false);
   const [email, setEmail] = useState(user.email);
-  const [serverResponse, setServerResponse] = useState(undefined);
+  const { Subscriber, loading } = useAppSelector<TSubscribers>(
+    (state) => state.subscribers,
+  );
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(fetchSubscriberByEmail(user.email as string));
+  }, []);
+  const handleSubscribtion = (name: string, email: string) => {
+    if (Subscriber) {
+      dispatch(deleteSubscriber(user.email as string));
+      return;
+    }
+    if (!Subscriber) {
+      dispatch(createSubscriber({ name, email }));
+      return;
+    }
+  };
   return (
     <NotifactionWrapper>
       <span className="mail-icon">
-        <MailSVg />
+        <svg
+          width="24"
+          height="25"
+          viewBox="0 0 24 25"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g clip-path="url(#clip0_317_1705)">
+            <path
+              d="M20 4.5H4C2.9 4.5 2.01 5.4 2.01 6.5L2 18.5C2 19.6 2.9 20.5 4 20.5H20C21.1 20.5 22 19.6 22 18.5V6.5C22 5.4 21.1 4.5 20 4.5ZM20 18.5H4V8.5L12 13.5L20 8.5V18.5ZM12 11.5L4 6.5H20L12 11.5Z"
+              fill="black"
+            />
+          </g>
+          <defs>
+            <clipPath id="clip0_317_1705">
+              <rect
+                width="24"
+                height="24"
+                fill="white"
+                transform="translate(0 0.5)"
+              />
+            </clipPath>
+          </defs>
+        </svg>
       </span>
       <Notifaction>
         <h2>Уведомления</h2>
@@ -24,7 +75,6 @@ const Notifactions = ({ user }) => {
           Изменив почта, вам также нужно будет подтвердить свой адрес
           электронной почты.
         </span>
-        {/* <span>{serverResponse !== 200 ? 'Ошибка сервера' : 'Успех'}</span> */}
         <div className="input-wrapper">
           <span style={{ color: color.textSecondary }}>Получать на адрес</span>
           {editNotify ? (
@@ -37,91 +87,63 @@ const Notifactions = ({ user }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <motion.button
+              <button
                 className="change-email-btn"
-                whileHover="hover"
-                whileTap="tap"
-                variants={variants.boxShadow}
                 style={{
                   backgroundColor:
                     isEmpty(email) || !isEmail(email)
-                      ? color.textSecondary
-                      : color.btnPrimary,
+                      ? color.bgProduct
+                      : color.btnSecondery,
                 }}
                 disabled={isEmpty(email) || !isEmail(email) ? true : false}
                 onClick={() => {
                   setEditNotify(false);
-                  handleEmailChange({ user, email, setServerResponse });
+                  handleEmailChange({ user, email });
                 }}
               >
                 Сохранить
-              </motion.button>
-              <motion.button
+              </button>
+              <button
                 className="change-email-btn"
-                whileHover="hover"
-                whileTap="tap"
-                variants={variants.boxShadow}
                 onClick={() => setEditNotify(false)}
               >
                 Отмена
-              </motion.button>
+              </button>
             </div>
           ) : (
             <div className="notify-email-wrapper">
               <motion.span>{email}</motion.span>
-              <motion.button
+              <button
                 className="change-email-btn"
-                whileHover="hover"
-                whileTap="tap"
-                variants={variants.boxShadow}
                 onClick={() => setEditNotify(true)}
               >
                 Изменить
-              </motion.button>
+              </button>
             </div>
           )}
         </div>
 
-        <label className="check-box-wrapper " htmlFor="review-notify">
-          <input
-            type="checkbox"
-            id="review-notify"
-            title="Ответы на мои отзывы"
-          />
-          <span>Ответы на мои отзывы</span>
-        </label>
-        <label className="check-box-wrapper " htmlFor="questions-notify">
-          <input
-            type="checkbox"
-            id="questions-notify"
-            title="Ответы на мои вопросы"
-          />
-          <span>Ответы на мои вопросы</span>
-        </label>
-        <label className="check-box-wrapper " htmlFor="discounts-notify">
-          <input
-            type="checkbox"
-            id="discounts-notify"
-            title="Рассылки о скидках и акциях"
-          />
-          <span>Рассылки о скидках и акциях</span>
-        </label>
-        <label className="check-box-wrapper " htmlFor="wishlist-notify">
-          <input
-            type="checkbox"
-            id="wishlist-notify"
-            title="Уведомления о товарах в избранном и сравнении"
-          />
-          <span>Уведомления о товарах в избранном и сравнении</span>
-        </label>
-        <label className="check-box-wrapper " htmlFor="blog-notify">
-          <input
-            type="checkbox"
-            id="blog-notify"
-            title="Популярные статьи из Журнала Wuluxe"
-          />
-          <span>Популярные статьи из Журнала Wuluxe</span>
-        </label>
+        {!loading ? (
+          <div
+            onClick={() => handleSubscribtion(user.firstName!, user.email!)}
+            className="check-box-wrapper "
+          >
+            <input
+              type="checkbox"
+              id="review-notify"
+              title="Подпишитесь на рассылку новостей"
+              checked={Subscriber ? true : false}
+              readOnly
+            />
+            <span>
+              {!Subscriber
+                ? 'Подпишитесь на рассылку новостей'
+                : 'Вы подписаны на нашу рассылку'}
+            </span>
+          </div>
+        ) : (
+          <Loading />
+        )}
       </Notifaction>
     </NotifactionWrapper>
   );
@@ -137,6 +159,7 @@ const NotifactionWrapper = styled.div`
   user-select: none;
   h2 {
     font-size: 1.3rem;
+    font-weight: 300;
   }
   .mail-icon {
     width: 40px;
@@ -186,23 +209,38 @@ const Notifaction = styled.div`
       gap: 20px;
 
       input {
-        width: 300px;
-        height: 50px;
-        border-radius: 10px;
+        width: 200px;
+        height: 40px;
+        border-radius: 5px;
         padding: 0 10px;
         font-size: 1rem;
-        font-weight: 700;
+        font-weight: 300;
+        background-color: ${color.btnSecondery};
+        border: none;
       }
       button {
-        width: 150px;
-        height: 50px;
-        border-radius: 10px;
-        background-color: ${color.btnPrimary};
-        color: ${color.textPrimary};
+        width: 200px;
+        height: 40px;
+        border-radius: 3px;
+        background-color: ${color.btnSecondery};
         cursor: pointer;
+        transition: 300ms;
+        &:hover {
+          background-color: ${color.btnPrimary} !important;
+          color: ${color.textPrimary};
+          transform: scale(1.02);
+        }
+        &:active {
+          transform: scale(1);
+        }
+        span {
+          font-family: ver(--font-Jost);
+          font-size: 1rem;
+        }
       }
     }
   }
+
   @media ${devices.laptopS} {
     .input-wrapper {
       flex-direction: column;
@@ -222,7 +260,83 @@ const Notifaction = styled.div`
       }
     }
   }
+  @media ${devices.tabletL} {
+    .input-wrapper {
+      flex-direction: column;
+      gap: 10px;
+      span {
+        width: 100%;
+      }
+      .notify-email-wrapper {
+        width: 100%;
+        flex-direction: column;
+        .change-email-btn {
+          width: 100%;
+        }
+        input {
+          width: 100%;
+        }
+      }
+    }
+  }
+  @media ${devices.tabletS} {
+    .input-wrapper {
+      flex-direction: column;
+      gap: 10px;
+      span {
+        width: 100%;
+      }
+      .notify-email-wrapper {
+        width: 100%;
+        flex-direction: column;
+        .change-email-btn {
+          width: 100%;
+        }
+        input {
+          width: 100%;
+        }
+      }
+    }
+  }
   @media ${devices.mobileL} {
+    .input-wrapper {
+      flex-direction: column;
+      gap: 10px;
+      span {
+        width: 100%;
+      }
+      .notify-email-wrapper {
+        width: 100%;
+        flex-direction: column;
+        .change-email-btn {
+          width: 100%;
+        }
+        input {
+          width: 100%;
+        }
+      }
+    }
+  }
+  @media ${devices.mobileM} {
+    .input-wrapper {
+      flex-direction: column;
+      gap: 10px;
+      span {
+        width: 100%;
+      }
+      .notify-email-wrapper {
+        width: 100%;
+        flex-direction: column;
+        .change-email-btn {
+          width: 100%;
+        }
+        input {
+          width: 100%;
+        }
+      }
+    }
+  }
+  @media ${devices.mobileS} {
     .input-wrapper {
       flex-direction: column;
       gap: 10px;

@@ -5,6 +5,7 @@ import {
   handlePending,
   handleError,
   handleChangeError,
+  openErrorNotification,
 } from '../../common/helpers';
 import { openSuccessNotification } from 'common/helpers/openSuccessNotidication.helper';
 import { FetchPayload, RequestResponse, TColorState } from 'redux/types';
@@ -22,7 +23,7 @@ export const fetchColors = createAsyncThunk<
     try {
       return await ColorService.getColors({
         limit: payload?.limit,
-        offset: payload?.offset
+        offset: payload?.offset,
       });
     } catch (error: any) {
       return rejectWithValue(getErrorMassage(error.response.status));
@@ -58,7 +59,7 @@ export const createColor = createAsyncThunk<
           name: payload.name,
           url: payload.url,
           code: payload.code.hex,
-        }
+        },
       });
     } catch (error: any) {
       return rejectWithValue(getErrorMassage(error.response.status));
@@ -75,11 +76,12 @@ export const editColor = createAsyncThunk<
   async function (payload: PayloadColor, { rejectWithValue }): Promise<any> {
     try {
       return await ColorService.updateColor({
-        colorId: payload.id as string, body: {
+        colorId: payload.id as string,
+        body: {
           name: payload.name,
           url: payload.url,
           code: payload.code.hex,
-        }
+        },
       });
     } catch (error: any) {
       return rejectWithValue(getErrorMassage(error.response.status));
@@ -91,16 +93,13 @@ export const deleteColor = createAsyncThunk<
   string,
   string,
   { rejectValue: string }
->(
-  'colors/deleteColor',
-  async function (id, { rejectWithValue }): Promise<any> {
-    try {
-      return await ColorService.deleteColor({ colorId: id });
-    } catch (error: any) {
-      return rejectWithValue(getErrorMassage(error.response.status));
-    }
-  },
-);
+>('colors/deleteColor', async function (id, { rejectWithValue }): Promise<any> {
+  try {
+    return await ColorService.deleteColor({ colorId: id });
+  } catch (error: any) {
+    return rejectWithValue(getErrorMassage(error.response.status));
+  }
+});
 
 const initialState: TColorState = {
   colors: [],
@@ -124,36 +123,24 @@ const colorsSlicer = createSlice({
     builder
       //fetchColors
       .addCase(fetchColors.pending, handlePending)
-      .addCase(
-        fetchColors.fulfilled,
-        (state, action) => {
-          state.colors = handlePaginationDataFormatter(action);
-          state.loading = false;
-          console.log('fulfilled');
-        },
-      )
+      .addCase(fetchColors.fulfilled, (state, action) => {
+        state.colors = handlePaginationDataFormatter(action);
+        state.loading = false;
+      })
       .addCase(fetchColors.rejected, handleError)
       //fetchColor
       .addCase(fetchChosenColor.pending, handlePending)
-      .addCase(
-        fetchChosenColor.fulfilled,
-        (state, action) => {
-          state.chosenColor = action.payload;
-          state.loading = false;
-          console.log('fulfilled');
-        },
-      )
+      .addCase(fetchChosenColor.fulfilled, (state, action) => {
+        state.chosenColor = action.payload;
+        state.loading = false;
+      })
       .addCase(fetchChosenColor.rejected, handleError)
       //createColor
       .addCase(createColor.pending, handleChangePending)
-      .addCase(
-        createColor.fulfilled,
-        (state) => {
-          state.saveLoading = false;
-          openSuccessNotification('Цвет успешно создан');
-          console.log('fulfilled');
-        },
-      )
+      .addCase(createColor.fulfilled, (state) => {
+        state.saveLoading = false;
+        openSuccessNotification('Цвет успешно создан');
+      })
       .addCase(createColor.rejected, handleChangeError)
       //editColor
       .addCase(editColor.pending, handleChangePending)
@@ -167,7 +154,6 @@ const colorsSlicer = createSlice({
         };
         openSuccessNotification('Цвет успешно обновлен');
         state.saveLoading = false;
-        console.log('fulfilled');
       })
       .addCase(editColor.rejected, handleChangeError)
       //deleteColor
@@ -178,9 +164,12 @@ const colorsSlicer = createSlice({
         );
         state.saveLoading = false;
         openSuccessNotification('Цвет успешно удален');
-        console.log('fulfilled');
       })
-      .addCase(deleteColor.rejected, handleChangeError);
+      .addCase(deleteColor.rejected, () => {
+        openErrorNotification(
+          'Удалить невозможно, В файле есть дополнительные данные',
+        );
+      });
   },
 });
 

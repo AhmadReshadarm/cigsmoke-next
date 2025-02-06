@@ -5,7 +5,7 @@ import { navigateTo } from 'common/helpers';
 import { DataType } from 'common/interfaces/data-type.interface';
 import AdminLayout from 'components/admin/adminLayout/layout';
 import { columns } from 'components/admin/tags/constants';
-import { handleTableChange } from 'components/admin/tags/helpers';
+// import { handleTableChange } from 'components/admin/tags/helpers';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
@@ -13,6 +13,7 @@ import { Page } from 'routes/constants';
 
 import { clearTags, fetchTags } from '../../../redux/slicers/tagsSlicer';
 import styles from './index.module.scss';
+import Head from 'next/head';
 
 const TagsPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -43,17 +44,19 @@ const TagsPage = () => {
       setOffset(0);
     };
   }, []);
-
   return (
     <>
+      <Head>
+        <title>Администрирование {`>`} Коллекция | NBHOZ</title>
+      </Head>
       <div className={styles.tagsHeader}>
-        <h1 className={styles.tagsHeader__title}>Теги</h1>
+        <h1 className={styles.tagsHeader__title}>Коллекция</h1>
         <Button
           className={styles.tagsHeader__createTagButton}
           type="primary"
           onClick={navigateTo(router, Page.ADMIN_CREATE_TAG)}
         >
-          Создать новый тег
+          Создать новый Коллекция
         </Button>
       </div>
       {isLoading ? (
@@ -61,12 +64,13 @@ const TagsPage = () => {
       ) : (
         <Table
           scroll={{
-            x: 1366,
+            // x: 1366,
             y: 768,
           }}
           pagination={{
             pageSize: 20,
             current: currentPage,
+            locale: { items_per_page: '/ странице' },
           }}
           columns={
             columns as (ColumnGroupType<DataType> | ColumnType<DataType>)[]

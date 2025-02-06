@@ -14,9 +14,9 @@ const TotalDeliveryDate = (props: any) => {
     <Container>
       <div className="back-to-cart">
         <Link href="/cart">
-          <a>Вернуться в корзину</a>
+          <span>Вернуться в корзину</span>
         </Link>
-        <h1>Оформление заказа</h1>
+        <h1>Подтверждение заказа</h1>
       </div>
       <Wrapper>
         <DeliveryDetails
@@ -44,13 +44,18 @@ const Container = styled.div`
   align-items: flex-start;
   gap: 20px;
   .back-to-cart {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 20px;
     a {
       &:hover {
-        color: ${color.hover};
+        color: ${color.textBase};
       }
     }
     h1 {
-      font-family: 'intro';
+      font-size: 1.5rem;
     }
   }
 `;
@@ -63,9 +68,20 @@ const Wrapper = styled.div`
   align-items: flex-start;
   padding: 20px 0;
   gap: 30px;
-
+  @media ${devices.tabletL} {
+    flex-direction: column-reverse;
+  }
+  @media ${devices.tabletS} {
+    flex-direction: column-reverse;
+  }
   @media ${devices.mobileL} {
-    flex-direction: column;
+    flex-direction: column-reverse;
+  }
+  @media ${devices.mobileM} {
+    flex-direction: column-reverse;
+  }
+  @media ${devices.mobileS} {
+    flex-direction: column-reverse;
   }
 `;
 

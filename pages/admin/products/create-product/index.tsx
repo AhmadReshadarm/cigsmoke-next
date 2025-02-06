@@ -1,6 +1,7 @@
 import { basicRequestParams } from 'common/constants';
 import AdminLayout from 'components/admin/adminLayout/layout';
 import ManageProductForm from 'components/admin/products/ManageProductsForm';
+import Head from 'next/head';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { clearBrands, fetchBrands } from 'redux/slicers/brandsSlicer';
@@ -11,8 +12,7 @@ import {
 import { clearColors, fetchColors } from 'redux/slicers/colorsSlicer';
 import { clearImageList } from 'redux/slicers/imagesSlicer';
 import { clearTags, fetchTags } from 'redux/slicers/tagsSlicer';
-import { clearSizes, fetchSizes } from 'redux/slicers/sizesSlicer';
-import { fetchProducts } from '../../../../redux/slicers/productsSlicer';
+// import { clearSizes, fetchSizes } from 'redux/slicers/sizesSlicer';
 
 const CreateProduct = () => {
   const title = 'Создание продукта';
@@ -24,40 +24,44 @@ const CreateProduct = () => {
   const colors = useAppSelector((state) => state.colors.colors);
   const categories = useAppSelector((state) => state.categories.categories);
   const filteredCategories = categories.filter((category) => !!category.parent);
-  const brands = useAppSelector((state) => state.brands.brands);
+  // const brands = useAppSelector((state) => state.brands.brands);
   const tags = useAppSelector((state) => state.tags.tags);
-  const sizes = useAppSelector((state) => state.sizes.sizes);
+  // const sizes = useAppSelector((state) => state.sizes.sizes);
 
   useEffect(() => {
     dispatch(fetchColors(basicRequestParams));
     dispatch(fetchCategories(basicRequestParams));
-    dispatch(fetchBrands(basicRequestParams));
     dispatch(fetchTags(basicRequestParams));
-    dispatch(fetchSizes(basicRequestParams));
-
+    // dispatch(fetchSizes(basicRequestParams));
     return () => {
       dispatch(clearColors());
       dispatch(clearCategories());
-      dispatch(clearBrands());
       dispatch(clearTags());
-      dispatch(clearSizes());
+      // dispatch(clearSizes());
       dispatch(clearImageList());
     };
   }, [dispatch]);
 
   return (
-    <ManageProductForm
-      tags={tags}
-      sizes={sizes}
-      brands={brands}
-      categories={filteredCategories}
-      colors={colors}
-      title={title}
-      editMode={false}
-      products={products}
-      isLoading={isLoading}
-      isSaveLoading={isSaveLoading}
-    />
+    <>
+      <Head>
+        <title>
+          Администрирование {`>`} Продукты {`>`} Создание продукта | NBHOZ
+        </title>
+      </Head>
+
+      <ManageProductForm
+        tags={tags}
+        // sizes={sizes}
+        categories={filteredCategories}
+        colors={colors}
+        title={title}
+        editMode={false}
+        products={products}
+        isLoading={isLoading}
+        isSaveLoading={isSaveLoading}
+      />
+    </>
   );
 };
 

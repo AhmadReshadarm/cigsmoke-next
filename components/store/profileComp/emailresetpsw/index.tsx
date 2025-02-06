@@ -1,7 +1,5 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 import color from 'components/store/lib/ui.colors';
-import variants from 'components/store/lib/variants';
 import { devices } from 'components/store/lib/Devices';
 import isEmpty from 'validator/lib/isEmpty';
 import isEmail from 'validator/lib/isEmail';
@@ -9,14 +7,14 @@ import { useEffect, useState } from 'react';
 import { handleResetClick } from './helpers';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-
+import { useDispatch } from 'react-redux';
 const EmailResetPsw = () => {
-  const [serverResponse, setServerResponse] = useState(undefined);
   const [email, setEmail] = useState('');
   const [inputErr, setInputErr] = useState(false);
   const [counter, setCoutner] = useState(30);
   const [counterStart, setCounterStart] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
   useEffect(() => {
     if (localStorage.getItem('accessToken')) {
       router.push('/');
@@ -37,44 +35,15 @@ const EmailResetPsw = () => {
       <Title>Сброс пароля</Title>
       <span
         style={{
-          color: color.hover,
-          width: '400px',
+          width: '200px',
           textAlign: 'center',
           fontSize: '1rem',
         }}
       >
         Мы отправим вам письмо на ваш адрес электронной почты для сброса пароля
       </span>
-      <ServerErrResponses>
-        {serverResponse == 404
-          ? 'Такой электронной почты нет в нашей базе данных'
-          : ''}
-        {serverResponse == 403
-          ? 'ваша электронная почта еще не подтверждена'
-          : ''}
-      </ServerErrResponses>
-      <ServerSuccessResponse>
-        <Link href="/profile">
-          <a>
-            <ServerSuccessResponse>
-              {serverResponse == 404
-                ? 'Вы можете зарегистрироваться здесь'
-                : ''}
-            </ServerSuccessResponse>
-          </a>
-        </Link>
-        {serverResponse == 403
-          ? 'проверьте папку со спамом, если вы не видите письма от нас'
-          : ''}
-        {serverResponse == 200
-          ? `Мы отправили вам электронное письмо с подтверждением на ${email}, нажмите на ссылку внутри письма, чтобы изменить свой пароль`
-          : ''}
-      </ServerSuccessResponse>
       <InputWrapper>
-        <motion.input
-          whileHover="hover"
-          whileTap="tap"
-          variants={variants.boxShadow}
+        <input
           type="email"
           value={email}
           placeholder={
@@ -86,22 +55,18 @@ const EmailResetPsw = () => {
             border: `solid 1px ${
               (isEmpty(email) || !isEmail(email)) && inputErr
                 ? color.hover
-                : color.btnPrimary
+                : color.searchBtnBg
             }`,
           }}
           onChange={(e) => {
             setEmail(e.target.value);
             setInputErr(true);
-            setServerResponse(undefined);
           }}
         />
-        <motion.button
-          whileHover="hover"
-          whileTap="tap"
-          variants={variants.boxShadow}
+        <button
           onClick={(e) => {
             e.preventDefault();
-            handleResetClick(email, setServerResponse);
+            handleResetClick(email, dispatch);
             setCounterStart(true);
           }}
           style={{
@@ -114,67 +79,77 @@ const EmailResetPsw = () => {
             isEmpty(email) || !isEmail(email) || counterStart ? true : false
           }
         >
-          {counterStart
-            ? `Повторите попытку после: ${counter}`
-            : 'Отправь мне ссылку'}
-        </motion.button>
+          <span>
+            {counterStart
+              ? `Повторите после: ${counter}`
+              : 'Отправь мне ссылку'}
+          </span>
+        </button>
+        <Link href="/help" className="somthing-is-wrong">
+          <span>Что-то пошло не так? напишите нам</span>
+        </Link>
       </InputWrapper>
     </>
   );
 };
 
 const Title = styled.h2`
-  font-family: 'intro';
   font-size: 1.5rem;
 `;
 
-const ServerErrResponses = styled.span`
-  color: ${color.hover};
-  font-size: 1.2rem;
-  width: 400px;
-  text-align: center;
-  @media ${devices.mobileL} {
-    width: 100%;
-  }
-`;
-const ServerSuccessResponse = styled.span`
-  color: ${color.ok};
-  font-size: 1.2rem;
-  width: 400px;
-  text-align: center;
-  a {
-    color: ${color.ok};
-    &:hover {
-      color: ${color.btnPrimary};
-    }
-  }
-  @media ${devices.mobileL} {
-    width: 100%;
-  }
-`;
-
 const InputWrapper = styled.form`
-  width: 400px;
-  heght: 70vw;
+  width: 350px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 30px;
   input {
-    width: 100%;
-    height: 50px;
-    border-radius: 15px;
+    width: 200px;
+    height: 40px;
+    border-radius: 3px;
     padding: 0 10px;
-    border: 1px solid ${color.btnPrimary};
+    background-color: ${color.searchBtnBg};
+    color: ${color.textPrimary};
   }
   button {
+    width: 200px;
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3px;
+    background-color: ${color.btnSecondery};
+    cursor: pointer;
+    transition: 300ms;
+    &:hover {
+      background-color: ${color.btnPrimary};
+      color: ${color.textPrimary};
+      transform: scale(1.02);
+    }
+    &:active {
+      transform: scale(1);
+    }
+    span {
+      font-size: 1rem;
+      font-weight: 300;
+      color: ${color.textPrimary};
+    }
+  }
+  a {
+    width: 200px;
+    span {
+      &:hover {
+        color: ${color.hoverBtnBg};
+      }
+    }
+  }
+  @media ${devices.tabletL} {
     width: 100%;
-    height: 50px;
-    border-radius: 15px;
-    background-color: ${color.btnPrimary};
-    color: ${color.textPrimary};
-    font-family: 'intro';
+  }
+  @media ${devices.tabletS} {
+    width: 100%;
   }
   @media ${devices.mobileL} {
     width: 100%;

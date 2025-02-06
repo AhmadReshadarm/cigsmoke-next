@@ -1,16 +1,12 @@
 import { Tabs } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import {
   clearBanners,
   fetchAdvertisement,
   fetchSlides,
 } from 'redux/slicers/bannersSlicer';
-import {
-  clearImageList,
-  setDefaultImageList,
-} from 'redux/slicers/imagesSlicer';
-import { Advertisement, Slide } from 'swagger/services';
+import { clearImageList } from 'redux/slicers/imagesSlicer';
 import AdvertisementForm from './AdvertisementForm';
 import SlidesForm from './SlidesForm';
 
@@ -30,7 +26,6 @@ const BannersFormLayout = () => {
   }, []);
 
   const handleChangeTab = (e) => {
-    console.log(e);
     switch (e) {
       case '1':
         dispatch(clearImageList());

@@ -20,24 +20,37 @@ const ProductItem: React.FC<Props> = ({ orderProduct }) => {
   return (
     <div className="product">
       <div className="image-wrapper">
-        <img
-          src={`/api/images/${images ? images[0] : ''}`}
-          alt={orderProduct.product?.name}
-        />
+        <Link href={`/product/${orderProduct.product?.url}`}>
+          <img
+            src={`/api/images/${images ? images[0] : ''}`}
+            alt={orderProduct.product?.name}
+          />
+        </Link>
       </div>
       <div className="product-image-column">
         <Link href={`/product/${orderProduct.product?.url}`}>
-          <a>{orderProduct.product?.name}</a>
+          {orderProduct.product?.name}
         </Link>
-        <b>
-          <span>{formatNumber(curVariant.price)} ₽</span>
-          {curVariant.oldPrice && (
-            <span className="discount">
-              {formatNumber(curVariant.oldPrice)} ₽
-            </span>
-          )}
-        </b>
-        <span>{orderProduct.qty} шт</span>
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-end',
+            gap: '20px',
+          }}
+        >
+          <b>
+            <span>{formatNumber(curVariant.price)} ₽</span>
+            {curVariant.oldPrice && (
+              <span className="discount">
+                {formatNumber(curVariant.oldPrice)} ₽
+              </span>
+            )}
+          </b>
+          <span>{orderProduct.qty} шт</span>
+        </div>
       </div>
       {orderProduct.productVariant?.color?.name !== '_' ? (
         <div className="color-wrapper">

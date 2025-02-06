@@ -8,7 +8,13 @@ import {
 } from '../../common/helpers';
 import { openSuccessNotification } from 'common/helpers/openSuccessNotidication.helper';
 import { FetchPayload, RequestResponse, TBannerState } from 'redux/types';
-import { Advertisement, Slide, AdvertisementService, SlideService, SlideDTO } from 'swagger/services';
+import {
+  Advertisement,
+  Slide,
+  AdvertisementService,
+  SlideService,
+  SlideDTO,
+} from 'swagger/services';
 
 export const fetchAdvertisement = createAsyncThunk<
   RequestResponse,
@@ -36,9 +42,8 @@ export const updateAdvertisement = createAsyncThunk<
       return await AdvertisementService.updateAdvertisement({
         advertisementId: payload.id!,
         body: {
-          image: payload.image,
+          title: payload.title,
           description: payload.description,
-          link: payload.link
         },
       });
     } catch (error: any) {
@@ -51,11 +56,28 @@ export const fetchSlides = createAsyncThunk<
   RequestResponse,
   undefined,
   { rejectValue: string }
+>('banners/fetchSlides', async function (_, { rejectWithValue }): Promise<any> {
+  try {
+    return await SlideService.getSlides();
+  } catch (error: any) {
+    return rejectWithValue(getErrorMassage(error.response.status));
+  }
+});
+
+export const createSlide = createAsyncThunk<
+  Slide,
+  Slide,
+  { rejectValue: string }
 >(
-  'banners/fetchSlides',
-  async function (_, { rejectWithValue }): Promise<any> {
+  'banners/createSlides',
+  async function (payload: Slide, { rejectWithValue }): Promise<any> {
     try {
-      return await SlideService.getSlides();
+      return await SlideService.createSlide({
+        body: {
+          image: payload.image,
+          link: payload.link,
+        },
+      });
     } catch (error: any) {
       return rejectWithValue(getErrorMassage(error.response.status));
     }
@@ -83,6 +105,7 @@ const initialState: TBannerState = {
   advertisement: [],
   slides: [],
   loading: false,
+  advertisementLoading: false,
   saveLoading: false,
 };
 
@@ -99,17 +122,17 @@ const bannersSlicer = createSlice({
     clearBanners(state) {
       state.advertisement = [];
       state.slides = [];
-      console.log('Banners cleared!')
     },
   },
   extraReducers: (builder) => {
     builder
       //fetchAdvertisement
-      .addCase(fetchAdvertisement.pending, handlePending)
+      .addCase(fetchAdvertisement.pending, (state, action) => {
+        state.advertisementLoading = true;
+      })
       .addCase(fetchAdvertisement.fulfilled, (state, action) => {
         state.advertisement = action.payload as unknown as Advertisement[];
-        state.loading = false;
-        console.log('fulfilled');
+        state.advertisementLoading = false;
       })
       .addCase(fetchAdvertisement.rejected, handleError)
       //updateAdvertisement
@@ -118,7 +141,6 @@ const bannersSlicer = createSlice({
         state.advertisement = action.payload as unknown as Advertisement[];
         state.saveLoading = false;
         openSuccessNotification('Баннер успешно обновлен');
-        console.log('fulfilled');
       })
       .addCase(updateAdvertisement.rejected, handleChangeError)
       //fetchSlides
@@ -126,18 +148,23 @@ const bannersSlicer = createSlice({
       .addCase(fetchSlides.fulfilled, (state, action) => {
         state.slides = action.payload as unknown as Slide[];
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchSlides.rejected, handleError)
+      //createSlides
+      .addCase(createSlide.pending, handlePending)
+      .addCase(createSlide.fulfilled, (state, action) => {
+        state.saveLoading = false;
+        openSuccessNotification('Баннер успешно создан');
+      })
+      .addCase(createSlide.rejected, handleChangeError)
       //updateSlides
       .addCase(updateSlides.pending, handlePending)
       .addCase(updateSlides.fulfilled, (state, action) => {
         state.slides = action.payload as unknown as Slide[];
         state.saveLoading = false;
         openSuccessNotification('Баннер успешно обновлен');
-        console.log('fulfilled');
       })
-      .addCase(updateSlides.rejected, handleChangeError)
+      .addCase(updateSlides.rejected, handleChangeError);
   },
 });
 

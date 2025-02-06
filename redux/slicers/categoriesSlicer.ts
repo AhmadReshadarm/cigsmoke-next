@@ -5,6 +5,7 @@ import {
   handlePending,
   handleError,
   handleChangeError,
+  openErrorNotification,
 } from '../../common/helpers';
 import { PayloadCategory } from 'common/interfaces/payload-category.interface';
 import { openSuccessNotification } from 'common/helpers/openSuccessNotidication.helper';
@@ -22,7 +23,7 @@ export const fetchCategories = createAsyncThunk<
     try {
       return await CategoryService.getCategories({
         limit: payload?.limit,
-        offset: payload?.offset
+        offset: payload?.offset,
       });
     } catch (error: any) {
       return rejectWithValue(getErrorMassage(error.response.status));
@@ -56,6 +57,7 @@ export const createCategory = createAsyncThunk<
       return await CategoryService.createCategory({
         body: {
           name: payload.name,
+          desc: payload.desc,
           image: payload.image,
           url: payload.url,
           parentId: payload.parent,
@@ -79,11 +81,8 @@ export const editCategory = createAsyncThunk<
       return await CategoryService.updateCategory({
         categoryId: payload.id as string,
         body: {
-          name: payload.name,
-          url: payload.url,
-          image: payload.image,
+          ...payload,
           parentId: payload.parent,
-          parameters: payload.parameters,
         },
       });
     } catch (error: any) {
@@ -119,7 +118,6 @@ const categoriesSlicer = createSlice({
   initialState,
   reducers: {
     clearCategories(state) {
-      console.log('Categories cleared!')
       state.categories = [];
     },
     clearCategory(state) {
@@ -133,7 +131,6 @@ const categoriesSlicer = createSlice({
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.categories = handlePaginationDataFormatter(action);
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchCategories.rejected, handleError)
       //fetchCategory
@@ -141,7 +138,6 @@ const categoriesSlicer = createSlice({
       .addCase(fetchCategory.fulfilled, (state, action) => {
         state.category = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchCategory.rejected, handleError)
       //createCategory
@@ -149,7 +145,6 @@ const categoriesSlicer = createSlice({
       .addCase(createCategory.fulfilled, (state) => {
         state.saveLoading = false;
         openSuccessNotification('Категория успешно создана');
-        console.log('fulfilled');
       })
       .addCase(createCategory.rejected, handleChangeError)
       //editCategory
@@ -164,7 +159,6 @@ const categoriesSlicer = createSlice({
         };
         openSuccessNotification('Категория успешно обновлена');
         state.saveLoading = false;
-        console.log('fulfilled');
       })
       .addCase(editCategory.rejected, handleChangeError)
       //deleteCategory
@@ -175,9 +169,12 @@ const categoriesSlicer = createSlice({
         );
         state.saveLoading = false;
         openSuccessNotification('Категория успешно удалена');
-        console.log('fulfilled');
       })
-      .addCase(deleteCategory.rejected, handleChangeError);
+      .addCase(deleteCategory.rejected, () => {
+        openErrorNotification(
+          'Удалить невозможно, В файле есть дополнительные данные',
+        );
+      });
   },
 });
 

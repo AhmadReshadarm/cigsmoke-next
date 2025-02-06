@@ -1,7 +1,6 @@
-import React from 'react';
 import Head from 'next/head';
 import { settings } from './helpers';
-
+import { baseUrl } from 'common/constant';
 const socialTags = ({
   openGraphType,
   url,
@@ -37,6 +36,9 @@ const socialTags = ({
     { name: 'og:type', content: openGraphType },
     { name: 'og:url', content: url },
     { name: 'og:image', content: image },
+    { name: 'og:image:type', content: 'image/webp' },
+    { name: 'og:image:width', content: '1080' },
+    { name: 'og:image:height', content: '1080' },
     { name: 'og:description', content: description },
     {
       name: 'og:site_name',
@@ -56,60 +58,81 @@ const socialTags = ({
 };
 
 const SEO = ({ product, images }) => {
-  const url = `https://wuluxe.ru/prodcut/${product?.url}`;
-  const image: any = [];
-  for (let i = 0; i < images?.length; i++) {
-    image.push(`https://wuluxe.ru/api/images/${images[i]}`);
-  }
+  const url = `${baseUrl}/product/${product?.url}`;
 
   return (
     <Head>
-      <title>{product?.name} | Wuluxe</title>
+      <title>{`${product?.name} | NBHOZ`}</title>
       <meta name="robots" content="index, follow" />
       <meta name="title" content={product?.name} />
       <meta name="description" content={product?.shortDesc} />
-      <meta name="image" content={image[0]} />
+      <meta name="image" content={images[0]} />
       <meta name="keywords" content={product?.keywords} />
+      <link rel="canonical" href={url} key="canonical" />
       {socialTags({
-        openGraphType: 'product',
+        openGraphType: 'website',
         url: url,
         title: product?.name,
         description: product?.shortDesc,
-        image: image[0],
+        image: images[0],
         createdAt: product?.createdAt,
         updatedAt: product?.updatedAt,
       }).map(({ name, content }) => {
-        return <meta key={name} name={name} content={content} />;
+        return (
+          <meta key={name} property={name} name={name} content={content} />
+        );
       })}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'http://schema.org',
-            '@type': 'Product',
-            name: product?.name,
-            description: product?.shortDesc,
-            image: image,
-            brand: {
-              '@type': 'Brand',
-              name: product?.brand.name,
-            },
-            aggregateRating: {
-              '@type': 'AggregateRating',
-              ratingValue: product?.rating?.avg || 0,
-              reviewCount: product?.reviews?.length || 0,
-            },
-            offers: {
-              '@type': 'Offer',
-              url: url,
-              priceCurrency: 'RUB',
-              price: product?.productVariants[0]?.price,
-              itemCondition: 'https://schema.org/NewCondition',
-              availability: 'https://schema.org/InStock',
-            },
-          }),
-        }}
-      />
+      {product?.reviews?.length != 0 ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'http://schema.org',
+              '@type': 'Product',
+              name: product?.name,
+              description: product?.shortDesc,
+              image: images,
+              sku: product?.productVariants[0]?.artical,
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: product?.rating?.avg ?? 0,
+                reviewCount: product?.reviews?.length ?? 0,
+              },
+              offers: {
+                '@type': 'Offer',
+                url: url,
+                priceCurrency: 'RUB',
+                price: product?.productVariants[0]?.price,
+                itemCondition: 'https://schema.org/NewCondition',
+                availability: 'https://schema.org/InStock',
+              },
+            }),
+          }}
+        />
+      ) : (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'http://schema.org',
+              '@type': 'Product',
+              name: product?.name,
+              description: product?.shortDesc,
+              // image: image[0],
+              image: images,
+              sku: product?.productVariants[0]?.article,
+              offers: {
+                '@type': 'Offer',
+                url: url,
+                priceCurrency: 'RUB',
+                price: product?.productVariants[0]?.price,
+                itemCondition: 'https://schema.org/NewCondition',
+                availability: 'https://schema.org/InStock',
+              },
+            }),
+          }}
+        />
+      )}
     </Head>
   );
 };

@@ -30,20 +30,23 @@ const UserImagePicker = ({
               }
             }}
           >
-            <motion.div
+            <motion.img
               custom={index * 0.005}
               initial="init"
               animate="animate"
               variants={variants.slideInFromRigh}
               style={{
-                backgroundColor: '#fff',
-                backgroundImage: `url(/api/images/${image})`,
                 width: '100px',
                 height: '100px',
                 backgroundPosition: 'center',
                 backgroundSize: 'contain',
                 backgroundRepeat: 'no-repeat',
                 borderRadius: '10px',
+              }}
+              src={`/api/images/${image}`}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = '/img_not_found.png';
               }}
             />
           </UserImageItems>
@@ -73,7 +76,7 @@ const UserImageList = styled.ul`
   grid-template-columns: repeat(3, 1fr);
   grid-column-gap: 10px;
   grid-row-gap: 10px;
-  align-items: center;
+  align-items: flex-start;
   overflow-y: scroll;
   overflow-x: hidden;
   user-select: none;
@@ -102,7 +105,6 @@ const UserImageItems = styled(motion.li)`
   cursor: pointer;
   border-radius: 10px;
   span {
-    font-family: 'intro';
     padding: 20px;
   }
   img {

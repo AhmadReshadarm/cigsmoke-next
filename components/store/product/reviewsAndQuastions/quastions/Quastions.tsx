@@ -4,7 +4,7 @@ import Filters from '../Filters';
 import color from 'components/store/lib/ui.colors';
 import variants from 'components/store/lib/variants';
 import LikeDisLike from '../LikeOrDisLike';
-import { quastionsDropdownOption, image } from '../../constants';
+import { quastionsDropdownOption } from '../../constants';
 import {
   LoadMoreBtnWrapper,
   ReviewContainer,
@@ -12,17 +12,20 @@ import {
   ReviewReplyContent,
   ReviewReplyItem,
   UserImageWrapper,
+  ReplyWrapper,
 } from '../../common';
 import moment from 'moment';
-import { getUserInfo } from 'common/helpers/jwtToken.helpers';
-import { Modal } from 'antd';
-import { useAppDispatch } from 'redux/hooks';
+// import { Modal } from 'antd';
+import Modal from 'antd/es/modal';
+import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import {
   createQuestionComment,
   deleteQuestion,
   deleteQuestionComment,
   sortQuestions,
+  updateCommentQuestion,
 } from 'redux/slicers/store/productInfoSlicer';
+
 import { Reaction } from 'common/enums/reaction.enum';
 import { getReactionNumber } from '../reviews/helpers';
 import {
@@ -31,17 +34,71 @@ import {
 } from './helpers';
 import styled from 'styled-components';
 import { Role } from 'common/enums/roles.enum';
+import { TAuthState } from 'redux/types';
+import { useRouter } from 'next/router';
 
 const Quastion = ({ product }) => {
   const dispatch = useAppDispatch();
-  const [filterValue, setFilterValue] = useState('Сначала полезные');
-  const user = getUserInfo();
+  const [filterValue, setFilterValue] = useState('Сначала новые');
+  const { user } = useAppSelector<TAuthState>((state) => state.auth);
   const [isQuestionModalVisible, setIsQuestionModalVisible] = useState(false);
   const [questionId, setQuestion] = useState('');
   const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
   const [commentId, setCommentId] = useState('');
   const [isCommentSendVisibleMap, setIsCommentSendVisibleMap] = useState({});
   const [commentValueMap, setCommentValueMap] = useState({});
+  const [commentEditeValueMap, setCommentEditeValueMap] = useState({
+    text: '',
+  });
+  const [isCommentEditeSendVisibleMap, setIsCommentEditeSendVisibleMap] =
+    useState({});
+
+  const handleEditeCommentClick =
+    (commentId: string, commentText: string) => () => {
+      setCommentEditeValueMap((prev) => ({
+        ...prev,
+        text: commentText,
+      }));
+
+      setIsCommentEditeSendVisibleMap((prev) => ({
+        ...prev,
+        [commentId]: !prev[commentId],
+      }));
+    };
+
+  const handleCommentEditeValueChange = (commentId: string) => (e) => {
+    setCommentEditeValueMap((prev) => ({
+      ...prev,
+      text: e.target.value,
+    }));
+  };
+
+  const handleUpdateComment =
+    (
+      commentId: string,
+      questionId: string,
+      commentValue: string,
+      userId: string,
+    ) =>
+    async () => {
+      if (commentValue == '' || commentValue == undefined) return;
+      const payload = {
+        questionId,
+        text: commentValue,
+        userId,
+      };
+      await dispatch(
+        updateCommentQuestion({
+          commentId,
+          payload,
+        }),
+      );
+
+      setIsCommentEditeSendVisibleMap((prev) => ({
+        ...prev,
+        [commentId]: false,
+      }));
+    };
 
   const onQuestionRemoveClick = (id: string) => () => {
     setIsQuestionModalVisible(true);
@@ -87,6 +144,8 @@ const Quastion = ({ product }) => {
 
   const handleCreateComment =
     (questionId: string, commentValue: string, userId: string) => async () => {
+      if (commentValue == '' || commentValue == undefined) return;
+
       await dispatch(
         createQuestionComment({ questionId, text: commentValue, userId }),
       );
@@ -100,13 +159,20 @@ const Quastion = ({ product }) => {
     setFilterValue(option);
     dispatch(sortQuestions(option));
   };
+
+  const router = useRouter();
+
   return (
     <>
-      <Filters
-        options={quastionsDropdownOption}
-        value={filterValue}
-        setValue={handleSortChange}
-      />
+      {router.pathname.includes('/admin') ? (
+        ''
+      ) : (
+        <Filters
+          options={quastionsDropdownOption}
+          value={filterValue}
+          setValue={handleSortChange}
+        />
+      )}
       <ReviewContainer>
         {product?.questions?.map((question) => {
           const isReviewLiked = !!question.reactions?.find(
@@ -126,22 +192,33 @@ const Quastion = ({ product }) => {
           );
 
           return (
-            <>
+            <div className="comment-map-func-wrapper" key={question.id}>
               <ReviewReplyWrapper
                 initial="init"
                 whileInView="animate"
                 viewport={{ once: true }}
                 custom={0.2}
                 variants={variants.fadInSlideUp}
-                padding="0"
               >
                 <ReviewReplyContent>
                   <UserImageWrapper>
                     <div className="user-profile-img">
-                      <img
-                        src={`https://avatars.dicebear.com/api/micah/${question?.user?.id}.svg?facialHairProbability=0&mouth[]=smile&scale=70&hair[]=fonze,full,pixie`}
-                        alt="profile"
-                      />
+                      {question.user.role === Role.Admin ? (
+                        <span>NBHOZ</span>
+                      ) : (
+                        <img
+                          src={
+                            question.user?.image
+                              ? `/api/images/${question.user.image}`
+                              : `https://api.dicebear.com/7.x/micah/svg?radius=50&backgroundColor=ECEEE7&seed=${question.user?.firstName}`
+                          }
+                          onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = `https://api.dicebear.com/7.x/micah/svg?radius=50&backgroundColor=ECEEE7&seed=${question.user?.firstName}`;
+                          }}
+                          alt={question.user?.firstName}
+                        />
+                      )}
                     </div>
                     <div className="side-line"></div>
                   </UserImageWrapper>
@@ -151,12 +228,17 @@ const Quastion = ({ product }) => {
                       <span className="date-stars">
                         <span className="post-date">
                           {moment(question.createdAt!).format('DD.MM.YYYY')}
-                          {question.user?.id == user?.id && (
+                          {(question.user?.id == user?.id &&
+                            question.comments?.length == 0) ||
+                          (user?.role === Role.Admin &&
+                            question.comments?.length == 0) ? (
                             <button
                               onClick={onQuestionRemoveClick(question.id!)}
                             >
                               Удалить
                             </button>
+                          ) : (
+                            ''
                           )}
                         </span>
                       </span>
@@ -208,65 +290,110 @@ const Quastion = ({ product }) => {
                 );
 
                 return (
-                  <ReviewReplyWrapper
+                  <ReplyWrapper
                     initial="init"
                     whileInView="animate"
                     viewport={{ once: true }}
                     custom={0.3}
                     variants={variants.fadInSlideUp}
-                    padding="50px"
+                    key={comment.id}
                   >
-                    <ReviewReplyContent>
-                      <UserImageWrapper>
-                        <span className="reply-logo">Wuluxe</span>
-                        <div className="side-line"></div>
-                      </UserImageWrapper>
-                      <ReviewReplyItem>
-                        <div className="review-header">
-                          <div className="replied-to-wrapper">
-                            <h3>Wuluxe</h3>
-                            <span>{`в ответ ${question.user?.firstName}`}</span>
-                          </div>
-                          <span className="date-stars">
-                            <span className="post-date">
-                              {moment(comment.createdAt).format('DD.MM.YYYY')}
-                              {comment.user?.id == user?.id && (
-                                <button
-                                  onClick={onCommentRemoveClick(comment.id!)}
-                                >
-                                  Удалить
-                                </button>
-                              )}
-                            </span>
-                          </span>
-                        </div>
-                        <div className="user-post-text">
-                          <span>{comment.text}</span>
-                        </div>
-                        <LikeDisLike
-                          likeNum={likeNum}
-                          dislikeNum={dislikeNum}
-                          isLiked={isCommentLiked}
-                          isDisliked={isCommentDisliked}
-                          bgColor={color.textPrimary}
-                          onLikeClick={handleCommentReactionClick(
-                            question,
-                            comment,
-                            dispatch,
-                            Reaction.Like,
-                            user,
-                          )}
-                          onDislikeClick={handleCommentReactionClick(
-                            question,
-                            comment,
-                            dispatch,
-                            Reaction.Dislike,
-                            user,
-                          )}
+                    {/* ______ edite mode start  _______ */}
+                    {isCommentEditeSendVisibleMap[comment?.id!] ? (
+                      <UserCommentWrapper>
+                        <UserCommentField
+                          placeholder="Напишите комментарий"
+                          value={commentEditeValueMap.text}
+                          onChange={handleCommentEditeValueChange(comment?.id!)}
                         />
-                      </ReviewReplyItem>
-                    </ReviewReplyContent>
-                  </ReviewReplyWrapper>
+                        <div className="comment-action-btns-wrapper">
+                          <SendUserCommentBtn
+                            onClick={handleUpdateComment(
+                              comment?.id!,
+                              question?.id!,
+                              commentEditeValueMap.text,
+                              user?.id!,
+                            )}
+                          >
+                            Отправить
+                          </SendUserCommentBtn>
+                          <SendUserCommentBtn
+                            onClick={handleEditeCommentClick(
+                              comment?.id!,
+                              comment.text!,
+                            )}
+                          >
+                            Отмена
+                          </SendUserCommentBtn>
+                        </div>
+                      </UserCommentWrapper>
+                    ) : (
+                      // edite mode end
+                      <ReviewReplyContent>
+                        <UserImageWrapper>
+                          <span className="reply-logo">NBHOZ</span>
+                          <div className="side-line"></div>
+                        </UserImageWrapper>
+                        <ReviewReplyItem>
+                          <div className="review-header">
+                            <div className="replied-to-wrapper">
+                              <h3>{comment.user.firstName}</h3>
+                              <span>{`в ответ ${question.user?.firstName}`}</span>
+                            </div>
+                            <span className="date-stars">
+                              <span className="post-date">
+                                {moment(comment.createdAt).format('DD.MM.YYYY')}
+                                {comment.user?.id == user?.id && (
+                                  <button
+                                    onClick={onCommentRemoveClick(comment.id!)}
+                                  >
+                                    Удалить
+                                  </button>
+                                )}
+                                {user?.role === Role.Admin &&
+                                comment.user?.id == user?.id ? (
+                                  <button
+                                    onClick={handleEditeCommentClick(
+                                      comment?.id!,
+                                      comment.text!,
+                                    )}
+                                  >
+                                    Редактировать
+                                  </button>
+                                ) : (
+                                  ''
+                                )}
+                              </span>
+                            </span>
+                          </div>
+                          <div className="user-post-text">
+                            <span>{comment.text}</span>
+                          </div>
+                          <LikeDisLike
+                            likeNum={likeNum}
+                            dislikeNum={dislikeNum}
+                            isLiked={isCommentLiked}
+                            isDisliked={isCommentDisliked}
+                            bgColor={color.textPrimary}
+                            onLikeClick={handleCommentReactionClick(
+                              question,
+                              comment,
+                              dispatch,
+                              Reaction.Like,
+                              user,
+                            )}
+                            onDislikeClick={handleCommentReactionClick(
+                              question,
+                              comment,
+                              dispatch,
+                              Reaction.Dislike,
+                              user,
+                            )}
+                          />
+                        </ReviewReplyItem>
+                      </ReviewReplyContent>
+                    )}
+                  </ReplyWrapper>
                 );
               })}
               {!isCommentSendVisibleMap[question?.id!] &&
@@ -288,40 +415,37 @@ const Quastion = ({ product }) => {
                     placeholder="Напишите комментарий"
                     onChange={handleCommentValueChange(question?.id!)}
                   />
-                  <SendUserCommentBtn
-                    onClick={handleCreateComment(
-                      question?.id!,
-                      commentValueMap[question?.id!],
-                      user?.id!,
-                    )}
-                  >
-                    Отправить
-                  </SendUserCommentBtn>
+                  <div className="comment-action-btns-wrapper">
+                    <SendUserCommentBtn
+                      onClick={handleCreateComment(
+                        question?.id!,
+                        commentValueMap[question?.id!],
+                        user?.id!,
+                      )}
+                    >
+                      Отправить
+                    </SendUserCommentBtn>
+                    <SendUserCommentBtn
+                      onClick={handleLeaveCommentClick(question?.id!)}
+                    >
+                      Отмена
+                    </SendUserCommentBtn>
+                  </div>
                 </UserCommentWrapper>
               )}
-            </>
+            </div>
           );
         })}
-        <LoadMoreBtnWrapper>
-          {/* <motion.button
-            whileHover="hover"
-            whileTap="tap"
-            variants={variants.boxShadow}
-            // onClick={() => setReveiwsData(reviewData + 1)}
-          >
-            Еще...
-          </motion.button> */}
-        </LoadMoreBtnWrapper>
       </ReviewContainer>
       <Modal
         title={'Вы действительно хотите удалить этот вопрос?'}
-        visible={isQuestionModalVisible}
+        open={isQuestionModalVisible}
         onOk={handleQuestionRemove(questionId)}
         onCancel={handleQuestionCancel}
       ></Modal>
       <Modal
         title={'Вы действительно хотите удалить этот комментарий?'}
-        visible={isCommentModalVisible}
+        open={isCommentModalVisible}
         onOk={handleCommentRemove(commentId)}
         onCancel={handleCommentCancel}
       ></Modal>
@@ -335,6 +459,15 @@ const UserCommentWrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
+  .comment-action-btns-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px 0;
+  }
 `;
 
 const UserCommentField = styled.textarea`
@@ -353,17 +486,20 @@ const UserCommentField = styled.textarea`
 `;
 
 const SendUserCommentBtn = styled.button`
-  width: 150px;
-  height: 45px;
-  border-radius: 15px;
+  width: 100px;
+  height: 50px;
+  border-radius: 30px;
   background-color: ${color.btnPrimary};
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-family: 'intro';
   color: ${color.textPrimary};
-  margin-top: 20px;
+  &:active {
+    background-color: ${color.backgroundPrimary};
+    color: ${color.activeIcons};
+    border: 1px solid;
+  }
 `;
 
 export default Quastion;

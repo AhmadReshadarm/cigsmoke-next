@@ -6,17 +6,28 @@ import {
   Content,
 } from 'components/store/storeLayout/common';
 import StoreLayout from 'components/store/storeLayout/layouts';
-
 import Head from 'next/head';
-import ProfileComp from 'components/store/profileComp';
 import { useState } from 'react';
+import { baseUrl } from 'common/constant';
+import dynamic from 'next/dynamic';
+import { LoaderMask } from 'ui-kit/generalLoaderMask';
+const ProfileComp = dynamic(() => import('components/store/profileComp'), {
+  ssr: false,
+  loading: () => <LoaderMask />,
+});
 
 const Profile = () => {
   const [isActive, setActive] = useState('profile');
+
   return (
     <>
       <Head>
-        <title>Личные кабинет | Wuluxe</title>
+        <title>Личные кабинет | NBHOZ</title>
+        <meta
+          property="og:image"
+          name="og:image"
+          content={`${baseUrl}/static/logo_800x800.png`}
+        />
       </Head>
       <Container
         variants={variants.fadInOut}
@@ -27,13 +38,14 @@ const Profile = () => {
         flex_direction="column"
         justify_content="center"
         align_items="center"
-        padding="200px 0"
+        padding="50px 0"
         bg_color={color.textPrimary}
       >
         <Wrapper>
           <Content
             flex_direction="column"
-            justify_content="flex-start"
+            justify_content="center"
+            align_items="center"
             gap="30px"
           >
             <ProfileComp isActive={isActive} setActive={setActive} />

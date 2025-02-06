@@ -1,0 +1,33 @@
+.rating_wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.review_star {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.review_text {
+  font-size: 12px;
+  color: #484848;
+}
+
+.artical_wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+}
+.artical_wrapper > span {
+  font-size: 0.8rem;
+}

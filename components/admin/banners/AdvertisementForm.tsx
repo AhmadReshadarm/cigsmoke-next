@@ -1,22 +1,16 @@
-import { Button, Form, Input, Spin } from 'antd';
+import { Button, Form, Spin, Input } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import { navigateTo } from 'common/helpers';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
-import {
-  clearImageList,
-  setDefaultImageList,
-} from 'redux/slicers/imagesSlicer';
 import { Page } from 'routes/constants';
-import { Advertisement, Image } from 'swagger/services';
-
+import { Advertisement } from 'swagger/services';
 import FormItem from '../generalComponents/FormItem';
-import ImageUpload from '../generalComponents/ImageUpload';
 import { handleFormSubmitBanner } from './helpers';
 import styles from './index.module.scss';
 import { ManageAdvertisementFields } from './manageAdvertisementFields';
-import { handleFalsyValuesCheck } from '../../../common/helpers/handleFalsyValuesCheck.helper';
+import { handleFalsyValuesCheck } from 'common/helpers/handleFalsyValuesCheck.helper';
 
 interface Props {
   isLoading: boolean;
@@ -27,50 +21,32 @@ const AdvertisementForm = ({ isLoading, isSaveLoading }: Props) => {
   const [form] = Form.useForm();
   const router = useRouter();
   const dispatch = useAppDispatch();
-
+  const [title, setTitle] = useState<string>();
   const [desc, setDesc] = useState<string>();
-  const [link, setLink] = useState<string>();
-
   const advertisement: Advertisement = useAppSelector<Advertisement[]>(
     (state) => state.banners.advertisement,
   )[0];
 
-  const imageList = useAppSelector<Image[]>((state) => state.images.imageList);
-
   const initialValues: Advertisement = {
-    description: advertisement?.description,
-    link: advertisement?.link,
+    title: advertisement?.title ?? '',
+    description: advertisement?.description ?? '',
   };
 
   useEffect(() => {
     if (advertisement) {
-      setDesc(advertisement?.description);
-      setLink(advertisement?.link);
+      setTitle(advertisement?.title ?? '');
+      setDesc(advertisement?.description ?? '');
     }
   }, [advertisement]);
 
-  useEffect(() => {
-    if (advertisement) {
-      dispatch(
-        setDefaultImageList({
-          name: advertisement?.image,
-          url: `/api/images/${advertisement?.image}`,
-        }),
-      );
-    }
-    return () => {
-      dispatch(clearImageList());
-    };
-  }, [isLoading]);
-
-  const isDisabled: boolean = handleFalsyValuesCheck(desc, link, imageList);
+  const isDisabled: boolean = handleFalsyValuesCheck(title, desc);
 
   return (
     <>
       {isLoading ? (
         <Spin className={styles.spinner} size="large" />
       ) : (
-        <div>
+        <>
           <Form
             layout="vertical"
             form={form}
@@ -80,35 +56,31 @@ const AdvertisementForm = ({ isLoading, isSaveLoading }: Props) => {
             onFinish={handleFormSubmitBanner(
               router,
               dispatch,
-              imageList,
+              'imageList',
               'advertisement',
               Number.parseInt(advertisement?.id!),
             )}
           >
             <FormItem
-              option={ManageAdvertisementFields.Desc}
-              children={
-                <TextArea
-                  rows={4}
-                  required={true}
-                  placeholder="Введите описание баннера"
-                  onChange={(e) => setDesc(e.target.value)}
-                />
-              }
-            />
-            <FormItem
-              option={ManageAdvertisementFields.Link}
+              option={ManageAdvertisementFields.Title}
               children={
                 <Input
                   required={true}
-                  placeholder="Введите ссылку"
-                  onChange={(e) => setLink(e.target.value)}
+                  placeholder="Введите имя бренда"
+                  onChange={(e) => setTitle(e.target.value)}
                 />
               }
             />
             <FormItem
-              option={ManageAdvertisementFields.Image}
-              children={<ImageUpload fileList={imageList} />}
+              option={ManageAdvertisementFields.Desc}
+              children={
+                <TextArea
+                  required={true}
+                  rows={4}
+                  placeholder="Краткое описание"
+                  onChange={(e) => setDesc(e.target.value)}
+                />
+              }
             />
             <Form.Item className={styles.updateBannerForm__buttonsStack}>
               <Button
@@ -128,7 +100,7 @@ const AdvertisementForm = ({ isLoading, isSaveLoading }: Props) => {
               </Button>
             </Form.Item>
           </Form>
-        </div>
+        </>
       )}
     </>
   );

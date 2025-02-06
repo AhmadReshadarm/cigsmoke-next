@@ -5,6 +5,7 @@ import {
   handlePending,
   handleError,
   handleChangeError,
+  openErrorNotification,
 } from '../../common/helpers';
 import { PayloadSize } from 'common/interfaces/payload-sizes.interface';
 import { openSuccessNotification } from 'common/helpers/openSuccessNotidication.helper';
@@ -120,7 +121,6 @@ const sizesSlicer = createSlice({
       .addCase(fetchSizes.fulfilled, (state, action) => {
         state.sizes = handlePaginationDataFormatter(action);
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchSizes.rejected, handleError)
       //fetchSize
@@ -128,7 +128,6 @@ const sizesSlicer = createSlice({
       .addCase(fetchSize.fulfilled, (state, action) => {
         state.size = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchSize.rejected, handleError)
       //createSize
@@ -136,7 +135,6 @@ const sizesSlicer = createSlice({
       .addCase(createSize.fulfilled, (state) => {
         state.saveLoading = false;
         openSuccessNotification('Размер успешно создан');
-        console.log('fulfilled');
       })
       .addCase(createSize.rejected, handleChangeError)
       //editTag
@@ -149,7 +147,6 @@ const sizesSlicer = createSlice({
         };
         openSuccessNotification('Размер успешно обновлен');
         state.saveLoading = false;
-        console.log('fulfilled');
       })
       .addCase(editSize.rejected, handleChangeError)
       //deleteSize
@@ -158,9 +155,12 @@ const sizesSlicer = createSlice({
         state.sizes = state.sizes.filter((item) => item.id !== action.payload);
         state.saveLoading = false;
         openSuccessNotification('Размер успешно удален');
-        console.log('fulfilled');
       })
-      .addCase(deleteSize.rejected, handleChangeError);
+      .addCase(deleteSize.rejected, () => {
+        openErrorNotification(
+          'Удалить невозможно, В файле есть дополнительные данные',
+        );
+      });
   },
 });
 

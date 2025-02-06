@@ -53,7 +53,7 @@ const AddressDetails = (props: any) => {
           <label htmlFor="address-postcode">
             <b>
               <span>Индекс</span>
-              <span className="required">*</span>
+              {/* <span className="required">*</span> */}
             </b>
             <InputsTooltip
               enterTouchDelay={0}
@@ -61,7 +61,7 @@ const AddressDetails = (props: any) => {
               key="address-postcode-tip"
               title={
                 <React.Fragment>
-                  <span>Это поле не обязательно к заполнению</span>
+                  {/* <span>Это поле не обязательно к заполнению</span> */}
                   <span>Пример: 117279</span>
                 </React.Fragment>
               }

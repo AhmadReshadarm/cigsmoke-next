@@ -5,6 +5,7 @@ import {
   handlePending,
   handleError,
   handleChangeError,
+  openErrorNotification,
 } from '../../common/helpers';
 import { PayloadTag } from 'common/interfaces/payload-tags.interface';
 import { openSuccessNotification } from 'common/helpers/openSuccessNotidication.helper';
@@ -119,7 +120,6 @@ const tagsSlicer = createSlice({
       .addCase(fetchTags.fulfilled, (state, action) => {
         state.tags = handlePaginationDataFormatter(action);
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchTags.rejected, handleError)
       //fetchTag
@@ -127,7 +127,6 @@ const tagsSlicer = createSlice({
       .addCase(fetchTag.fulfilled, (state, action) => {
         state.tag = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
       .addCase(fetchTag.rejected, handleError)
       //createTag
@@ -135,7 +134,6 @@ const tagsSlicer = createSlice({
       .addCase(createTag.fulfilled, (state) => {
         state.saveLoading = false;
         openSuccessNotification('Тег успешно создан');
-        console.log('fulfilled');
       })
       .addCase(createTag.rejected, handleChangeError)
       //editTag
@@ -148,7 +146,6 @@ const tagsSlicer = createSlice({
         };
         openSuccessNotification('Тег успешно обновлен');
         state.saveLoading = false;
-        console.log('fulfilled');
       })
       .addCase(editTag.rejected, handleChangeError)
       //deleteTag
@@ -157,9 +154,12 @@ const tagsSlicer = createSlice({
         state.tags = state.tags.filter((item) => item.id !== action.payload);
         state.saveLoading = false;
         openSuccessNotification('Тег успешно удален');
-        console.log('fulfilled');
       })
-      .addCase(deleteTag.rejected, handleChangeError);
+      .addCase(deleteTag.rejected, () => {
+        openErrorNotification(
+          'Удалить невозможно, В файле есть дополнительные данные',
+        );
+      });
   },
 });
 

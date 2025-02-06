@@ -1,23 +1,18 @@
-import { MutableRefObject, useState } from 'react';
-import styled from 'styled-components';
+import { MutableRefObject, useEffect, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import color from 'components/store/lib/ui.colors';
-import variants from 'components/store/lib/variants';
-import {
-  Container,
-  Wrapper,
-  Content,
-} from 'components/store/storeLayout/common';
 import TabPanel from './TabPanel';
 import { a11yProps } from './helpers';
-import Reviews from './reviews';
-import Quastions from './quastions';
-import { HeaderWrapper } from '../common';
-import { useAppDispatch } from 'redux/hooks';
+import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { Product } from 'swagger/services';
-import { getUserInfo } from 'common/helpers/jwtToken.helpers';
+import { TAuthState } from 'redux/types';
+import { useInViewport } from 'components/store/storeLayout/useInViewport';
+import dynamic from 'next/dynamic';
+import { setProductStateFromServer } from 'redux/slicers/store/productInfoSlicer';
+const Reviews = dynamic(() => import('./reviews'));
+const Quastions = dynamic(() => import('./quastions'));
+import styles from '../styles/reviewsAndQuestions.module.css';
 
 type Props = {
   reviewRef: MutableRefObject<null>;
@@ -29,102 +24,57 @@ const ReveiwsAndQuastions: React.FC<Props> = ({
   questionRef,
   product,
 }) => {
-  const dispatch = useAppDispatch();
   const [tab, setTab] = useState(0);
-  const user = getUserInfo();
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTab(newValue);
   };
-
+  const { user } = useAppSelector<TAuthState>((state) => state.auth);
+  const { isInViewport, ref } = useInViewport();
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(setProductStateFromServer(product));
+  }, []);
   return (
-    <Container
-      id="reveiws-quastions"
-      key="container-product-section-one"
-      flex_direction="row"
-      justify_content="center"
-      align_items="center"
-      padding="50px 0"
-      bg_color={color.bgProduct}
-      initial="start"
-      whileInView="middle"
-      variants={variants.fadInOut}
-    >
-      <Wrapper>
-        <Content
-          flex_direction="column"
-          justify_content="space-between"
-          align_items="center"
-          gap="30px"
-        >
-          <HeaderWrapper
-            custom={0.2}
-            initial="init"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={variants.fadInSlideUp}
-            style={{ position: 'relative' }}
-          >
-            <h3>Отзывы и вопросы о товаре</h3>
-            <TotalReviews>{product?.reviews?.length}</TotalReviews>
-          </HeaderWrapper>
-
+    <div id="reveiws-quastions" className={styles.Container}>
+      <div className={styles.Wrapper}>
+        <div className={styles.Content}>
           <Box
             sx={{
               width: '100%',
             }}
+            ref={ref}
           >
             <Box>
-              <Tabs
-                value={tab}
-                onChange={handleChange}
-                aria-label="reviews label"
-              >
+              <Tabs value={tab} onChange={handleChange}>
                 <Tab
                   ref={reviewRef}
-                  label="Отзывы о товаре"
+                  label={`${product?.reviews?.length} Отзыв(ов) о товаре`}
                   {...a11yProps(0)}
                 />
                 <Tab
                   ref={questionRef}
-                  label="Вопросы и ответы о товаре"
+                  label={`${product?.questions?.length} Вопрос(ов) о товаре`}
                   {...a11yProps(1)}
                 />
               </Tabs>
             </Box>
-            <TabPanel value={tab} index={0}>
-              <Reviews />
-            </TabPanel>
-            <TabPanel value={tab} index={1}>
-              <Quastions productId={product?.id} userId={user?.id!} />
-            </TabPanel>
+            {isInViewport ? (
+              <>
+                <TabPanel value={tab} index={0}>
+                  <Reviews />
+                </TabPanel>
+                <TabPanel value={tab} index={1}>
+                  <Quastions productId={product?.id} userId={user?.id!} />
+                </TabPanel>
+              </>
+            ) : (
+              ''
+            )}
           </Box>
-        </Content>
-      </Wrapper>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
-
-const TotalReviews = styled.span`
-  position: absolute;
-  top: -10px;
-  left: 325px;
-  color: ${color.textSecondary};
-  font-family: intro;
-  font-size: 1rem;
-`;
-
-const NoContent = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 20px 0;
-  h3 {
-    font-family: 'intro';
-    font-size: 1.2rem;
-    color: ${color.hover};
-  }
-`;
 
 export default ReveiwsAndQuastions;

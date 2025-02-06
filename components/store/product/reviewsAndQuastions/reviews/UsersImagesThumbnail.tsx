@@ -22,19 +22,20 @@ const UserImages = ({ title, thumbnails, setOpen, setDisplay }) => {
                 setDisplay('flex');
               }}
             >
-              <motion.div
+              <motion.img
                 custom={index * 0.08}
                 initial="init"
                 whileInView="animate"
                 viewport={{ once: true }}
                 variants={variants.slideInFromRigh}
+                src={`/api/images/${image}`}
                 style={{
-                  backgroundImage: `url(/api/images/${image})`,
-                  backgroundSize: 'contain',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'center',
                   width: '80px',
                   height: '80px',
+                }}
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src = '/img_not_found.png';
                 }}
               />
               {index > 4 ? (
@@ -52,6 +53,7 @@ const UserImages = ({ title, thumbnails, setOpen, setDisplay }) => {
 
 const ImagesWrapper = styled.div`
   max-width: 600px;
+  min-width: 200px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -60,8 +62,6 @@ const ImagesWrapper = styled.div`
   gap: 20px;
   h3 {
     text-align: start;
-    font-size: 1.5rem;
-    margin: 0;
   }
 `;
 
@@ -72,6 +72,8 @@ const ImagesContentWrapper = styled.ul`
   justify-content: flex-start;
   align-items: center;
   gap: 15px;
+  overflow-x: scroll;
+  overflow-y: hidden;
   li {
     width: 80px;
     height: 80px;

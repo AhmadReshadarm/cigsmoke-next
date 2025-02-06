@@ -1,10 +1,7 @@
-import { Refund } from '@a2seven/yoo-checkout';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { axiosInstance } from 'common/axios.instance';
-import { getErrorMassage, handleChangeError, handleChangePending, handleError, handlePending } from 'common/helpers';
-import { openSuccessNotification } from 'common/helpers/openSuccessNotidication.helper';
+import { getErrorMassage, handlePending } from 'common/helpers';
 import { TDeliveryInfo, TOrderInfo, TStoreCheckoutState } from 'redux/types';
-import { Checkout, CheckoutService } from 'swagger/services';
+import { AddressService, Checkout, CheckoutService } from 'swagger/services';
 
 export const fetchCheckouts = createAsyncThunk<
   Checkout[],
@@ -14,7 +11,9 @@ export const fetchCheckouts = createAsyncThunk<
   'checkout/fetchCheckouts',
   async function (_, { rejectWithValue }): Promise<any> {
     try {
-      const response = await CheckoutService.getCheckouts({ limit: '1000' }) as unknown as { rows: Checkout[] };
+      const response = (await CheckoutService.getCheckouts({
+        limit: '1000',
+      })) as unknown as { rows: Checkout[] };
       return response.rows;
     } catch (error: any) {
       return rejectWithValue(getErrorMassage(error.response.status));
@@ -22,22 +21,18 @@ export const fetchCheckouts = createAsyncThunk<
   },
 );
 
-
-
-export const cancelCheckout = createAsyncThunk<
-  any,
-  string,
+export const fetchAddress = createAsyncThunk<
+  TDeliveryInfo,
+  undefined,
   { rejectValue: string }
 >(
-  'checkout/cancelCheckout',
-  async function (paymentId, { rejectWithValue }): Promise<any> {
+  'checkout/fetchAddress',
+  async function (_, { rejectWithValue }): Promise<any> {
     try {
-      const response = await axiosInstance.delete<Refund>('/payments', {
-        data: {
-          paymentId,
-        },
-      } as any);
-      return response.data;
+      const response = (await AddressService.getAddresses({
+        limit: '1',
+      })) as unknown as { rows: TDeliveryInfo[] };
+      return response.rows[0] ?? null;
     } catch (error: any) {
       return rejectWithValue(getErrorMassage(error.response.status));
     }
@@ -73,19 +68,20 @@ const storeCheckoutSlicer = createSlice({
       .addCase(fetchCheckouts.fulfilled, (state, action) => {
         state.checkouts = action.payload;
         state.loading = false;
-        console.log('fulfilled');
       })
-      .addCase(fetchCheckouts.rejected, handleError)
-    builder
-      // fetchCheckouts
-      .addCase(cancelCheckout.pending, handleChangePending)
-      .addCase(cancelCheckout.fulfilled, (state, action) => {
-        state.checkouts = state.checkouts.filter(checkout => checkout.paymentId !== action.payload.payment_id);
-        state.saveLoading = false;
-        openSuccessNotification('Ваш Заказ успешно отменен');
-        console.log('fulfilled');
+      .addCase(fetchCheckouts.rejected, (state, action) => {
+        state.checkouts = initialState.checkouts;
+        state.loading = false;
       })
-      .addCase(cancelCheckout.rejected, handleChangeError)
+      // fetchAddress
+      .addCase(fetchAddress.pending, handlePending)
+      .addCase(fetchAddress.fulfilled, (state, action) => {
+        state.deliveryInfo = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchAddress.rejected, (state, action) => {
+        state.loading = false;
+      });
   },
 });
 

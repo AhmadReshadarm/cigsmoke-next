@@ -1,4 +1,4 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
+// import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, Spin } from 'antd';
 import { navigateTo } from 'common/helpers/navigateTo.helper';
 import { useRouter } from 'next/router';
@@ -70,7 +70,7 @@ const ManageTagForm = ({
             children={
               <Input
                 required={true}
-                placeholder="Введите имя тега"
+                placeholder="Введите имя Коллекция"
                 onChange={(e) => setName(e.target.value)}
               />
             }
@@ -80,8 +80,9 @@ const ManageTagForm = ({
             children={
               <Input
                 required={true}
-                placeholder="Введите URL тега"
+                placeholder="Введите URL Коллекция"
                 onChange={(e) => setUrl(e.target.value)}
+                disabled={editMode}
               />
             }
           />

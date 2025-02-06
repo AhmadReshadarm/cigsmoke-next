@@ -1,10 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+:root {
+  --font-Circe: 'Circe';
+  --font-Jost: 'Jost';
+  --font-ricordi: 'ricordi';
+  --font-roboto: 'Roboto';
+  --textPrimary: #ffffff;
+  --buttonPrimary: #000000;
+  --textSecondary: #000000;
+  --boxShadowBtn: rgba(0, 0, 0, 0.25);
+  --textTertiary: #707f8d;
+  --textBase: #949494;
+  --backgroundSecondery: #ffffff;
+  --footerBackground: #f3f3f3;
+  --glassmorphismBg: rgba(236, 238, 231, 0.6);
+  --glassmorphismSeconderBG: rgba(26, 26, 26, 0.4);
+  --backgroundPrimary: #ffffff;
+  --productCart: #f5f1ec;
+  --bgProduct: #f9f9f9;
+  --hover: #ed3969;
+  --yellow: #edba64;
+}
+
+/* @font-face {
+  font-family: 'Jost';
+  src: url('/fonts/Jost/Jost-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: 400;
+  font-display: swap;
+} */
+
+/* ---------------------------------- Circe font ----------------------------------------- */
 
 @font-face {
-  font-family: 'Intro';
-  src: url('/fonts/IntroDemo-BlackCAPS.woff2') format('woff2'),
-    url('/fonts/IntroDemo-BlackCAPS.woff') format('woff');
-  font-weight: 900;
+  font-family: 'Circe';
+  src: url('/fonts/circe/circe-light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Circe';
+  src: url('/fonts/circe/circe-regular.woff') format('woff');
+  font-weight: normal;
+  font-style: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Circe';
+  src: url('/fonts/circe/circe-bold.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------------------------------- Circe font end ----------------------------------------- */
+@font-face {
+  font-family: 'ricordi';
+  src: url('/fonts/tt-ricordi-marmo-trial-variable.woff') format('woff');
   font-style: normal;
   font-display: swap;
 }
@@ -13,16 +64,16 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* scroll-behavior: smooth; */
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--font-roboto), Arial;
+  font-weight: 400;
 }
 
 body {
   width: 100%;
   margin: 0;
   padding: 0;
-  /* scroll-behavior: smooth; */
   overflow-x: hidden;
+  height: 100%;
 }
 
 a {
@@ -37,7 +88,11 @@ li {
   list-style-type: none;
 }
 
-button:focus,
+svg:focus {
+  outline: none;
+}
+
+/* button:focus, */
 input:focus {
   outline: none;
 }
@@ -59,7 +114,7 @@ h6 {
 /* custom scroll bar */
 
 ::-webkit-scrollbar {
-  width: 15px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -112,6 +167,15 @@ h6 {
   text-align: center;
 }
 
-a span {
-  color: #000;
+/* custom css for antd pagesize */
+@media only screen and (max-width: 576px) {
+  .ant-pagination {
+    position: relative;
+    padding-bottom: 40px;
+  }
+  .ant-pagination .ant-pagination-options {
+    display: block;
+    position: absolute;
+    bottom: 0;
+  }
 }

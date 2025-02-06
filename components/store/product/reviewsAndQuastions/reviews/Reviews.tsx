@@ -1,29 +1,19 @@
 import { Rating } from '@mui/material';
 import { Modal } from 'antd';
 import { Reaction } from 'common/enums/reaction.enum';
-import { getUserInfo } from 'common/helpers/jwtToken.helpers';
 import color from 'components/store/lib/ui.colors';
-import variants from 'components/store/lib/variants';
-import { motion } from 'framer-motion';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
+import { TAuthState } from 'redux/types';
 import {
   createComment,
   deleteComment,
   deleteReview,
   sortReviews,
+  updateComment,
 } from 'redux/slicers/store/productInfoSlicer';
-import { TProductInfoState } from 'redux/types';
-import styled from 'styled-components';
-import {
-  LoadMoreBtnWrapper,
-  ReviewContainer,
-  ReviewReplyContent,
-  ReviewReplyItem,
-  ReviewReplyWrapper,
-  UserImageWrapper,
-} from '../../common';
+
 import { reviewDropdownOption } from '../../constants';
 import Filters from '../Filters';
 import LikeDisLike from '../LikeOrDisLike';
@@ -32,32 +22,43 @@ import {
   handleCommentReactionClick,
   handleReviewReactionClick,
 } from './helpers';
-import UserImagesSlider from './UserImagesSlider';
-import UserImages from './UsersImagesThumbnail';
+import SingleUserImagesSlider from './SingleUserImagesSlider';
+import { Role } from 'common/enums/roles.enum';
+import { UseImagePaginat } from 'components/store/storeLayout/helpers';
+import { handleMenuState } from './helpers';
+import Pagination from '../../productInfo/images/Pagination';
+import styles from '../../styles/review.module.css';
 
 export enum ModalType {
   Review,
   Comment,
 }
 
-const Review = () => {
+const Review = ({ product }) => {
   const dispatch = useAppDispatch();
-  const { product } = useAppSelector<TProductInfoState>(
-    (state) => state.productInfo,
-  );
-  const [filterValue, setFilterValue] = useState('Сначала полезные');
-  const [reviewsOpen, setReveiwsOpen] = useState(false);
-  const [reviewDisplay, setReveiwsDisplay] = useState('none');
-  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const user = getUserInfo();
+  const [filterValue, setFilterValue] = useState('Сначала полезные');
   const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
   const [reviewId, setReviewId] = useState('');
   const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
   const [commentId, setCommentId] = useState('');
   const [isCommentSendVisibleMap, setIsCommentSendVisibleMap] = useState({});
+  const [isCommentEditeSendVisibleMap, setIsCommentEditeSendVisibleMap] =
+    useState({});
   const [commentValueMap, setCommentValueMap] = useState({});
-  // const [imagesData, setImagesData] = useState(8);
+  const [commentEditeValueMap, setCommentEditeValueMap] = useState({
+    text: '',
+  });
+  const { user } = useAppSelector<TAuthState>((state) => state.auth);
+  // ____________  user images hooks start ___________
+
+  const [isOpened, setIsOpened] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [seleteduser, setSeletedUser] = useState(0);
+  // ____________ user images hooks end ______________
+  // _________________ paginition _______________________
+  const [page, direction, setPage, paginateImage] = UseImagePaginat();
+  // ____________________________________________________
 
   const onReviewRemoveClick = (id: string) => () => {
     setIsReviewModalVisible(true);
@@ -93,16 +94,35 @@ const Review = () => {
       [reviewId]: !prev[reviewId],
     }));
   };
+  const handleEditeCommentClick =
+    (commentId: string, commentText: string) => () => {
+      setCommentEditeValueMap((prev) => ({
+        ...prev,
+        text: commentText,
+      }));
 
+      setIsCommentEditeSendVisibleMap((prev) => ({
+        ...prev,
+        [commentId]: !prev[commentId],
+      }));
+    };
   const handleCommentValueChange = (reviewId: string) => (e) => {
     setCommentValueMap((prev) => ({
       ...prev,
       [reviewId]: e.target.value,
     }));
   };
+  const handleCommentEditeValueChange = (commentId: string) => (e) => {
+    setCommentEditeValueMap((prev) => ({
+      ...prev,
+      text: e.target.value,
+    }));
+  };
 
   const handleCreateComment =
     (reviewId: string, commentValue: string, userId: string) => async () => {
+      if (commentValue == '' || commentValue == undefined) return;
+
       await dispatch(createComment({ reviewId, text: commentValue, userId }));
       setIsCommentSendVisibleMap((prev) => ({
         ...prev,
@@ -110,9 +130,46 @@ const Review = () => {
       }));
     };
 
+  const handleUpdateComment =
+    (
+      commentId: string,
+      reviewId: string,
+      commentValue: string,
+      userId: string,
+    ) =>
+    async () => {
+      if (commentValue == '' || commentValue == undefined) return;
+      const payload = {
+        reviewId,
+        text: commentValue,
+        userId,
+      };
+      await dispatch(
+        updateComment({
+          commentId,
+          payload,
+        }),
+      );
+
+      setIsCommentEditeSendVisibleMap((prev) => ({
+        ...prev,
+        [commentId]: false,
+      }));
+    };
+
   const handleSortChange = (option) => {
     setFilterValue(option);
     dispatch(sortReviews(option));
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      dispatch(sortReviews(reviewDropdownOption[1]));
+    }, 1000);
+  }, []);
+
+  const getImages = (review) => {
+    return review.images ? review.images?.split(', ') : [];
   };
 
   return (
@@ -122,8 +179,8 @@ const Review = () => {
         value={filterValue}
         setValue={handleSortChange}
       />
-      <ReviewContainer>
-        {!product?.reviews?.length && <div>Отзывов пока нет.</div>}
+      <ul className={styles.ReviewContainer}>
+        {!product?.reviews?.length && <li>Отзывов пока нет.</li>}
         {product?.reviews?.map((review, key) => {
           const isReviewLiked = !!review.reactions?.find(
             (reaction) =>
@@ -144,34 +201,42 @@ const Review = () => {
 
           return (
             <React.Fragment key={`review-${key}`}>
-              <ReviewReplyWrapper
-                initial="init"
-                whileInView="animate"
-                viewport={{ once: true }}
-                custom={0.2}
-                variants={variants.fadInSlideUp}
-                padding="0"
-              >
-                <ReviewReplyContent>
-                  <UserImageWrapper>
-                    <div className="user-profile-img">
-                      <img
-                        src={`https://avatars.dicebear.com/api/micah/${review.user?.id}.svg?facialHairProbability=0&mouth[]=smile&scale=70&hair[]=fonze,full,pixie`}
-                        alt="profile"
-                      />
+              <li className={styles.ReviewReplyWrapper}>
+                <div className={styles.ReviewReplyContent}>
+                  <div className={styles.UserImageWrapper}>
+                    <div className={styles.user_profile_img}>
+                      {review.user?.role === Role.Admin ? (
+                        <span>NBHOZ</span>
+                      ) : (
+                        <img
+                          src={
+                            review.user?.image
+                              ? `/api/images/${review.user.image}`
+                              : `https://api.dicebear.com/7.x/micah/svg?radius=50&backgroundColor=ECEEE7&seed=${review.user?.firstName}`
+                          }
+                          onError={({ currentTarget }) => {
+                            currentTarget.onerror = null;
+                            currentTarget.src = `https://api.dicebear.com/7.x/micah/svg?radius=50&backgroundColor=ECEEE7&seed=${review.user?.firstName}`;
+                          }}
+                          alt={review.user?.firstName}
+                        />
+                      )}
                     </div>
-                    <div className="side-line"></div>
-                  </UserImageWrapper>
-                  <ReviewReplyItem>
-                    <div className="review-header">
+                    <div className={styles.side_line}></div>
+                  </div>
+                  <div className={styles.ReviewReplyItem}>
+                    <div className={styles.review_header}>
                       <h3>{review?.user?.firstName}</h3>
-                      <span className="date-stars">
-                        <span className="post-date">
+                      <span className={styles.date_stars}>
+                        <span className={styles.post_date}>
                           {moment(review.createdAt).format('DD.MM.YYYY')}
-                          {review.user?.id == user?.id && (
+                          {review.user?.id == user?.id &&
+                          review.comments?.length == 0 ? (
                             <button onClick={onReviewRemoveClick(review.id!)}>
                               Удалить
                             </button>
+                          ) : (
+                            ''
                           )}
                         </span>
                         <span>
@@ -183,36 +248,114 @@ const Review = () => {
                         </span>
                       </span>
                     </div>
-                    {/* <span className="product-details">{`Цвет товара: черный, Российский размер 
-                    (обуви): 40,Размер 
-                    производителя: US 8,5, Название 
-                     цвета: cblack / pugry6 / quaglw`}</span> */}
-                    <div className="user-post-text">
+                    <div className={styles.user_post_text}>
                       <h3>Отзыв</h3>
                       <span>{review.text}</span>
                     </div>
-                    <UserImagesWrapper>
-                      {!!review.images?.length && (
-                        <UserImages
-                          setOpen={setReveiwsOpen}
-                          setDisplay={setReveiwsDisplay}
-                          thumbnails={thumbnails}
-                          title={'Вложения'}
+                    {/* fullscreen mode  start */}
+                    {thumbnails?.length! > 0 ? (
+                      <div className={styles.ThumbnailsWrapper}>
+                        <h3 className={styles.title_users_images}>
+                          Фото покупатель
+                        </h3>
+                        <div className={styles.client_images_wrapper}>
+                          {thumbnails.map((image, index) => {
+                            return (
+                              <img
+                                key={index}
+                                src={`/api/images/${image}`}
+                                onError={({ currentTarget }) => {
+                                  currentTarget.onerror = null;
+                                  currentTarget.src = '/img_not_found.png';
+                                }}
+                                className={styles.image_container}
+                              />
+                            );
+                          })}
+                        </div>
+                        {/* ___________ open full screen _______________ */}
+                        <button
+                          onClick={handleMenuState(
+                            setIsOpened,
+                            setSelectedIndex,
+                            setSeletedUser,
+                            key,
+                          )}
+                          className={styles.show_all_action_btn}
+                        >
+                          Смотреть все
+                        </button>
+                      </div>
+                    ) : (
+                      ''
+                    )}
+
+                    <div
+                      style={{
+                        display:
+                          isOpened && seleteduser == key ? 'flex' : 'none',
+                      }}
+                      className={styles.ProductImagesFullScreenWrapper}
+                    >
+                      <div className={styles.pagination_and_slider_wrapper}>
+                        <span
+                          onClick={handleMenuState(
+                            setIsOpened,
+                            setSelectedIndex,
+                            setSeletedUser,
+                            key,
+                          )}
+                          className={styles.close_btn_wrapper}
+                        >
+                          <svg
+                            width="15"
+                            height="15"
+                            viewBox="0 0 21 22"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <line
+                              x1="1"
+                              y1="-1"
+                              x2="26.3541"
+                              y2="-1"
+                              transform="matrix(0.683484 -0.729965 0.681649 0.731679 1.52267 21.0312)"
+                              stroke="black"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                            />
+                            <line
+                              x1="1"
+                              y1="-1"
+                              x2="26.3044"
+                              y2="-1"
+                              transform="matrix(0.680786 0.732483 -0.684345 0.729158 0.21875 1.03125)"
+                              stroke="black"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                            />
+                          </svg>
+                        </span>
+                        <SingleUserImagesSlider
+                          images={getImages(review)}
+                          selectedIndex={selectedIndex}
+                          setSelectedIndex={setSelectedIndex}
+                          isOpened={isOpened}
+                          direction={direction}
+                          page={page}
+                          paginateImage={paginateImage}
                         />
-                      )}
-                      <UserImagesSlider
-                        setSelectedIndex={setSelectedIndex}
-                        selectedIndex={selectedIndex}
-                        isOpen={reviewsOpen}
-                        setOpen={setReveiwsOpen}
-                        display={reviewDisplay}
-                        setDisplay={setReveiwsDisplay}
-                        images={thumbnails}
-                        review={review}
-                        // imagesData={imagesData}
-                        // setImagesData={setImagesData}
-                      />
-                    </UserImagesWrapper>
+                        <Pagination
+                          images={getImages(review)}
+                          selectedIndex={selectedIndex}
+                          setSelectedIndex={setSelectedIndex}
+                          paginateImage={paginateImage}
+                          alt={product?.name}
+                          isOpened={isOpened}
+                        />
+                      </div>
+                    </div>
+                    {/* fullscreen mode  end */}
                     <LikeDisLike
                       likeNum={likeNum}
                       dislikeNum={dislikeNum}
@@ -232,10 +375,12 @@ const Review = () => {
                         user,
                       )}
                     />
-                  </ReviewReplyItem>
-                </ReviewReplyContent>
-              </ReviewReplyWrapper>
-              {review.comments?.map((comment) => {
+                  </div>
+                </div>
+              </li>
+              {/* _____________  Comments Start _____________ */}
+
+              {review.comments?.map((comment, index) => {
                 const isCommentLiked = !!comment.reactions?.find(
                   (reaction) =>
                     reaction.userId == user?.id &&
@@ -256,165 +401,192 @@ const Review = () => {
                 );
 
                 return (
-                  <ReviewReplyWrapper
-                    initial="init"
-                    whileInView="animate"
-                    viewport={{ once: true }}
-                    custom={0.3}
-                    variants={variants.fadInSlideUp}
-                    padding="50px"
-                  >
-                    <ReviewReplyContent>
-                      <UserImageWrapper>
-                        <div className="user-profile-img">
-                          <img
-                            src={`https://avatars.dicebear.com/api/micah/${comment.user?.id}.svg?facialHairProbability=0&mouth[]=smile&scale=70&hair[]=fonze,full,pixie`}
-                            alt="profile"
+                  <div className={styles.ReplyWrapper}>
+                    {/* ______ edite mode start  _______ */}
+                    {isCommentEditeSendVisibleMap[comment?.id!] ? (
+                      <div className={styles.UserCommentWrapper}>
+                        <textarea
+                          className={styles.UserCommentField}
+                          placeholder="Напишите комментарий"
+                          value={commentEditeValueMap.text}
+                          onChange={handleCommentEditeValueChange(comment?.id!)}
+                        />
+                        <div className={styles.comment_action_btns_wrapper}>
+                          <button
+                            className={styles.SendUserCommentBtn}
+                            onClick={handleUpdateComment(
+                              comment?.id!,
+                              review?.id!,
+                              commentEditeValueMap.text,
+                              user?.id!,
+                            )}
+                          >
+                            Отправить
+                          </button>
+                          <button
+                            className={styles.SendUserCommentBtn}
+                            onClick={handleEditeCommentClick(
+                              comment?.id!,
+                              comment.text!,
+                            )}
+                          >
+                            Отмена
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // edite mode end
+                      <div className={styles.ReviewReplyContent}>
+                        <div className={styles.UserImageWrapper}>
+                          <div className={styles.user_profile_img}>
+                            {comment.user?.role === Role.Admin ? (
+                              <span>NBHOZ</span>
+                            ) : (
+                              <img
+                                src={
+                                  comment.user?.image
+                                    ? `/api/images/${comment.user.image}`
+                                    : `https://api.dicebear.com/7.x/micah/svg?radius=50&backgroundColor=ECEEE7&seed=${comment.user?.firstName}`
+                                }
+                                onError={({ currentTarget }) => {
+                                  currentTarget.onerror = null;
+                                  currentTarget.src = `https://api.dicebear.com/7.x/micah/svg?radius=50&backgroundColor=ECEEE7&seed=${comment.user?.firstName}`;
+                                }}
+                                alt={comment.user?.firstName}
+                              />
+                            )}
+                          </div>
+                          <div className={styles.side_line}></div>
+                        </div>
+                        <div className={styles.ReviewReplyItem}>
+                          <div className={styles.review_header}>
+                            <div className={styles.replied_to_wrapper}>
+                              <h3>{comment.user?.firstName}</h3>
+                              <span>{`в ответ ${review.user?.firstName}`}</span>
+                            </div>
+                            <span className={styles.date_stars}>
+                              <span className={styles.post_date}>
+                                {moment(comment.createdAt).format('DD.MM.YYYY')}
+                                {user?.role === Role.Admin ||
+                                (comment.user?.id == user?.id && user) ? (
+                                  <button
+                                    onClick={onCommentRemoveClick(comment.id!)}
+                                  >
+                                    Удалить
+                                  </button>
+                                ) : (
+                                  ''
+                                )}
+                                {user?.role === Role.Admin &&
+                                comment.user?.id == user?.id ? (
+                                  <button
+                                    onClick={handleEditeCommentClick(
+                                      comment?.id!,
+                                      comment.text!,
+                                    )}
+                                  >
+                                    Редактировать
+                                  </button>
+                                ) : (
+                                  ''
+                                )}
+                              </span>
+                            </span>
+                          </div>
+                          <div className={styles.user_post_text}>
+                            <span>{comment.text}</span>
+                          </div>
+                          <LikeDisLike
+                            likeNum={likeNum}
+                            dislikeNum={dislikeNum}
+                            isLiked={isCommentLiked}
+                            isDisliked={isCommentDisliked}
+                            bgColor={color.textPrimary}
+                            onLikeClick={handleCommentReactionClick(
+                              review,
+                              comment,
+                              dispatch,
+                              Reaction.Like,
+                              user,
+                            )}
+                            onDislikeClick={handleCommentReactionClick(
+                              review,
+                              comment,
+                              dispatch,
+                              Reaction.Dislike,
+                              user,
+                            )}
                           />
                         </div>
-                        <div className="side-line"></div>
-                      </UserImageWrapper>
-                      <ReviewReplyItem>
-                        <div className="review-header">
-                          <div className="replied-to-wrapper">
-                            <h3>{comment.user?.firstName}</h3>
-                            <span>{`в ответ ${review.user?.firstName}`}</span>
-                          </div>
-                          <span className="date-stars">
-                            <span className="post-date">
-                              {moment(comment.createdAt).format('DD.MM.YYYY')}
-                              {comment.user?.id == user?.id && (
-                                <button
-                                  onClick={onCommentRemoveClick(comment.id!)}
-                                >
-                                  Удалить
-                                </button>
-                              )}
-                            </span>
-                          </span>
-                        </div>
-                        <div className="user-post-text">
-                          <span>{comment.text}</span>
-                        </div>
-                        <LikeDisLike
-                          likeNum={likeNum}
-                          dislikeNum={dislikeNum}
-                          isLiked={isCommentLiked}
-                          isDisliked={isCommentDisliked}
-                          bgColor={color.textPrimary}
-                          onLikeClick={handleCommentReactionClick(
-                            review,
-                            comment,
-                            dispatch,
-                            Reaction.Like,
-                            user,
-                          )}
-                          onDislikeClick={handleCommentReactionClick(
-                            review,
-                            comment,
-                            dispatch,
-                            Reaction.Dislike,
-                            user,
-                          )}
-                        />
-                      </ReviewReplyItem>
-                    </ReviewReplyContent>
-                  </ReviewReplyWrapper>
+                      </div>
+                    )}
+                  </div>
                 );
               })}
-              {!isCommentSendVisibleMap[review?.id!] && (
-                <LoadMoreBtnWrapper>
-                  <motion.button
-                    whileHover="hover"
-                    whileTap="tap"
-                    variants={variants.boxShadow}
-                    onClick={handleLeaveCommentClick(review?.id!)}
-                  >
-                    Оставить комментарий
-                  </motion.button>
-                </LoadMoreBtnWrapper>
+              {/* ____________ Comments end _______________ */}
+              {user ? (
+                (!isCommentSendVisibleMap[review?.id!] &&
+                  user.id === review.user?.id &&
+                  review.comments?.length !== 0) ||
+                user.role === Role.Admin ? (
+                  <div className={styles.LoadMoreBtnWrapper}>
+                    <button onClick={handleLeaveCommentClick(review?.id!)}>
+                      Оставить комментарий
+                    </button>
+                  </div>
+                ) : (
+                  ''
+                )
+              ) : (
+                ''
               )}
-              {isCommentSendVisibleMap[review?.id!] && (
-                <UserCommentWrapper>
-                  <UserCommentField
+              {/* ________ New comment start __________ */}
+              {user && isCommentSendVisibleMap[review?.id!] && (
+                <div className={styles.UserCommentWrapper}>
+                  <textarea
+                    className={styles.UserCommentField}
                     placeholder="Напишите комментарий"
                     onChange={handleCommentValueChange(review?.id!)}
                   />
-                  <SendUserCommentBtn
-                    onClick={handleCreateComment(
-                      review?.id!,
-                      commentValueMap[review?.id!],
-                      user?.id!,
-                    )}
-                  >
-                    Отправить
-                  </SendUserCommentBtn>
-                </UserCommentWrapper>
+                  <div className={styles.comment_action_btns_wrapper}>
+                    <button
+                      className={styles.SendUserCommentBtn}
+                      onClick={handleCreateComment(
+                        review?.id!,
+                        commentValueMap[review?.id!],
+                        user?.id!,
+                      )}
+                    >
+                      Отправить
+                    </button>
+                    <button
+                      className={styles.SendUserCommentBtn}
+                      onClick={handleLeaveCommentClick(review?.id!)}
+                    >
+                      Отмена
+                    </button>
+                  </div>
+                </div>
               )}
+              {/* ________ New comment end __________ */}
             </React.Fragment>
           );
         })}
-      </ReviewContainer>
+      </ul>
       <Modal
         title={'Вы действительно хотите удалить этот отзыв?'}
-        visible={isReviewModalVisible}
+        open={isReviewModalVisible}
         onOk={handleReviewRemove(reviewId)}
         onCancel={handleReviewCancel}
-      ></Modal>
+      />
       <Modal
         title={'Вы действительно хотите удалить этот комментарий?'}
-        visible={isCommentModalVisible}
+        open={isCommentModalVisible}
         onOk={handleCommentRemove(commentId)}
         onCancel={handleCommentCancel}
-      ></Modal>
+      />
     </>
   );
 };
-
-const UserImagesWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  position: relative;
-`;
-
-const UserCommentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`;
-
-const UserCommentField = styled.textarea`
-  width: 100%;
-  max-width: 660px;
-  min-height: 100px;
-  max-height: 400px;
-  display: block;
-  background: #ccc;
-  border: none;
-  border-radius: 12px;
-  font-size: 18px;
-  padding: 20px;
-  outline: none;
-  user-select: none;
-`;
-
-const SendUserCommentBtn = styled.button`
-  width: 150px;
-  height: 45px;
-  border-radius: 15px;
-  background-color: ${color.btnPrimary};
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-family: 'intro';
-  color: ${color.textPrimary};
-  margin-top: 20px;
-`;
 
 export default Review;

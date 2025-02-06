@@ -19,30 +19,29 @@ axiosInstance.interceptors.request.use(async function (config) {
       return config;
     }
 
-    let response: any;
+    // let response: any;
 
-    try {
-      // check for access token session if ended prolong it
-      await axios.post('/api/auth/session', {
-        token: accessToken,
-      });
-    } catch (error: any) {
-      if (error.response.status === 403) {
-        try {
-          // check for refresh token session
-          response = await axios.post(`/api/auth/token`, {
-            token: refreshToken,
-          });
-          localStorage.setItem('accessToken', response.data.accessToken);
-          accessToken = response.data.accessToken;
-        } catch (error: any) {
-          console.log(error);
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
-          return config;
-        }
-      }
-    }
+    // try {
+    //   // check for access token session if ended prolong it
+    //   await axios.post('/api/auth/session', {
+    //     token: accessToken,
+    //   });
+    // } catch (error: any) {
+    //   if (error.response.status === 403) {
+    //     try {
+    //       // check for refresh token session
+    //       response = await axios.post(`/api/auth/token`, {
+    //         token: refreshToken,
+    //       });
+    //       localStorage.setItem('accessToken', response.data.accessToken);
+    //       accessToken = response.data.accessToken;
+    //     } catch (error: any) {
+    //       localStorage.removeItem('accessToken');
+    //       localStorage.removeItem('refreshToken');
+    //       return config;
+    //     }
+    //   }
+    // }
 
     config.headers!.Authorization = accessToken ? `Bearer ${accessToken}` : '';
   }

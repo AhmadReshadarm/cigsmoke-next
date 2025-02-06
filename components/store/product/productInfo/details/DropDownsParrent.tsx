@@ -1,105 +1,63 @@
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
 import { useState } from 'react';
-import color from 'components/store/lib/ui.colors';
-import variants from 'components/store/lib/variants';
-import Arrow from '../../../../../assets/arrow.svg';
+import styles from '../../styles/dropDowns.module.css';
 
 type Props = {
   title: string;
+  borderBottom?: string;
   children: JSX.Element | JSX.Element[] | string | string[];
 };
 
-const InfoDropdown = ({ title, children }: Props) => {
-  const [openInfo, setOpenInfo] = useState(false);
-  const [displayInfo, setDisplayInfo] = useState('none');
+const InfoDropdown = ({ title, children, borderBottom }: Props) => {
+  const [openInfo, setOpenInfo] = useState(true);
+  const [displayInfo, setDisplayInfo] = useState('flex');
+  const [rotation, setRotation] = useState(-90);
 
   return (
-    <InfoWrappers>
-      <InfoBtnWrappers
+    <div style={{ border: borderBottom }} className={styles.InfoWrappers}>
+      <div
         onClick={() => {
           setOpenInfo(!openInfo);
+          setRotation(rotation == 90 ? -90 : 90);
           setTimeout(() => {
             setDisplayInfo(displayInfo == 'none' ? 'flex' : 'none');
           }, 200);
         }}
+        title={title}
+        className={styles.InfoBtnWrappers}
       >
         <h2>{title}</h2>
-        <motion.span
-          animate={openInfo ? 'open' : 'close'}
-          variants={variants.rotate}
-        >
-          <Arrow />
-        </motion.span>
-      </InfoBtnWrappers>
-      <InfoContentWrappers
+        <span style={{ transform: `rotate(${rotation}deg)` }}>
+          <svg
+            width="9"
+            height="14"
+            viewBox="0 0 9 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.3125 1.875L7.25 6.9375L2.3125 11.875"
+              stroke="black"
+              stroke-width="3.1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+      </div>
+      <div
         style={{ display: displayInfo }}
-        animate={{
-          padding: openInfo ? '15px' : 0,
-        }}
-        transition={{ duration: 0.3, padding: { delay: 0.1 } }}
+        className={styles.InfoContentWrappers}
       >
-        <motion.div
+        <div
           id="info-content"
           style={{ display: displayInfo }}
-          animate={{
-            opacity: openInfo ? 1 : 0,
-          }}
+          className={styles.info_content}
         >
           {children}
-        </motion.div>
-      </InfoContentWrappers>
-    </InfoWrappers>
+        </div>
+      </div>
+    </div>
   );
 };
-
-const InfoWrappers = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid ${color.textSecondary};
-`;
-
-const InfoBtnWrappers = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  cursor: pointer;
-  h2 {
-    font-size: 1rem;
-    font-family: 'intro';
-    margin: 0;
-  }
-  span {
-    transform: rotate(90deg);
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-`;
-
-const InfoContentWrappers = styled(motion.div)`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 15px;
-  overflow: hidden;
-  #info-content {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 20px;
-  }
-`;
 
 export default InfoDropdown;

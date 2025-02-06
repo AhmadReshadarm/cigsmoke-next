@@ -1,14 +1,41 @@
 import Head from 'next/head';
 import AdminLayout from 'components/admin/adminLayout/layout';
-
+import { List } from 'antd';
+import { menueItems } from 'components/admin/adminLayout/constants';
+import Link from 'next/link';
 const IndexPage = (): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Wuluxe | Admin</title>
-        <meta name="description" content="Test description" />
+        <title>Администрирование | NBHOZ</title>
       </Head>
-      Main page
+      <List
+        size="large"
+        bordered
+        dataSource={menueItems}
+        renderItem={(item: any) => (
+          <>
+            <List.Item>
+              <div>
+                <Link legacyBehavior href={item.key}>
+                  {item.label}
+                </Link>
+                <div>
+                  {item.children
+                    ? item.children.map((child) => (
+                        <List.Item>
+                          <Link legacyBehavior href={child.key}>
+                            {child.label}
+                          </Link>
+                        </List.Item>
+                      ))
+                    : ''}
+                </div>
+              </div>
+            </List.Item>
+          </>
+        )}
+      />
     </>
   );
 };

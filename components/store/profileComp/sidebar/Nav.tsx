@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import color from 'components/store/lib/ui.colors';
-
+import { devices } from 'components/store/lib/Devices';
 const Nav = (props: any) => {
   const {
     isActive,
@@ -98,6 +98,24 @@ const WrapperNav = styled.ul`
   align-items: flex-start;
   border-radius: 20px;
   overflow: hidden;
+  box-shadow: 0px 5px 10px 0px ${color.boxShadowBtn};
+  background-color: ${color.bgProduct};
+  @media ${devices.tabletL} {
+    display: none;
+  }
+  @media ${devices.tabletS} {
+    display: none;
+  }
+  @media ${devices.mobileL} {
+    display: none;
+  }
+  @media ${devices.mobileM} {
+    display: none;
+  }
+  @media ${devices.mobileS} {
+    display: none;
+  }
+
   .active {
     background-color: #0000000d;
     border-right: 2px solid ${color.hover};

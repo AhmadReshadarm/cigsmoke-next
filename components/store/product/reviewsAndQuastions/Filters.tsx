@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect } from 'react';
 import color from 'components/store/lib/ui.colors';
 import variants from 'components/store/lib/variants';
 import { outsideClickListner } from 'components/store/storeLayout/helpers';
-import Arrow from '../../../../assets/arrow_white.svg';
 import { PopupDisplay } from 'components/store/storeLayout/constants';
 
 const Filters = (props: any) => {
@@ -54,7 +53,21 @@ const Filters = (props: any) => {
           animate={isOpen ? 'open' : 'close'}
           variants={variants.rotate}
         >
-          <Arrow />
+          <svg
+            width="9"
+            height="14"
+            viewBox="0 0 9 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.3125 1.875L7.25 6.9375L2.3125 11.875"
+              stroke="white"
+              stroke-width="3.1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         </motion.span>
       </FilterDropDownBtn>
       <FilterDropDownWrapper
@@ -97,12 +110,12 @@ const FilterWrapper = styled(motion.div)`
 `;
 
 const FilterDropDownBtn = styled(motion.button)`
-  height: 40px;
+  height: 50px;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-  border-radius: 15px;
+  border-radius: 30px;
   padding: 0 15px;
   gap: 20px;
   background-color: ${color.btnPrimary};
@@ -125,8 +138,9 @@ const FilterDropDownWrapper = styled(motion.div)`
   background-color: ${color.textPrimary};
   box-shadow: 0px 2px 6px ${color.boxShadow};
   position: absolute;
-  top: 70px;
+  top: 75px;
   left: 0;
+  z-index: 2;
 `;
 
 const DropdownContentWrapper = styled.ul`

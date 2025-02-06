@@ -1,92 +1,111 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import TextField from '@mui/material/TextField';
 import color from '../../lib/ui.colors';
-import variants from '../../lib/variants';
-import isEmpty from 'validator/lib/isEmpty';
 import Link from 'next/link';
-import DiscountSVG from '../../../../assets/discount.svg';
-import ArrowRight from '../../../../assets/arrow_right.svg';
-import { Payment } from '@a2seven/yoo-checkout';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { TCartState, TStoreCheckoutState } from 'redux/types';
-import {
-  getDiscount,
-  getOldPrice,
-  getTotalPrice,
-  findTotalWheight,
-  getTotalPriceSuperUser,
-} from './helpers';
+import { getDiscount, getTotalPrice, generateInvoiceTemplet } from './helpers';
 import { formatNumber } from 'common/helpers/number.helper';
 import { NextRouter, useRouter } from 'next/router';
-import { setOrderInfo } from 'redux/slicers/store/checkoutSlicer';
 import { devices } from 'components/store/lib/Devices';
-import { axiosInstance } from 'common/axios.instance';
 import { AddressService, CheckoutService, CheckoutDTO } from 'swagger/services';
 import { createCart, fetchCart } from 'redux/slicers/store/cartSlicer';
 import { openSuccessNotification } from 'common/helpers/openSuccessNotidication.helper';
 import { openErrorNotification } from 'common/helpers';
 import { TAuthState } from 'redux/types';
 import { Role } from 'common/enums/roles.enum';
-import { Basket } from 'swagger/services';
+import DropDowns from './DropDowns';
+import { useMetrica, YandexMetricaProvider } from 'next-yandex-metrica';
 const TotalDetails = ({ comment, leaveNearDoor, setLoading }) => {
   const dispatch = useAppDispatch();
-  const [discount, setDiscount] = useState('');
   const router = useRouter();
-  const [success, setSuccess] = useState(false);
-  const [promoMessage, setPromoMessage] = useState('');
-  const [promoInput, setPormoInput] = useState('');
-  const { cart } = useAppSelector<TCartState>((state) => state.cart);
+  const { reachGoal } = useMetrica();
+  const { cart, isOneClickBuy } = useAppSelector<TCartState>(
+    (state) => state.cart,
+  );
   const { deliveryInfo } = useAppSelector<TStoreCheckoutState>(
     (state) => state.storeCheckout,
   );
   const { user } = useAppSelector<TAuthState>((state) => state.auth);
+
   const [withDelivery, setWithDelivery] = useState(true);
-  const [totalUI, setTotalUI] = useState(
-    user?.role === Role.SuperUser
-      ? getTotalPriceSuperUser(cart, withDelivery)
-      : getTotalPrice(cart, withDelivery, discount),
-  );
+  const [totalUI, setTotalUI] = useState(getTotalPrice(cart, withDelivery));
+  const handleCheckoutWithoutRegister = (router: NextRouter) => async () => {
+    setLoading(true);
+    reachGoal('cta-click-order');
+    const payload = {
+      receiverName: deliveryInfo?.receiverName,
+      receiverPhone: deliveryInfo?.receiverPhone,
+      receiverEmail: deliveryInfo?.receiverEmail,
+      address: deliveryInfo?.address,
+      roomOrOffice: deliveryInfo?.roomOrOffice,
+      door: deliveryInfo?.door,
+      floor: deliveryInfo?.floor,
+      rignBell: deliveryInfo?.rignBell,
+      zipCode: deliveryInfo?.zipCode,
+      comment,
+      cart,
+    };
+
+    const generatedHtml = generateInvoiceTemplet(payload);
+
+    if (deliveryInfo && payload && cart) {
+      try {
+        await CheckoutService.createCheckoutWithoutRegister({
+          body: {
+            to: payload.receiverEmail,
+            subject: `Заказ ${payload.receiverName}`,
+            html: `${generatedHtml}`,
+          },
+        });
+        // await dispatch(createCart());
+
+        // const basketId = localStorage.getItem('basketId') ?? '';
+
+        // dispatch(fetchCart(basketId));
+        openSuccessNotification('Ваш Заказ успешно');
+
+        router.push('/checkout/after-checkout');
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        openErrorNotification('Ваш Заказ не прошел, Попробуйте еще раз');
+      }
+    }
+  };
   const handlePayClick = (router: NextRouter) => async () => {
     setLoading(true);
+    reachGoal('cta-click-order');
+
     const payload = {
       comment,
       leaveNearDoor,
     };
 
-    // const response = await axiosInstance.post('/payments', {
-    //   value: `${Math.floor(
-    //     Number(getTotalPrice(cart, withDelivery, discount)),
-    //   )}.0`,
-    // });
-    // response.data.id &&
     if (deliveryInfo && payload && cart) {
       try {
         const responseAdress = await AddressService.createAddress({
           body: {
-            receiverName: deliveryInfo.fullName,
-            receiverPhone: deliveryInfo.phone,
+            receiverName: deliveryInfo.receiverName,
+            receiverPhone: deliveryInfo.receiverPhone,
             address: deliveryInfo.address,
             roomOrOffice: deliveryInfo.roomOrOffice,
             door: deliveryInfo.door,
             floor: deliveryInfo.floor,
             rignBell: deliveryInfo.rignBell,
-            zipCode: deliveryInfo.postCode,
+            zipCode: deliveryInfo.zipCode,
           },
         });
 
         await CheckoutService.createCheckout({
           body: {
-            // paymentId: response.data.id as string,
-            address: responseAdress.id,
-            basket: cart?.id,
-            totalAmount:
-              user?.role === Role.SuperUser
-                ? getTotalPriceSuperUser(cart, withDelivery)
-                : getTotalPrice(cart, withDelivery, discount),
+            address: responseAdress,
+            basket: cart,
+            totalAmount: getTotalPrice(cart, withDelivery),
             comment: payload.comment,
             leaveNearDoor: payload.leaveNearDoor,
+            userId: user?.id,
           } as CheckoutDTO,
         });
 
@@ -95,7 +114,6 @@ const TotalDetails = ({ comment, leaveNearDoor, setLoading }) => {
         const basketId = localStorage.getItem('basketId') ?? '';
 
         dispatch(fetchCart(basketId));
-
         openSuccessNotification('Ваш Заказ успешно');
 
         router.push('/orders');
@@ -110,169 +128,127 @@ const TotalDetails = ({ comment, leaveNearDoor, setLoading }) => {
   };
 
   useEffect(() => {
-    setTotalUI(
-      user?.role === Role.SuperUser
-        ? getTotalPriceSuperUser(cart, withDelivery)
-        : getTotalPrice(cart, withDelivery, discount),
-    );
+    setTotalUI(getTotalPrice(cart, withDelivery));
   });
+
+  const estimated_delivery_date = new Date().toISOString().split('T')[0];
+
   return (
-    <Container>
-      <h3 className="total-header">Ваша сумма</h3>
-      <Wrapper>
-        <Content>
-          <ItemColumn>
-            <a>
-              <motion.button
-                whileHover="hover"
-                whileTap="tap"
-                variants={variants.boxShadow}
-                onClick={handlePayClick(router)}
-              >
-                Завершить мой заказ
-              </motion.button>
-            </a>
-            <span>
-              Нажимая на кнопку, вы соглашаетесь с{' '}
-              <Link href="/privacy">
-                <a>Условиями обработки перс. данных</a>
-              </Link>
-              , а также с{' '}
-              <Link href="/policy">
-                <a>Условиями продажи</a>
-              </Link>
-            </span>
-          </ItemColumn>
-          <ItemRowWrapper>
-            <ItemRow>
-              <h3>Ваш заказ</h3>
-              <span className="product-wheight">
-                {cart?.orderProducts?.length} товар(ов) •{' '}
-                {findTotalWheight(cart).totalWeight.toFixed(2)}{' '}
-                {findTotalWheight(cart).in == 'gram' ? 'гр' : 'кг'}
-              </span>
-            </ItemRow>
-            {cart?.orderProducts?.map((product: any) => {
-              return (
+    <>
+      <YandexMetricaProvider
+        tagID={96632717}
+        initParameters={{
+          clickmap: true,
+          trackLinks: true,
+          accurateTrackBounce: true,
+        }}
+      >
+        <Container>
+          {/* <h3 className="total-header">Ваша сумма</h3> */}
+          <Wrapper>
+            <Content>
+              <ItemColumn>
+                <span>
+                  <button
+                    onClick={
+                      isOneClickBuy
+                        ? handleCheckoutWithoutRegister(router)
+                        : handlePayClick(router)
+                    }
+                    className="checkout-action-btn"
+                  >
+                    Завершить мой заказ
+                  </button>
+                </span>
+                <span className="user-agreement-text">
+                  Нажимая на кнопку, вы соглашаетесь с{' '}
+                  <Link href="/privacy">
+                    <span>Политика безопасности</span>
+                  </Link>
+                  , а также с{' '}
+                  <Link href="/user-agreement">
+                    <span>Пользовательское соглашение</span>
+                  </Link>
+                </span>
+              </ItemColumn>
+              <ItemRowWrapper>
                 <ItemRow>
-                  <span>{product.product?.name?.slice(0, 20)}..</span>
-                  <b>
-                    <span>{product!.qty} шт</span> *{'  '}
-                    <span>
-                      {user?.role === Role.SuperUser
-                        ? product.productVariant?.wholeSalePrice
-                        : product.productVariant?.price}{' '}
-                      ₽
-                    </span>
-                    {'  '}
-                    <span>=</span>
-                    {'  '}
-                    <span style={{ whiteSpace: 'nowrap' }}>
-                      {user?.role === Role.SuperUser
-                        ? product.productVariant?.wholeSalePrice * product.qty
-                        : product.productVariant?.price * product.qty}{' '}
-                      ₽
-                    </span>
-                  </b>
-                </ItemRow>
-              );
-            })}
-            {user?.role === Role.SuperUser ? (
-              ''
-            ) : (
-              <ItemRow>
-                <span>Скидка</span>
-                <b>
-                  <span style={{ color: color.ok }}>
-                    {`${formatNumber(getDiscount(cart))}`} ₽
+                  <h3>Ваш заказ</h3>
+                  <span className="product-wheight">
+                    {cart?.orderProducts?.length} товар(ов) •
                   </span>
-                </b>
-              </ItemRow>
-            )}
-            <ItemRow>
-              <label className="self-pick-up" htmlFor="self-pick-up">
-                <input
-                  type="checkbox"
-                  onClick={(e: any) =>
-                    setWithDelivery(e.target.checked ? false : true)
-                  }
-                  id="self-pick-up"
-                  title="Самовывоз?"
-                />
-                <span>Самовывоз?</span>
-              </label>
-            </ItemRow>
-            {withDelivery ? (
+                </ItemRow>
+                {cart?.orderProducts?.map((product: any, index) => {
+                  return (
+                    <ItemRow key={index}>
+                      <span title={product.product.name}>
+                        {product.product?.name?.slice(0, 20)}..
+                      </span>
+                      <p className="product-price-mobile-wrapper">
+                        <span>{product!.qty} шт</span> *{'  '}
+                        <span>
+                          {user?.role === Role.SuperUser
+                            ? product.productVariant?.wholeSalePrice
+                            : product.productVariant?.price}{' '}
+                          ₽
+                        </span>
+                        {'  '}
+                        <span>=</span>
+                        {'  '}
+                        <span style={{ whiteSpace: 'nowrap' }}>
+                          {user?.role === Role.SuperUser
+                            ? product.productVariant?.wholeSalePrice *
+                              product.qty
+                            : product.productVariant?.price * product.qty}{' '}
+                          ₽
+                        </span>
+                      </p>
+                    </ItemRow>
+                  );
+                })}
+                {/* {user?.role === Role.SuperUser ? (
+                  ''
+                ) : (
+                  <ItemRow>
+                    <span>Скидка</span>
+                    <b>
+                      <span style={{ color: color.ok }}>
+                        {`${formatNumber(getDiscount(cart))}`} ₽
+                      </span>
+                    </b>
+                  </ItemRow>
+                )} */}
+              </ItemRowWrapper>
               <ItemRow>
-                <span>Стоимость доставки</span>
-                <b>
-                  <span>{user?.role === Role.SuperUser ? '500' : '150'} ₽</span>
-                </b>
+                <h3 className="total">Итого</h3>
+                <h3 className="total">{formatNumber(totalUI)} ₽</h3>
               </ItemRow>
-            ) : (
-              ''
-            )}
-          </ItemRowWrapper>
-          <ItemRow>
-            <h3 className="total">Итого</h3>
-            <h3 className="total">{formatNumber(totalUI)} ₽</h3>
-          </ItemRow>
-        </Content>
-      </Wrapper>
-      {user?.role === Role.SuperUser ? (
-        ''
-      ) : (
-        <Wrapper>
-          <ItemRow>
-            <span className="disount-svg">
-              <DiscountSVG />
-            </span>
-            <TextField
-              fullWidth
-              label="Промокод"
-              multiline
-              rows={1}
-              value={promoInput}
-              defaultValue=""
-              onChange={(e) => setPormoInput(e.target.value.toLowerCase())}
-            />
-            <motion.button
-              whileHover="hover"
-              whileTap="tap"
-              variants={variants.boxShadow}
-              disabled={isEmpty(promoInput) ? true : false}
-              style={{
-                backgroundColor: isEmpty(promoInput)
-                  ? color.textSecondary
-                  : color.btnPrimary,
-              }}
-              onClick={() => {
-                setDiscount(promoInput);
-                setSuccess(promoInput === 'wuluxeosen2022' ? true : false);
-                setPromoMessage(
-                  promoInput === 'wuluxeosen2022' ? 'Успешно' : 'Не успешно',
-                );
-                setTimeout(() => {
-                  setSuccess(false);
-                  setPromoMessage('');
-                }, 1000);
-              }}
-              className="promo-btn"
-            >
-              <ArrowRight />
-            </motion.button>
-          </ItemRow>
-          <span
-            className="promo-message"
-            style={{
-              color: success ? color.ok : color.hover,
-            }}
-          >
-            {promoMessage}
-          </span>
-        </Wrapper>
-      )}
-    </Container>
+            </Content>
+
+            <DropDowns />
+          </Wrapper>
+        </Container>
+        <script
+          src="https://apis.google.com/js/platform.js?onload=renderOptIn"
+          async
+          defer
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `  window.renderOptIn = function()
+        {window.gapi.load('surveyoptin', function () {
+          window.gapi.surveyoptin.render({
+            merchant_id: 5338706929,
+            order_id: ${cart?.id},
+            email: ${isOneClickBuy ? deliveryInfo?.receiverEmail : user?.email},
+            delivery_country: 'RU',
+            estimated_delivery_date: ${estimated_delivery_date},
+          });
+        })}`,
+          }}
+        />
+      </YandexMetricaProvider>
+    </>
   );
 };
 
@@ -286,12 +262,28 @@ const Container = styled.div`
   position: sticky;
   top: 0;
   .total-header {
-    font-family: 'intro';
+    font-size: 1.5rem;
     color: ${color.textSecondary};
   }
-
+  @media ${devices.tabletL} {
+    width: 100%;
+    position: unset;
+  }
+  @media ${devices.tabletS} {
+    width: 100%;
+    position: unset;
+  }
   @media ${devices.mobileL} {
     width: 100%;
+    position: unset;
+  }
+  @media ${devices.mobileM} {
+    width: 100%;
+    position: unset;
+  }
+  @media ${devices.mobileS} {
+    width: 100%;
+    position: unset;
   }
 `;
 
@@ -305,11 +297,7 @@ const Wrapper = styled.div`
   border-radius: 20px;
   background-color: ${color.textPrimary};
   box-shadow: 0px 2px 6px ${color.boxShadow};
-  .promo-message {
-    width: 100%;
-    text-align: center;
-    padding: 10px 0;
-  }
+  gap: 20px;
 `;
 
 const Content = styled.div`
@@ -330,27 +318,40 @@ const ItemColumn = styled(motion.div)`
   gap: 10px;
   padding: 10px 0;
   border-bottom: 1px solid rgb(124 124 124 / 19%);
-  a {
+  span {
     width: 100%;
-    button {
+    .checkout-action-btn {
       width: 100%;
       height: 50px;
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      border-radius: 15px;
-      background-color: ${color.ok};
+      border-radius: 30px;
+      background-color: ${color.textSecondary};
+      cursor: pointer;
+      transition: 150ms;
       color: ${color.textPrimary};
-      font-family: 'intro';
+      font-size: 1.2rem;
+      &:active {
+        background-color: ${color.textPrimary};
+        color: ${color.textSecondary};
+        border: 1px solid ${color.textSecondary};
+      }
+      &:hover {
+        scale: 1.01;
+        background-color: ${color.textPrimary};
+        color: ${color.textSecondary};
+        border: 1px solid ${color.textSecondary};
+        box-shadow: 0px 4px 10px 5px rgb(0 0 0 / 12%);
+      }
+      span {
+        font-size: 1rem;
+      }
     }
   }
-  span {
-    color: ${color.textSecondary};
+  .user-agreement-text {
+    width: 100%;
     a {
-      color: ${color.yellow};
+      color: ${color.hoverBtnBg};
       &:hover {
-        color: ${color.hover};
+        color: ${color.ok};
       }
     }
   }
@@ -389,31 +390,51 @@ const ItemRow = styled(motion.div)`
   }
   h3 {
     font-size: 1rem;
-    font-weight: 800;
+    font-weight: 500;
   }
   .product-wheight {
     color: ${color.textTertiary};
   }
   .total {
-    font-family: 'intro';
-    font-size: 1.1rem;
+    font-size: 1.6rem;
+    font-weight: 600;
   }
-  .disount-svg {
-    display: flex;
-    flex-direction: row;
-    justify-contetn: center;
-    align-items: center;
+  @media ${devices.laptopS} {
+    .product-price-mobile-wrapper {
+      width: 100%;
+      text-align: end;
+    }
+  }
+  @media ${devices.tabletL} {
+    .product-price-mobile-wrapper {
+      width: 100%;
+      text-align: end;
+    }
+  }
+  @media ${devices.tabletS} {
+    .product-price-mobile-wrapper {
+      width: 100%;
+      text-align: end;
+    }
   }
 
-  .promo-btn {
-    width: 50px;
-    min-width: 50px;
-    height: 55px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+  @media ${devices.mobileL} {
+    .product-price-mobile-wrapper {
+      width: 100%;
+      text-align: end;
+    }
+  }
+  @media ${devices.mobileM} {
+    .product-price-mobile-wrapper {
+      width: 100%;
+      text-align: end;
+    }
+  }
+  @media ${devices.mobileS} {
+    .product-price-mobile-wrapper {
+      width: 100%;
+      text-align: end;
+    }
   }
 `;
 

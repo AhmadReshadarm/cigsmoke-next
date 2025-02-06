@@ -1,384 +1,317 @@
-import styled from 'styled-components';
 import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import variants from '../lib/variants';
-import color from '../lib/ui.colors';
-import { Container, Wrapper, Content } from './common';
-import { devices } from '../lib/Devices';
-import VKSVG from '../../../assets/vkcolored.svg';
-import TelegraSVG from '../../../assets/telegramcolored.svg';
-import WhatsappSVG from '../../../assets/whatsappcolored.svg';
-import CloseSVg from '../../../assets/close_black.svg';
 import { handleCookiesClick, acceptedCookies } from './helpers';
 import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from 'redux/hooks';
+import { TGlobalState } from 'redux/types';
+import {
+  LocationPointerSVG,
+  MailSVG,
+  PhoneSVG,
+  WatchSVG,
+} from './utils/headerIcons/SVGIconsFooter';
+import { content } from './constants';
+import { useInViewport } from './useInViewport';
+import Image from 'next/image';
+import { fetchCategories, fetchTags } from 'redux/slicers/store/globalSlicer';
+import styles from './styles/footer.module.css';
 const Footer = (): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const { categories } = useAppSelector<TGlobalState>((state) => state.global);
   const copyRighYear = new Date().getFullYear();
   const [isOpen, setOpen] = useState(true);
-
+  const [showCookiesNotifi, setShowCookiesNotifi] = useState(false);
+  const { isInViewport, ref } = useInViewport();
   useEffect(() => {
     acceptedCookies(setOpen);
   }, []);
 
+  const [isClient, setClient] = useState(false);
+  useEffect(() => {
+    setClient(true);
+    setTimeout(() => {
+      setShowCookiesNotifi(true);
+    }, 15000);
+  }, []);
+
+  useEffect(() => {
+    if (isInViewport) {
+      dispatch(fetchCategories());
+      dispatch(fetchTags());
+    }
+  }, [isInViewport]);
+
   return (
     <>
-      <Container
-        variants={variants.fadInOut}
-        key="header"
-        initial="start"
-        animate="middle"
-        exit="end"
-        flex_direction="row"
-        justify_content="space-evenly"
-        padding="85px 0"
-        bg_color="#f5f1f1"
-      >
-        <Wrapper>
-          <Content
-            flex_direction="column"
-            justify_content="center"
-            align_items="space-between"
-            gap="25px"
-          >
-            <Grid>
-              <Sections_wrapper>
-                <Sections_header>Персональная информация</Sections_header>
-                <Sections_content>
-                  <Sections_item>
-                    <Link href="/catalog">
-                      <a>
-                        <span>Категории</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Link href="/profile">
-                      <a>
-                        <span>Личный кабинет</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Link href="/wishlist">
-                      <a>
-                        <span>Избранное</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Link href="/orders">
-                      <a>
-                        <span>Заказы</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Link href="/cart">
-                      <a>
-                        <span>Корзина</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                </Sections_content>
-              </Sections_wrapper>
-              <Sections_wrapper>
-                <Sections_header>Дополнительная информация</Sections_header>
-                <Sections_content>
-                  <Sections_item>
-                    <Link href="/privacy">
-                      <a>
+      {isClient ? (
+        <>
+          <div className={styles.Container} ref={ref}>
+            {isInViewport && (
+              <div className={styles.Wrapper}>
+                <div className={styles.FooterContentWrapper}>
+                  <div className={styles.FooterTopContentWrapper}>
+                    <div className={styles.FooterLeftContentWrapper}>
+                      <div className={styles.footer_columns_wrapper}>
+                        <span title="Каталог" className={styles.columns_header}>
+                          Каталог
+                        </span>
+                        {categories.map((category, index) => {
+                          return (
+                            <Link
+                              title={category.name}
+                              key={`${category.url}-${index}`}
+                              href={`/catalog?categories=${category.url}`}
+                              prefetch={false}
+                            >
+                              <span>{category.name}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+
+                      <div className={styles.footer_columns_wrapper}>
+                        <span className={styles.columns_header}>О нас</span>
+                        {content.aboutUs.map((service, index) => {
+                          return (
+                            <Link
+                              title={service.text}
+                              key={`${service.url}-${index}`}
+                              href={`${service.url}`}
+                              prefetch={false}
+                            >
+                              <span>{service.text}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <div className={styles.FooterRightContentWrapper}>
+                      <div className={styles.right_column_content}>
+                        <PhoneSVG />
+                        <div className={styles.call_row_wrapper}>
+                          <Link
+                            aria-label="позвонить 89254865444"
+                            href="tel:+79254865444"
+                            prefetch={false}
+                          >
+                            <span title="позвонить 8-925-486-54-44">
+                              8-925-486-54-44
+                            </span>
+                          </Link>
+                          <span className={styles.call_saperator}>|</span>
+                          <Link
+                            aria-label="позвонить 89266999952"
+                            href="tel:89266999952"
+                            prefetch={false}
+                          >
+                            <span title="позвонить 8-926-699-99-52">
+                              8-926-699-99-52
+                            </span>
+                          </Link>
+                          <span className={styles.call_saperator}>|</span>
+                          <Link
+                            aria-label="позвонить 89268999954"
+                            href="tel:89268999954"
+                          >
+                            <span title="позвонить 8-926-899-99-54">
+                              8-926-899-99-54
+                            </span>
+                          </Link>
+                        </div>
+                      </div>
+                      <div className={styles.right_column_content}>
+                        <MailSVG />
+                        <div className={styles.call_row_wrapper}>
+                          <Link
+                            aria-label="отправьте письмо по адресу info@nbhoz.ru"
+                            href="mailto:info@nbhoz.ru"
+                            prefetch={false}
+                          >
+                            <span title="отправьте письмо по адресу info@nbhoz.ru">
+                              info@wuluxe.ru
+                            </span>
+                          </Link>
+                          {/* <span className={styles.call_saperator}>|</span>
+                          <Link
+                            aria-label="отправьте письмо по адресу exelon@hoz-mardon.ru"
+                            href="mailto:exelon@hoz-mardon.ru"
+                            prefetch={false}
+                          >
+                            <span title="отправьте письмо по адресу exelon@hoz-mardon.ru">
+                              exelon@hoz-mardon.ru
+                            </span>
+                          </Link> */}
+                        </div>
+                      </div>
+                      <div className={styles.right_column_content}>
+                        <div className={styles.call_row_wrapper}>
+                          <Link
+                            href="https://vk.com/wuluxe"
+                            target="__blank"
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'flex-start',
+                              justifyContent: 'flex-start',
+                              gap: '5px',
+                            }}
+                            title="Подпишитесь на нас в ВКонтакте"
+                            prefetch={false}
+                          >
+                            <Image
+                              src="/icons/vk.png"
+                              alt="wuluxe vk"
+                              width={0}
+                              height={0}
+                              sizes="100vw"
+                              loading="lazy"
+                            />
+                            <span>/wuluxe</span>
+                          </Link>
+                          <span className={styles.call_saperator}>|</span>
+                          <Link
+                            href="https://t.me/wuluxe"
+                            target="__blank"
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'flex-start',
+                              justifyContent: 'flex-start',
+                              gap: '5px',
+                            }}
+                            title="Подпишитесь на нас в Telegram"
+                            prefetch={false}
+                          >
+                            <Image
+                              src="/icons/telegram.png"
+                              alt="wuluxe telegram"
+                              width={0}
+                              height={0}
+                              sizes="100vw"
+                              loading="lazy"
+                            />
+                            <span>/wuluxe</span>
+                          </Link>
+                        </div>
+                      </div>
+                      <div className={styles.right_column_content}>
+                        <WatchSVG />
+                        <span title="график работы понедельник-суббота с 10:00 до 21:00">
+                          Понедельник-Суббота с 10:00 до 21:00
+                        </span>
+                      </div>
+                      <div className={styles.right_column_content}>
+                        <LocationPointerSVG />
+                        <span title="адрес г. Москва, Каширское шоссе">
+                          г. Москва, Каширское шоссе
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.FooterBottomContentWrapper}>
+                    <div className={styles.bottom_left_wrapper}>
+                      <Link
+                        title="Пользовательское соглашение"
+                        href="/user-agreement"
+                        prefetch={false}
+                      >
+                        <span>Пользовательское соглашение</span>
+                      </Link>
+                      <Link
+                        title="Политика безопасности"
+                        href="/privacy"
+                        prefetch={false}
+                      >
                         <span>Политика безопасности</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Link href="/policy">
-                      <a>
-                        <span>Условия соглашения</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Link href="/info-delivery">
-                      <a>
-                        <span>Информация о доставке</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Link href="/info-refund">
-                      <a>
-                        <span>Информация о возврате</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Link href="/rekvizity-ep-d">
-                      <a>
-                        <span>Реквизиты</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                </Sections_content>
-              </Sections_wrapper>
-              <Sections_wrapper>
-                <Sections_header>Контактные данные</Sections_header>
-                <Sections_content>
-                  <Sections_item>
-                    <Image width="20" height="14" src="/icons/phone.svg" />
-                    <Link href="tel:+79855675947">
-                      <a>
-                        <span>+7 (985) 567-59-47</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Image width="20" height="14" src="/icons/mail.svg" />
-                    <Link href="mailto:info@wuluxe.ru">
-                      <a>
-                        <span>info@wuluxe.ru</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                  <Sections_item>
-                    <Image
-                      width="20"
-                      height="14"
-                      src="/icons/location-black.svg"
+                      </Link>
+                    </div>
+                    <div className={styles.bottom_right_wrapper}>
+                      <span
+                        title={`Nbhoz. All rights reserved. Все права защищены © ${copyRighYear}`}
+                      >
+                        WULUXE. All rights reserved. Все права защищены ©{' '}
+                        {copyRighYear}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          {showCookiesNotifi ? (
+            <div
+              title="Политикой использования файлов cookies."
+              style={{ display: isOpen ? 'flex' : 'none' }}
+              className={styles.CookiesNotification}
+            >
+              <div className={styles.close_cookies}>
+                <span
+                  onClick={() => {
+                    setOpen(false);
+                    localStorage.setItem('agree-cookies', '0');
+                  }}
+                  className={styles.close_btn_wrapper}
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 21 22"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <line
+                      x1="1"
+                      y1="-1"
+                      x2="26.3541"
+                      y2="-1"
+                      transform="matrix(0.683484 -0.729965 0.681649 0.731679 1.52267 21.0312)"
+                      stroke="black"
+                      stroke-width="2"
+                      stroke-linecap="round"
                     />
-                    <Link href="/address-contact-us">
-                      <a>
-                        <span>МО, г. Люберцы, Октябрьский проспект 181</span>
-                      </a>
-                    </Link>
-                  </Sections_item>
-                </Sections_content>
-              </Sections_wrapper>
-              <Sections_wrapper>
-                <Sections_header>Способы оплаты</Sections_header>
-                <Sections_content>
-                  <Sections_item>
-                    <Image width="100" height="30" src="/icons/cart-visa.png" />
-                    <Image
-                      width="54"
-                      height="33"
-                      src="/icons/cart-master.png"
+                    <line
+                      x1="1"
+                      y1="-1"
+                      x2="26.3044"
+                      y2="-1"
+                      transform="matrix(0.680786 0.732483 -0.684345 0.729158 0.21875 1.03125)"
+                      stroke="black"
+                      stroke-width="2"
+                      stroke-linecap="round"
                     />
-                    <Image width="110" height="35" src="/icons/cart-mir.png" />
-                  </Sections_item>
-                  <Sections_item>
-                    <span style={{ padding: '5px 0' }}>
-                      Вы также можете оплатить покупки наличными при получении
-                    </span>
-                  </Sections_item>
-                  <span>
-                    <b>Присоединяйтесь к нашим социальным сетям</b>
-                  </span>
-                  <SocialWrapper>
-                    <Link href="https://vk.com/wuluxe">
-                      <a target="_blank" rel="noopener noreferrer">
-                        <span>
-                          <VKSVG />
-                        </span>
-                      </a>
-                    </Link>
-                    <Link href="https://t.me/wuluxe">
-                      <a target="_blank" rel="noopener noreferrer">
-                        <span>
-                          <TelegraSVG />
-                        </span>
-                      </a>
-                    </Link>
-                    <Link href="https://wa.me/+79855675947">
-                      <a target="_blank" rel="noopener noreferrer">
-                        <span>
-                          <WhatsappSVG />
-                        </span>
-                      </a>
-                    </Link>
-                  </SocialWrapper>
-                  <Link href="/copyright-terms">
-                    <a id="copyright">
-                      © {copyRighYear} «Wuluxe». Все права защищены.
-                    </a>
+                  </svg>
+                </span>
+              </div>
+              <div className={styles.notification_cookies}>
+                <span>
+                  При нажимая «Принять все файлы cookies», вы соглашаетесь, что
+                  NBHOZ может сохранять файлы cookies на вашем устройстве и
+                  раскрывать информацию в соответствии с нашей{' '}
+                  <Link
+                    style={{ color: '#5A6445' }}
+                    href="/privacy#cookies"
+                    prefetch={false}
+                  >
+                    <span>Политикой использования файлов cookies.</span>
                   </Link>
-                </Sections_content>
-              </Sections_wrapper>
-            </Grid>
-          </Content>
-        </Wrapper>
-      </Container>
-      <CookiesNotification style={{ display: isOpen ? 'flex' : 'none' }}>
-        <div className="close-cookies">
-          <span
-            onClick={() => {
-              setOpen(false);
-              localStorage.setItem('agree-cookies', '0');
-            }}
-          >
-            <CloseSVg />
-          </span>
-        </div>
-        <div className="notification-cookies">
-          <span>
-            Нажимая «Принять все файлы cookie», вы соглашаетесь, что Wuluxe
-            может сохранять файлы cookie на вашем устройстве и раскрывать
-            информацию в соответствии с нашей{' '}
-            <Link href="/privacy#cookies">
-              <a style={{ color: color.yellow }}>
-                Политикой использования файлов cookie.
-              </a>
-            </Link>
-          </span>
-          <motion.button
-            whileHover="hover"
-            whileTap="tap"
-            variants={variants.boxShadow}
-            className="accept-cookies"
-            onClick={() => handleCookiesClick(setOpen)}
-          >
-            Принять все файлы cookie
-          </motion.button>
-        </div>
-      </CookiesNotification>
+                </span>
+              </div>
+              <button
+                className={styles.accept_cookies}
+                onClick={() => handleCookiesClick(setOpen)}
+                title="Принять все файлы cookies"
+              >
+                Принять все файлы cookies
+              </button>
+            </div>
+          ) : (
+            ''
+          )}
+        </>
+      ) : (
+        ''
+      )}
     </>
   );
 };
-
-const Grid = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  justify-content: space-between;
-  align-items: flex-start;
-
-  @media ${devices.mobileL} {
-    gap: 15px;
-    grid-template-columns: repeat(2, 1fr);
-  }
-`;
-
-const Sections_wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  place-items: space-between;
-  gap: 15px;
-`;
-
-const Sections_header = styled.h3`
-  font-size: 1.1rem;
-  display: inline-block;
-`;
-
-const Sections_content = styled.ul`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  place-items: space-between;
-  gap: 5px;
-  #copyright {
-    color: ${color.textSecondary}!important;
-    &:hover {
-      color: ${color.hover}!important;
-    }
-  }
-`;
-
-const Sections_item = styled.li`
-  font-size: 1rem;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 10px;
-  align-self: flex-start;
-  a {
-    padding: 5px 5px 5px 0;
-  }
-  a:hover {
-    color: ${color.hover};
-  }
-`;
-
-const SocialWrapper = styled.li`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 20px;
-  padding: 10px 0;
-  a {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    span {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-    }
-  }
-`;
-
-const CookiesNotification = styled.div`
-  width: 100%;
-  background-color: ${color.textPrimary};
-  position: sticky;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  z-index: 99999;
-  box-shadow: 0 -1px 3px -2px #000;
-  padding: 0 0 20px 0;
-  .close-cookies {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    span {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-      cursor: pointer;
-    }
-  }
-  .notification-cookies {
-    width: 90%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    .accept-cookies {
-      cursor: pointer;
-      padding: 15px;
-      border-radius: 10px;
-      background-color: ${color.btnPrimary};
-      color: ${color.textPrimary};
-      white-space: nowrap;
-    }
-  }
-  @media ${devices.laptopM} {
-    .notification-cookies {
-      flex-direction: column;
-    }
-  }
-  @media ${devices.laptopS} {
-    .notification-cookies {
-      flex-direction: column;
-    }
-  }
-  @media ${devices.mobileL} {
-    .notification-cookies {
-      flex-direction: column;
-    }
-  }
-`;
 
 export default Footer;

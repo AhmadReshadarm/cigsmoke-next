@@ -1,264 +1,239 @@
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import color from 'components/store/lib/ui.colors';
-import variants from 'components/store/lib/variants';
-import { styleProps } from 'components/store/lib/types';
 import InfoDropdown from './DropDownsParrent';
-import DeleveryBox from '../../../../../assets/deleveryBox.svg';
-import { devices } from 'components/store/lib/Devices';
 import { ParameterProduct } from 'swagger/services';
-
+import { useAppSelector } from 'redux/hooks';
+import { TProductInfoState } from 'redux/types';
+import Link from 'next/link';
+import InfoDropdownReturn from './DropDownsParrentReturn';
+import styles from '../../styles/dropDowns.module.css';
 type Props = {
-  description?: any;
   parameterProducts?: ParameterProduct[];
 };
 
-const DropDowns: React.FC<Props> = ({ description, parameterProducts }) => {
+const DropDowns: React.FC<Props> = ({ parameterProducts }) => {
+  const { product, loading }: TProductInfoState = useAppSelector(
+    (state) => state.productInfo,
+  );
+
   return (
-    <InfoContainer
-      key="info-product-page"
-      custom={0.3}
-      initial="init"
-      whileInView="animate"
-      exit={{ y: -20, opacity: 0, transition: { delay: 0.2 } }}
-      viewport={{ once: true }}
-      variants={variants.fadInSlideUp}
-      margintop="-35px"
-    >
+    <div className={styles.InfoContainer}>
       <InfoDropdown title="Описание">
-        <section
-          dangerouslySetInnerHTML={{
-            __html: description,
-          }}
-        />
+        <p>
+          {!loading
+            ? product?.desc?.includes('|')
+              ? product?.desc
+                  ?.split('|')[1]
+                  .split(`\n`)
+                  .map((text) => (
+                    <>
+                      {text}
+                      <br />
+                    </>
+                  ))
+              : product?.desc?.split(`\n`).map((text) => (
+                  <>
+                    {text}
+                    <br />
+                  </>
+                ))
+            : ''}
+        </p>
       </InfoDropdown>
       <InfoDropdown title="Характеристики">
-        <SpecsContainer>
-          <SpecsKeyValueWrapper>
+        <div className={styles.SpecsContainer}>
+          <ul className={styles.SpecsKeyValueWrapper}>
             {parameterProducts?.map((item, index) => {
+              if (item.value == '_' || item.value == '-' || item.value == '') {
+                return <></>;
+              }
               return (
-                <>
-                  {item.value == '_' ||
-                  item.value == '-' ||
-                  item.value == '' ? (
-                    ''
-                  ) : (
-                    <li
-                      className="wrapper-key-vlaue"
-                      key={`parameter-product-label-${index}`}
-                    >
-                      <span id="key-specs">{item.parameter?.name}: </span>
-                      <span id="value-specs">{item.value}</span>
-                    </li>
-                  )}
-                </>
+                <li
+                  className={styles.wrapper_key_vlaue}
+                  key={`parameter-product-label-${index}`}
+                >
+                  <span
+                    title={item.parameter?.name}
+                    className={styles.key_wrapper}
+                  >
+                    {item.parameter?.name}:{' '}
+                  </span>
+                  <span title={item.value}>{item.value}</span>
+                </li>
               );
             })}
-          </SpecsKeyValueWrapper>
-        </SpecsContainer>
+          </ul>
+        </div>
       </InfoDropdown>
-      <InfoDropdown title="Информация о доставке">
-        <h3>КАКОВА СТОИМОСТЬ И ВАРИАНТЫ ДОСТАВКИ?</h3>
-        <span style={{ fontSize: '1rem', fontWeight: '600' }}>
-          Мы делаем все возможное, чтобы ваш заказ был доставлен вовремя и в
-          полном объеме. Однако обратите внимание, что в периоды пикового спроса
-          (например, в выходные дни Черной пятницы, на Рождество и в День
-          святого Валентина) доставка может занять больше времени, чем
-          ожидалось.
+      <InfoDropdown title="Подробнее о доставке">
+        <h3 className={styles.dilevery_title}>
+          КАКОВА СТОИМОСТЬ И ВАРИАНТЫ ДОСТАВКИ?
+        </h3>
+
+        <span className={styles.Content}>
+          Бесплатная доставка по Москве и в любую транспортную компанию при
+          заказе от 70 000 рублей.
         </span>
-        <DeleveryInfoHeader>
-          <DeleveryBox />
-          <h3>ВАРИАНТЫ ДОСТАВКИ WULUXE:</h3>
-        </DeleveryInfoHeader>
-        <DeleveryInfoContaiener>
-          <DeleveryInfoItems borderbottom="1px solid" borderright="1px solid">
-            <span className="headers-delevery">Услуги</span>
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderbottom="1px solid" borderright="1px solid">
-            <span className="headers-delevery">Доступный</span>
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderbottom="1px solid" borderright="1px solid">
-            <span className="headers-delevery">Расходы</span>
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderbottom="1px solid">
-            <span className="headers-delevery">Бесплатно, если потратить</span>
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderbottom="1px solid" borderright="1px solid">
-            <span>Стандартная Доставка</span>
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderbottom="1px solid" borderright="1px solid">
-            <span>2-5 рабочих дней</span>
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderbottom="1px solid" borderright="1px solid">
-            <span className="prices-delever">150₽</span>
-            {/* TODO add dynamic pricing */}
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderbottom="1px solid">
-            <span className="prices-delever">5000₽</span>
-            {/* TODO add dynamic pricing */}
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderright="1px solid">
-            <span>Экспресс-доставка</span>
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderright="1px solid">
-            <span>2-3 рабочих дня</span>
-          </DeleveryInfoItems>
-          <DeleveryInfoItems borderright="1px solid">
-            <span className="prices-delever">500₽</span>
-            {/* TODO add dynamic pricing */}
-          </DeleveryInfoItems>
-          <DeleveryInfoItems>
-            <span className="prices-delever">10000₽</span>
-            {/* TODO add dynamic pricing */}
-          </DeleveryInfoItems>
-        </DeleveryInfoContaiener>
-        <span>
-          Обратите внимание, что примерная стоимость доставки зависит от вашего
-          местоположения, и курьеры могут продлить окно доставки, если ваше
-          местоположение классифицируется как «удаленное». Пожалуйста, свяжитесь
-          с нашей службой поддержки клиентов для получения дополнительной
-          информации по этому вопросу. Если вы заказываете товары на нашем
-          сайте, ваш заказ может облагаться импортными пошлинами и налогами,
-          которые применяются, когда доставка достигает пункта назначения за
-          пределами Великобритании. Обратите внимание, что мы не контролируем
-          эти сборы и не можем предсказать их сумму. Оплата любых таких
-          импортных пошлин и налогов является обязанностью покупателя.
-          Пожалуйста, свяжитесь с местной таможней для получения дополнительной
-          информации.
+        <span className={styles.Content}>
+          При меньшей сумме заказа возможен самовывоз или платная доставка.
+        </span>
+        <span className={styles.Content}>
+          Стоимость платной доставки определяется после оформления заказа. Наш
+          менеджер свяжется с вами, чтобы уточнить адрес доставки и цену.
+        </span>
+        <h3 className="dilevery_title">ГДЕ НАХОДЯТСЯ НАШИ СКЛАДЫ?</h3>
+        <span className={styles.Content}>
+          Наши склады находятся в разных районах Москвы. После оформления заказа
+          мы свяжемся с вами, чтобы уточнить адрес доставки или самовывоза с
+          ближайшего к вам склада.
+        </span>
+        <span className={styles.Content}>
+          По дополнительным вопросам обращаться по номеру телефона:{' '}
+          <Link
+            title="По дополнительным вопросам обращаться по номеру телефона 8-925-486-54-44"
+            href="tel:89254865444"
+            prefetch={false}
+          >
+            <span
+              style={{
+                whiteSpace: 'nowrap',
+              }}
+            >
+              8-925-486-54-44
+            </span>
+          </Link>
+          .
+        </span>
+        <span className={styles.Content}>
+          Дополнительная скидка рассчитывается индивидуально и зависит от
+          количества заказанного товара.
         </span>
       </InfoDropdown>
-      <InfoDropdown title="Информация о возврате">
-        <h2>Как работает возврат?</h2>
-        <span style={{ fontSize: '1rem' }}>
-          Наши продукты тестируются и проверяются по заводским стандартам, хотя
-          в некоторых случаях могут быть некоторые дефекты, и в этом случае мы
-          даем нашим клиентам возможность проверить свой товар при получении
-          товара, если клиенты увидят какие-либо дефекты на товар, они могут
-          отказаться от получения доставленного товара и вернуть его нам, и мы
-          вышлем покупателю замену этого товара. также клиент может отменить
-          свой заказ до того, как он получит свой заказ (
-          <span style={{ color: color.yellow }}>
-            кнопка отмены заказа будет доступна для пользователя на странице
-            заказов в течение 24 часов после оплаты, через 24 часов кнопка
-            исчезнет, и отменить заказ будет невозможно
-          </span>
-          )
+      <InfoDropdownReturn
+        title="Политика возврата товаров в НБХОЗ (info@nbhoz.ru, +7-925-486-54-44)"
+        borderBottom="none"
+      >
+        <span className={styles.Content}>
+          НБХОЗ стремится обеспечить своих клиентов высококачественной
+          продукцией и безупречным сервисом. Мы понимаем, что иногда может
+          возникнуть необходимость вернуть товар. Данная политика возврата
+          товаров поможет вам легко и быстро осуществить возврат.
         </span>
-        <h2>Каковы правила возврата?</h2>
-        <span style={{ fontSize: '1rem' }}>
-          1: Для клиентов, которые получили товар и проверили его состояние,
-          возврат товара невозможен.
+        <h3>Право на возврат товара надлежащего качества</h3>
+        <span className={styles.Content}>
+          В соответствии с Законом РФ "О защите прав потребителей" (статья 26.1)
+          вы имеете право вернуть товар надлежащего качества в течение 7 дней с
+          момента его получения при соблюдении следующих условий:
         </span>
-        <span style={{ fontSize: '1rem' }}>
-          2: Если клиент запрашивает возврат средств вместо замены товара после
-          получения дефектного товара, клиент несет ответственность за оплату
-          стоимости доставки и получит возмещение после оплаты стоимости
-          доставки.
+        <ul className={styles.ListsDots}>
+          <li>Сохранены потребительские свойства товара.</li>
+          <li>
+            Сохранен товарный вид, включая все заводские упаковки, ярлыки и
+            бирки.
+          </li>
+          <li>
+            Имеются документы, подтверждающие покупку товара (чек, товарная
+            накладная).
+          </li>
+        </ul>
+        <h3>
+          Возврат товара надлежащего качества осуществляется за счет покупателя.
+        </h3>
+        <h3>Товары, не подлежащие возврату надлежащего качества</h3>
+        <span className={styles.Content}>
+          Согласно Постановлению Правительства РФ от 31.12.2020 N 2463, не
+          подлежат возврату товары надлежащего качества, такие как:
         </span>
-        <span style={{ fontSize: '1rem' }}>
-          3: Изменение заказа после получения заказа невозможно
+        <ul className={styles.ListsDots}>
+          <li>
+            Товары для профилактики и лечения заболеваний в домашних условиях.
+          </li>
+          <li>Предметы личной гигиены.</li>
+          <li>Парфюмерно-косметические товары.</li>
+          <li>Текстильные товары (отрезные ткани).</li>
+          <li>
+            Швейные и трикотажные изделия (белье, чулочно-носочные изделия).
+          </li>
+          <li>
+            Изделия и материалы, контактирующие с пищевыми продуктами (посуда,
+            столовые приборы, емкости для хранения продуктов).
+          </li>
+          <li>Товары бытовой химии.</li>
+          <li>Ювелирные изделия и изделия из драгоценных металлов.</li>
+          <li>Автомобили и мототовары.</li>
+          <li>
+            Технически сложные товары бытового назначения на гарантии не менее 1
+            года.
+          </li>
+          <li>Животные и растения.</li>
+          <li>Непериодические издания (книги, брошюры).</li>
+        </ul>
+        <h3>Возврат товара ненадлежащего качества</h3>
+        <span className={styles.Content}>
+          В случае обнаружения товара ненадлежащего качества, вы, в соответствии
+          со статьей 18 ФЗ "О защите прав потребителей", вправе требовать от
+          продавца:
         </span>
-      </InfoDropdown>
-    </InfoContainer>
+        <ul className={styles.ListsDots}>
+          <li>Замены на товар аналогичной марки (модели).</li>
+          <li>
+            Замены на такой же товар другой марки (модели) с перерасчетом
+            стоимости.
+          </li>
+          <li>Уменьшения покупной цены товара, соразмерно его недостаткам.</li>
+          <li>
+            Возврата полной стоимости товара и возмещения расходов на его
+            доставку.
+          </li>
+          <li>
+            Безвозмездного устранения недостатков товара или возмещения расходов
+            на их устранение.
+          </li>
+        </ul>
+        <h3>Как оформить возврат</h3>
+        <span className={styles.Content}>
+          Для оформления возврата товара, пожалуйста,свяжитесь с нашей службой
+          поддержки клиентов по электронной почте info@nbhoz.ru или по телефону
+          <p style={{ whiteSpace: 'nowrap' }}>+7-925-486-54-44.</p>
+        </span>
+
+        <h3>В своем обращении укажите:</h3>
+        <ul className={styles.ListsDots}>
+          <li>Номер вашего заказа.</li>
+          <li>Причину возврата.</li>
+          <li>Информацию о товаре, который вы хотите вернуть.</li>
+        </ul>
+        <h3>
+          После получения вашего запроса наш менеджер свяжется с вами для
+          уточнения деталей и предоставит дальнейшие инструкции.
+        </h3>
+        <h3>Обратите внимание:</h3>
+        <ul className={styles.ListsDots}>
+          <li>
+            Возврат товара осуществляется по адресу, который будет предоставлен
+            менеджером службы поддержки клиентов.
+          </li>
+          <li>
+            Товар должен быть возвращен в полной комплектации, в оригинальной
+            упаковке, с сохранением всех этикеток и ярлыков.
+          </li>
+          <li>
+            Возврат денежных средств за товар надлежащего качества
+            осуществляется в течение 14 дней с момента получения товара на
+            складе НБХОЗ.
+          </li>
+          <li>
+            Возврат денежных средств за товар ненадлежащего качества
+            осуществляется в течение 14 дней с момента предъявления
+            соответствующего требования.
+          </li>
+        </ul>
+        <h3>
+          Мы надеемся, что данная информация поможет вам легко оформить возврат.
+          Если у вас возникнут какие-либо вопросы, пожалуйста, не стесняйтесь
+          обращаться к нашей службе поддержки клиентов.
+        </h3>
+      </InfoDropdownReturn>
+    </div>
   );
 };
-
-const InfoContainer = styled(motion.div)`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-itmes: flex-start;
-  border-radius: 15px;
-  overflow: hidden;
-  background-color: ${color.textPrimary};
-  box-shadow: 0px 2px 6px ${color.boxShadowBtn};
-  margin-top: ${(P: styleProps) => P.margintop};
-  user-select: none;
-`;
-
-const SpecsContainer = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 20px;
-`;
-
-const SpecsKeyValueWrapper = styled.ul`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 30px;
-  .wrapper-key-vlaue {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 15px;
-    span {
-      font-size: 0.875rem;
-    }
-    #key-specs {
-      width: 100%;
-      font-family: 'intro';
-      color: ${color.textSecondary};
-    }
-    #value-specs {
-      width: 50%;
-    }
-  }
-`;
-
-const DeleveryInfoHeader = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 20px;
-  h3 {
-    margin: 0;
-  }
-`;
-
-const DeleveryInfoContaiener = styled.ul`
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gird-template-rows: repeat(3, 1fr);
-  border: 1px solid ${color.btnPrimary};
-  border-radius: 15px;
-`;
-
-const DeleveryInfoItems = styled.li`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  border-right: ${(P: styleProps) => P.borderright};
-  border-bottom: ${(P: styleProps) => P.borderbottom};
-  padding: 5px;
-  span {
-    font-size: 0.6rem;
-    text-align: center;
-  }
-  .headers-delevery {
-    text-align: center;
-    font-size: 0.5rem;
-    font-family: 'intro';
-    color: ${color.hover};
-  }
-  .prices-delever {
-    font-family: 'intro';
-    font-size: 1rem;
-  }
-`;
 
 export default DropDowns;

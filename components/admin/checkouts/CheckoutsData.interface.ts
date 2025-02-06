@@ -1,10 +1,12 @@
-import { Address, Basket, OrderProduct, User } from "swagger/services";
+import { Address, Basket, OrderProduct, User } from 'swagger/services';
 
 export interface CheckoutsData {
   key: string;
   id: string;
   user?: User;
   basket?: Basket;
-  address?: Address,
-  comment?: string
+  address?: Address;
+  createdAt: Date;
+  comment?: string;
+  status: number;
 }

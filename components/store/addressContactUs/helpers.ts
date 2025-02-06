@@ -2,14 +2,14 @@ import { useState } from 'react';
 const useCopyToClipboard = () => {
   const [copiedText, setCopiedText]: [any, any] = useState(false);
 
-  const copy = async (text: any) => {
+  const copy = async () => {
     if (!navigator?.clipboard) {
       console.warn('Clipboard not supported');
       return false;
     }
 
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText('г. Москва, Каширское шоссе');
       setCopiedText(true);
       return true;
     } catch (error) {

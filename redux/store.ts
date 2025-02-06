@@ -15,18 +15,22 @@ import imagesReducer from './slicers/imagesSlicer';
 import multipleImagesSlicer from './slicers/mutipleImagesSlicer';
 import tagsReducer from './slicers/tagsSlicer';
 import sizesReducer from './slicers/sizesSlicer';
+import questionReducer from './slicers/questionSlicer';
 import reviewsReducer from './slicers/reviewsSlicer';
 import globalSlicer from './slicers/store/globalSlicer';
+import globalUISlicer from './slicers/store/globalUISlicer';
 import checkoutsReducer from './slicers/checkoutsSlicer';
 import cartSlicer from './slicers/store/cartSlicer';
 import catalogSlicer from './slicers/store/catalogSlicer';
-import analyticsReducer from './slicers/analyticsSlicer';
+// import analyticsReducer from './slicers/analyticsSlicer';
 import productInfoSlicer from './slicers/store/productInfoSlicer';
 import homePageSlicer from './slicers/store/homePageSlicer';
 import bannersReducer from './slicers/bannersSlicer';
 import storeCheckoutSlicer from './slicers/store/checkoutSlicer';
 import wishlistSlicer from './slicers/store/wishlistSlicer';
 import profileSlicer from './slicers/store/profileSlicer';
+// import newsSlicer from './slicers/newsSlicer';
+import subscriberSlicer from './slicers/subscriberSlicer';
 
 const combinedReducer = combineReducers({
   categories: categoriesReducer,
@@ -38,12 +42,16 @@ const combinedReducer = combineReducers({
   multipleImages: multipleImagesSlicer,
   tags: tagsReducer,
   sizes: sizesReducer,
+  questions: questionReducer,
   reviews: reviewsReducer,
   checkouts: checkoutsReducer,
-  analytics: analyticsReducer,
+  // analytics: analyticsReducer,
   banners: bannersReducer,
+  // newsPosts: newsSlicer,
+  subscribers: subscriberSlicer,
 
   global: globalSlicer,
+  globalUI: globalUISlicer,
   cart: cartSlicer,
   catalog: catalogSlicer,
   productInfo: productInfoSlicer,
@@ -75,7 +83,7 @@ export const makeStore = () =>
       getDefaultMiddleware({
         serializableCheck: false,
       }),
-  } as any);
+  } as never);
 
 type Store = ReturnType<typeof makeStore>;
 

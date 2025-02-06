@@ -1,186 +1,460 @@
-import Head from 'next/head';
 import Link from 'next/link';
-import styled from 'styled-components';
-import { Btns, Container, Content, Wrapper } from './common';
-import { overrideDefaultIOSZoom } from './helpers';
-import AuthComp from './utils/HeaderAuth/index';
-import HeaderCart from './utils/HeaderCart';
-import SearchBar from './utils/SearchBar/SearchBar';
-import LocationFinder from './utils/LocationFinder';
-import variants from '../lib/variants';
+import { handleMenuStateRedux, overrideDefaultIOSZoom } from './helpers';
 import color from '../lib/ui.colors';
-import LogoSVG from '../../../assets/wuluxe.svg';
-import Order from '../../../assets/order.svg';
-import WishList from '../../../assets/wishlist.svg';
-import HeaderCatalog from './utils/HeaderCatalog/index';
-import { devices } from '../lib/Devices';
-import { useEffect, useState } from 'react';
-import NavWrapMobile from './NavWrapMobile';
-import AuthBtnMobile from './utils/HeaderAuth/AuthBtnMobile';
+import {
+  MenueNormalStateSVG,
+  LogoSVG,
+  SearchSVG,
+  WishlistSVG,
+  BasketSVG,
+  ProfileSVG,
+  MenuActiveStateSVG,
+} from './utils/headerIcons/SVGIconsHeader';
+import { PopupDisplay } from './constants';
+import { useEffect, useState, useCallback } from 'react';
+import { useAppDispatch } from 'redux/hooks';
 import { useRouter } from 'next/router';
-import ReactGA from 'react-ga';
+import {
+  TWishlistState,
+  TAuthState,
+  TGlobalUIState,
+  TCartState,
+} from 'redux/types';
+import { useAppSelector } from 'redux/hooks';
+import {
+  changeCatelogState,
+  changeCatelogDisplayState,
+  changeSearchFormState,
+  changeSearchDisplayState,
+  changeAuthFormState,
+  changeAuthFormDisplayState,
+  changeBasketState,
+  changeCartDisplayState,
+  changeWishlistState,
+  changeWishlistDisplayState,
+} from 'redux/slicers/store/globalUISlicer';
+import NavMobile from './utils/mobileNav';
+import dynamic from 'next/dynamic';
+import { createCart, fetchCart } from 'redux/slicers/store/cartSlicer';
+import {
+  createWishlist,
+  fetchWishlistProducts,
+} from 'redux/slicers/store/wishlistSlicer';
+import styles from './styles/header.module.css';
+
+const HeaderCatalog = dynamic(() => import('./utils/HeaderCatalog/index'), {
+  ssr: false,
+});
+const SearchBar = dynamic(() => import('./utils/SearchBar'), {
+  ssr: false,
+});
+const HeaderWishlist = dynamic(() => import('./utils/HeaderWishlist'), {
+  ssr: false,
+});
+const HeaderCart = dynamic(() => import('./utils/HeaderCart'), {
+  ssr: false,
+});
+const AuthorizationModel = dynamic(() => import('./utils/HeaderAuth/index'), {
+  ssr: false,
+});
 
 const Header = () => {
-  const [boxShadow, setBoxShadow] = useState('');
-  ReactGA.initialize('G-LGRKY05W0C');
+  const dispatch = useAppDispatch();
   const router = useRouter();
-
-  useEffect(() => {
-    const handleRouteChange = (url, { shallow }) => {
-      // REACTGA
-      // Send pageview with a custom path
-      ReactGA.send({ hitType: 'pageview', page: url });
-
-      console.log(
-        `App is changing to ${url} ${
-          shallow ? 'with' : 'without'
-        } shallow routing`,
-      );
-    };
-
-    router.events.on('routeChangeComplete', handleRouteChange);
-
-    // If the component is unmounted, unsubscribe
-    // from the event with the `off` method:
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, []);
-  useEffect(() => {
-    ReactGA.pageview(window.location.pathname + window.location.search);
-  }, []);
-  useEffect(() => {
-    window.addEventListener('scroll', function () {
-      let scroll = this.scrollY;
-
-      if (scroll) {
-        setBoxShadow('0px 2px 6px #00000017');
-
-        return;
-      }
-      setBoxShadow('');
-    });
-  }, []);
   useEffect(() => overrideDefaultIOSZoom());
+  const { user } = useAppSelector<TAuthState>((state) => state.auth);
+  const { cart } = useAppSelector<TCartState>((state) => state.cart);
+  const { wishlist } = useAppSelector<TWishlistState>(
+    (state) => state.wishlist,
+  );
+
+  // ---------------------- UI HOOKS ------------------------
+
+  // ------------------- catelog hooks -------------------
+  const [catelogButtonRef, setCatelogButtonRef] = useState(null);
+  const catelogButtonNode = useCallback((node: any) => {
+    setCatelogButtonRef(node);
+  }, []);
+  // --------------------------------------------------------
+
+  // ------------------- search hooks ---------------------
+  const [searchButtonRef, setSearchButtonRef] = useState(null);
+  const searchButtonNode = useCallback((node) => {
+    setSearchButtonRef(node);
+  }, []);
+
+  // ------------------ wishlist hooks ------------------------
+  const [wishlistButtonRef, setWishlistButtonRef] = useState(null);
+  const wishlistButtonNode = useCallback((node) => {
+    setWishlistButtonRef(node);
+  }, []);
+  // ------------------- cart hooks ------------------------------
+  const [cartButtonRef, setCartButtonRef] = useState(null);
+  const cartButtonNode = useCallback((node) => {
+    setCartButtonRef(node);
+  }, []);
+
+  // ------------------- authorization hooks ---------------------
+  const [authButtonRef, setAuthButtonRef] = useState(null);
+  const authButtonNode = useCallback((node) => {
+    setAuthButtonRef(node);
+  }, []);
+  // ------------------ end of authorization hooks ------------------
+  const {
+    isCatalogOpen,
+    isAuthFormOpen,
+    isBasketOpen,
+    isWishlistOpen,
+    isSearchFormActive,
+    // isDropDownOpen,
+    catelogDisplay,
+    searchDisplay,
+    wishlistDisplay,
+    cartDisplay,
+    authDisplay,
+  } = useAppSelector<TGlobalUIState>((state) => state.globalUI);
+
+  const [windowWidth, setWindowWidth]: [any, any] = useState(null);
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    const handleWindowResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  });
+
+  // --------------------- end of UI hooks --------------------------
+
+  const [isClient, setClient] = useState(false);
+  useEffect(() => {
+    setClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      const basketId = localStorage.getItem('basketId');
+      const wishlistId = localStorage.getItem('wishlistId')!;
+
+      // const createWishlistId = async () => {
+      //   try {
+      //     const wishlist = await axiosInstance.post('/wishlists');
+      //     localStorage.setItem('wishlistId', wishlist.data.id);
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // };
+
+      const fetchDataCartProducts = async () => {
+        if (!basketId) {
+          await dispatch(createCart());
+          const newCreatedCardId = localStorage.getItem('basketId');
+          await dispatch(fetchCart(newCreatedCardId!));
+        }
+        if (basketId) {
+          const cartResponse = await dispatch(fetchCart(basketId));
+          // only for dev use 👇
+          if (cartResponse.meta.requestStatus == 'rejected') {
+            await dispatch(createCart());
+            const newCreatedCardId = localStorage.getItem('basketId');
+            await dispatch(fetchCart(newCreatedCardId!));
+          }
+        }
+      };
+      fetchDataCartProducts();
+
+      const fetchDataWishlistProducts = async () => {
+        if (!wishlistId) {
+          // await createWishlistId();
+          await dispatch(createWishlist());
+          const newCreatedWishlistId = localStorage.getItem('wishlistId');
+          dispatch(fetchWishlistProducts(newCreatedWishlistId!));
+        }
+        if (wishlistId) {
+          const wishlistResponse = await dispatch(
+            fetchWishlistProducts(wishlistId),
+          );
+          // only for dev use 👇
+          if (wishlistResponse.meta.requestStatus == 'rejected') {
+            // await createWishlistId();
+            await dispatch(createWishlist());
+
+            const newCreatedWishlistId = localStorage.getItem('wishlistId');
+            dispatch(fetchWishlistProducts(newCreatedWishlistId!));
+          }
+        }
+      };
+      fetchDataWishlistProducts();
+    }
+  }, [isClient]);
+
   return (
     <>
-      <Head>
-        <link
-          href="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css"
-          rel="stylesheet"
-        />
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      <Container
-        variants={variants.fadInOut}
-        key="header"
-        initial="start"
-        animate="middle"
-        exit="end"
-        flex_direction="column"
-        justify_content="center"
-        padding="10px 0 20px 0"
-        position="fixed"
-        top="0"
-        z_index="20"
-        bg_color={color.textPrimary}
-        box_shadow={boxShadow}
-      >
-        <Wrapper>
-          <Content
-            flex_direction="row"
-            justify_content="space-between"
-            align_items="center"
-            style={{ alignItems: 'end' }}
-          >
-            <LogoWrapper>
-              <LocationFinder />
-              <Link href="/">
-                <a>
-                  <LogoSVG id="header-logo" />
-                </a>
+      <div className={styles.Container}>
+        <div className={styles.Wrapper}>
+          <div className={styles.Content}>
+            {/* ---------------------- catelog ------------------------- */}
+            <button
+              ref={catelogButtonNode}
+              onClick={handleMenuStateRedux(
+                dispatch,
+                changeCatelogState,
+                changeCatelogDisplayState,
+                isCatalogOpen,
+                catelogDisplay,
+              )}
+              title="каталог"
+              className={styles.MenuButtonWrapper}
+            >
+              {catelogDisplay == PopupDisplay.None ? (
+                <>
+                  <MenueNormalStateSVG
+                    fill={
+                      isAuthFormOpen ||
+                      isBasketOpen ||
+                      isWishlistOpen ||
+                      isSearchFormActive
+                        ? color.inactiveIcons
+                        : color.activeIcons
+                    }
+                    animate={true}
+                  />
+                  <span>Каталог</span>
+                </>
+              ) : (
+                <MenuActiveStateSVG fill={color.activeIcons} animate={true} />
+              )}
+            </button>
+            {/* ---------------------- end of catelog ------------------------- */}
+            <div className={styles.LogoWrapper}>
+              <Link
+                href="/"
+                prefetch={false}
+                title="Перейти на главную страницу"
+              >
+                <LogoSVG />
               </Link>
-            </LogoWrapper>
-            <HeaderCatalog />
-            <SearchBar />
-            <AuthBtnMobile />
-            <NavWrap>
-              <RelativeContainer id="auth-container">
-                <AuthComp />
-              </RelativeContainer>
-              <Link href="/orders">
-                <a style={{ alignSelf: 'flex-end' }}>
-                  <Btns>
-                    <span>
-                      <Order />
-                    </span>
-                    <span> Заказы</span>
-                  </Btns>
-                </a>
-              </Link>
-              <Link href="/wishlist">
-                <a style={{ alignSelf: 'flex-end' }}>
-                  <Btns>
-                    <span>
-                      <WishList />
-                    </span>
-                    <span>Избранное</span>
-                  </Btns>
-                </a>
-              </Link>
-              <RelativeContainer>
-                <HeaderCart />
-              </RelativeContainer>
-            </NavWrap>
-          </Content>
-        </Wrapper>
-      </Container>
-      <NavWrapMobile />
+            </div>
+            <div className={styles.IconsWrapper}>
+              {/* ---------------------- search ------------------------- */}
+              <button
+                ref={searchButtonNode}
+                onClick={handleMenuStateRedux(
+                  dispatch,
+                  changeSearchFormState,
+                  changeSearchDisplayState,
+                  isSearchFormActive,
+                  searchDisplay,
+                )}
+                className={styles.icons_parent_wrapper}
+                title="Поиск товаров"
+              >
+                <SearchSVG
+                  fill={
+                    isAuthFormOpen ||
+                    isBasketOpen ||
+                    isWishlistOpen ||
+                    isCatalogOpen
+                      ? color.inactiveIcons
+                      : color.activeIcons
+                  }
+                />
+                <span
+                  style={{
+                    color:
+                      isAuthFormOpen ||
+                      isBasketOpen ||
+                      isWishlistOpen ||
+                      isCatalogOpen
+                        ? color.inactiveIcons
+                        : color.activeIcons,
+                  }}
+                >
+                  Поиск
+                </span>
+              </button>
+              {/* ---------------------- end of search ------------------------- */}
+              {/* ---------------------- wishlist ------------------------- */}
+              <button
+                ref={wishlistButtonNode}
+                onClick={handleMenuStateRedux(
+                  dispatch,
+                  changeWishlistState,
+                  changeWishlistDisplayState,
+                  isWishlistOpen,
+                  wishlistDisplay,
+                )}
+                className={styles.icons_parent_wrapper}
+                title="избранное"
+              >
+                {!!wishlist?.items?.length && (
+                  <div className={styles.Counter}>
+                    {wishlist?.items?.length}
+                  </div>
+                )}
+                <WishlistSVG
+                  fill={
+                    isAuthFormOpen ||
+                    isSearchFormActive ||
+                    isBasketOpen ||
+                    isCatalogOpen
+                      ? color.inactiveIcons
+                      : color.activeIcons
+                  }
+                />
+                <span
+                  style={{
+                    color:
+                      isAuthFormOpen ||
+                      isSearchFormActive ||
+                      isBasketOpen ||
+                      isCatalogOpen
+                        ? color.inactiveIcons
+                        : color.activeIcons,
+                  }}
+                >
+                  Избранное
+                </span>
+              </button>
+              {/* ---------------------- end of wishlist ------------------------- */}
+              {/* ---------------------- basket ------------------------- */}
+              <button
+                ref={cartButtonNode}
+                onClick={handleMenuStateRedux(
+                  dispatch,
+                  changeBasketState,
+                  changeCartDisplayState,
+                  isBasketOpen,
+                  cartDisplay,
+                )}
+                className={styles.icons_parent_wrapper}
+                title="корзина"
+              >
+                {!!cart?.orderProducts?.length && (
+                  <div className={styles.Counter}>
+                    {cart?.orderProducts?.length}
+                  </div>
+                )}
+                <BasketSVG
+                  fill={
+                    isAuthFormOpen ||
+                    isSearchFormActive ||
+                    isWishlistOpen ||
+                    isCatalogOpen
+                      ? color.inactiveIcons
+                      : color.activeIcons
+                  }
+                />
+                <span
+                  style={{
+                    color:
+                      isAuthFormOpen ||
+                      isSearchFormActive ||
+                      isWishlistOpen ||
+                      isCatalogOpen
+                        ? color.inactiveIcons
+                        : color.activeIcons,
+                  }}
+                >
+                  Корзина
+                </span>
+              </button>
+              {/* ---------------------- end of basket ------------------------- */}
+              {/* ---------------------- Authorization ------------------------- */}
+              <div
+                ref={authButtonNode}
+                onClick={() => {
+                  windowWidth < 1024
+                    ? router.push('/profile')
+                    : handleMenuStateRedux(
+                        dispatch,
+                        changeAuthFormState,
+                        changeAuthFormDisplayState,
+                        isAuthFormOpen,
+                        authDisplay,
+                      )();
+                }}
+                className={styles.profile_icon_wrapper}
+              >
+                <button
+                  title="личный кабинет"
+                  aria-label="личный кабинет"
+                  style={{ display: user ? 'none' : 'flex' }}
+                >
+                  <ProfileSVG
+                    fill={
+                      isBasketOpen ||
+                      isSearchFormActive ||
+                      isWishlistOpen ||
+                      isCatalogOpen
+                        ? color.inactiveIcons
+                        : color.activeIcons
+                    }
+                  />
+                </button>
+                {/* <span className={styles.profile_tag_mobile}>Л.K.</span> */}
+
+                <button
+                  title="личный кабинет"
+                  style={{ display: user ? 'flex' : 'none' }}
+                >
+                  <img
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                    }}
+                    src={
+                      user
+                        ? user!.image
+                          ? `/api/images/${user!.image}`
+                          : `https://api.dicebear.com/7.x/initials/svg?radius=50&seed=${user?.firstName}`
+                        : ''
+                    }
+                    alt="личный кабинет"
+                  />
+                </button>
+                <span
+                  style={{
+                    color:
+                      isBasketOpen ||
+                      isSearchFormActive ||
+                      isWishlistOpen ||
+                      isCatalogOpen
+                        ? color.inactiveIcons
+                        : color.activeIcons,
+                  }}
+                >
+                  л.к.
+                </span>
+              </div>
+
+              {/* ---------------------- end of Authorization ------------------------- */}
+            </div>
+          </div>
+
+          <HeaderCatalog catelogButtonRef={catelogButtonRef} />
+          <SearchBar
+            searchButtonRef={searchButtonRef}
+            windowWidth={windowWidth}
+          />
+          <HeaderWishlist wishlistButtonRef={wishlistButtonRef} />
+          <HeaderCart cartButtonRef={cartButtonRef} />
+          <AuthorizationModel
+            authButtonRef={authButtonRef}
+            windowWidth={windowWidth}
+          />
+        </div>
+      </div>
+      <NavMobile />
     </>
   );
 };
-
-const LogoWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  gap: 29px;
-  justify-self: flex-start;
-  #header-logo {
-    width: 125px;
-  }
-  @media ${devices.laptopS} {
-    gap: 47px;
-  }
-
-  @media ${devices.mobileL} {
-    gap: 55px;
-    flex-direction: column-reverse;
-    margin-top: 15px;
-    margin-bottom: -15px;
-    #header-logo {
-      margin-top: -10px;
-    }
-  }
-`;
-
-const RelativeContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  align-self: flex-end;
-  position: relative;
-`;
-
-const NavWrap = styled.div`
-  display: flex;
-  width: 294px;
-  justify-content: space-between;
-  align-self: flex-end;
-  @media ${devices.mobileL} {
-    display: none;
-  }
-`;
 
 export default Header;

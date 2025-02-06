@@ -52,7 +52,7 @@ const Progress = (props: props) => {
         >
           3
         </StepsNumber>
-        <span>Оформление заказа</span>
+        <span>Подтверждение заказа</span>
       </Step>
     </StepsWrapper>
   );
@@ -73,12 +73,24 @@ const StepsWrapper = styled(motion.div)`
   padding: 20px 0;
   user-select: none;
   span {
-    font-family: 'intro';
     font-size: 1rem;
   }
-
+  @media ${devices.laptopS} {
+    flex-direction: column;
+  }
+  @media ${devices.tabletL} {
+    flex-direction: column;
+  }
+  @media ${devices.tabletS} {
+    flex-direction: column;
+  }
   @media ${devices.mobileL} {
-    width: 350px;
+    flex-direction: column;
+  }
+  @media ${devices.mobileM} {
+    flex-direction: column;
+  }
+  @media ${devices.mobileS} {
     flex-direction: column;
   }
 `;
@@ -107,7 +119,22 @@ const ProgressBarContaier = styled(motion.div)`
   }
 
   @media ${devices.laptopS} {
-    width: 174px;
+    width: 70vw;
+  }
+  @media ${devices.tabletL} {
+    width: 70vw;
+  }
+  @media ${devices.tabletS} {
+    width: 70vw;
+  }
+  @media ${devices.mobileL} {
+    width: 70vw;
+  }
+  @media ${devices.mobileM} {
+    width: 70vw;
+  }
+  @media ${devices.mobileS} {
+    width: 70vw;
   }
 `;
 
@@ -129,7 +156,7 @@ const ProgressBarWrapper = styled.div`
 
 const ProgressBar = styled(motion.span)`
   height: 100%;
-  background-color: ${color.ok};
+  background: linear-gradient(94deg, #f2d099 9.58%, #c6986a 106.37%);
   border-radius: 5px;
   position: absolute;
   top: 0;

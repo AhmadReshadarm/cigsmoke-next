@@ -1,6 +1,12 @@
 import { motion } from 'framer-motion';
+import styled from 'styled-components';
+
+type StyleProps = {
+  transform: string;
+};
 const Path = (props: any) => (
-  <motion.path
+  <Paths
+    transform={props.transform}
     fill="transparent"
     strokeWidth="2"
     strokeLinecap="round"
@@ -8,6 +14,10 @@ const Path = (props: any) => (
   />
 );
 
-const PathCircle = (props: any) => <motion.path {...props} />;
+// const PathCircle = (props: any) => <motion.path {...props} />;
 
-export { Path, PathCircle };
+const Paths = styled(motion.path)`
+  transform-origin: ${(p: StyleProps) => p.transform} !important;
+`;
+// PathCircle
+export { Path };

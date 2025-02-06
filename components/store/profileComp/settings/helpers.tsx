@@ -4,6 +4,7 @@ import color from 'components/store/lib/ui.colors';
 import { UserService } from 'swagger/services';
 import { openSuccessNotification } from 'common/helpers/openSuccessNotidication.helper';
 import { openErrorNotification } from 'common/helpers';
+import { updateUserById } from 'redux/slicers/authSlicer';
 const InputsTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -12,7 +13,6 @@ const InputsTooltip = styled(({ className, ...props }: TooltipProps) => (
     color: color.btnPrimary,
     maxWidth: 200,
     fontSize: theme.typography.pxToRem(14),
-    fontFamily: 'intro',
     boxShadow: `0px 2px 6px ${color.boxShadowBtn}`,
     display: 'flex',
     flexDirection: 'column',
@@ -25,16 +25,22 @@ const InputsTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }));
 
-const handleEmailChange = async ({ user, email, setServerResponse }) => {
+const handleEmailChange = async ({ user, email }) => {
   try {
+    if (email == user.email) {
+      openErrorNotification('Ничего не изменилось 🤔');
+      return;
+    }
     await UserService.updateUser({ userId: user.id, body: { email } });
-    setServerResponse(200);
+
     openSuccessNotification('Успешно изменено 🙌');
+    openSuccessNotification(
+      'Письмо с подтверждение аккаунта отправлено вам на почту 📬',
+    );
   } catch (error: any) {
-    setServerResponse(error.response.status);
     switch (error.response.status) {
       case 409:
-        openErrorNotification('Ничего не изменилось');
+        openErrorNotification('Ничего не изменилось 🤔');
         break;
       case 401:
         openErrorNotification('Несанкционированный доступ');
@@ -51,15 +57,30 @@ const handleEmailChange = async ({ user, email, setServerResponse }) => {
         );
         break;
     }
-    setTimeout(() => {
-      setServerResponse(undefined);
-    }, 1000);
   }
 };
 
-const handleDataChange = async ({ user, payload, setServerResponse }) => {
+const handleDataChange = async ({
+  user,
+  payload,
+  setServerResponse,
+  dispatch,
+}) => {
   try {
-    await UserService.updateUser({ userId: user.id, body: payload });
+    if (
+      user.firstName == payload.firstName &&
+      user.lastName == payload.lastName
+    ) {
+      openErrorNotification('Ничего не изменилось');
+      return;
+    }
+    // await UserService.updateUser({ userId: user.id, body: payload });
+    dispatch(
+      updateUserById({
+        userId: user?.id!,
+        user: { firstName: payload.firstName, lastName: payload.lastName },
+      }),
+    );
     setServerResponse(200);
     openSuccessNotification('Успешно изменено 🙌');
   } catch (error: any) {

@@ -35,6 +35,7 @@ const ColorFilter: React.FC<Props> = ({ title, options, onChange }) => {
         animate="animate"
         exit={{ y: -80, opacity: 0, transition: { delay: 0.3 } }}
         variants={variants.fadInSlideUp}
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}
       >
         {options?.map((option) => (
           <ColorCheckbox

@@ -8,13 +8,26 @@ import {
 import StoreLayout from 'components/store/storeLayout/layouts';
 
 import Head from 'next/head';
-import ConfirmResetPsw from 'components/store/profileComp/confirmResetPsw';
-
+import { baseUrl } from 'common/constant';
+import dynamic from 'next/dynamic';
+import { LoaderMask } from 'ui-kit/generalLoaderMask';
+const ConfirmResetPsw = dynamic(
+  () => import('components/store/profileComp/confirmResetPsw'),
+  {
+    ssr: false,
+    loading: () => <LoaderMask />,
+  },
+);
 const ConfirmPswReset = () => {
   return (
     <>
       <Head>
-        <title>Сброс пароля | Wuluxe</title>
+        <title>Сброс пароля | NBHOZ</title>
+        <meta
+          property="og:image"
+          name="og:image"
+          content={`${baseUrl}/static/logo_800x800.png`}
+        />
       </Head>
       <Container
         variants={variants.fadInOut}
@@ -25,7 +38,7 @@ const ConfirmPswReset = () => {
         flex_direction="column"
         justify_content="center"
         align_items="center"
-        padding="200px 0"
+        padding="50px 0"
         bg_color={color.textPrimary}
       >
         <Wrapper>

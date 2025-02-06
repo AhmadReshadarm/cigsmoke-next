@@ -1,9 +1,12 @@
-import { Input, Slider as SliderInit } from 'antd';
+// import { Input, Slider as SliderInit } from 'antd';
+import SliderInit from 'antd/es/slider';
+import Input from 'antd/es/input';
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Filter, FilterBody, FilterTitle } from '../common';
 import debounce from 'lodash/debounce';
 import variants from 'components/store/lib/variants';
+import color from 'components/store/lib/ui.colors';
 
 type Props = {
   title: string;
@@ -27,14 +30,16 @@ const RangeFilter: React.FC<Props> = ({ title, min, max, onChange }) => {
 
   const handleMinValChange = (e) => {
     setValues([e.target.value, maxVal]);
+    delayedChange([e.target.value, maxVal]);
   };
 
   const handleMaxValChange = (e) => {
     setValues([minVal, e.target.value]);
+    delayedChange([minVal, e.target.value]);
   };
 
   const delayedChange = useCallback(
-    debounce((values) => onChange(values), 200),
+    debounce((values) => onChange(values), 500),
     [],
   );
 
@@ -55,33 +60,40 @@ const RangeFilter: React.FC<Props> = ({ title, min, max, onChange }) => {
         animate="animate"
         exit={{ y: -80, opacity: 0, transition: { delay: 0.4 } }}
         variants={variants.fadInSlideUp}
+        style={{ display: 'block' }}
       >
         <FieldsWrapper>
-          <Input
-            min={min}
-            max={max}
-            value={minVal}
-            suffix={<Suffix>₽</Suffix>}
-            style={{
-              maxWidth: '95px',
-              marginRight: '50px',
-              borderColor: '#F0BC5E',
-              borderRadius: '4px',
-            }}
-            onChange={handleMinValChange}
-          />
-          <Input
-            min={min}
-            max={max}
-            value={maxVal}
-            suffix={<Suffix>₽</Suffix>}
-            style={{
-              maxWidth: '95px',
-              borderColor: '#F0BC5E',
-              borderRadius: '4px',
-            }}
-            onChange={handleMaxValChange}
-          />
+          <div className="fields-wrapper">
+            <span className="field-label">От</span>
+            <Input
+              min={min}
+              max={max}
+              value={minVal}
+              suffix={<Suffix>₽</Suffix>}
+              style={{
+                maxWidth: '95px',
+                marginRight: '50px',
+                borderRadius: '4px',
+                backgroundColor: color.rangeBgcolor,
+              }}
+              onChange={handleMinValChange}
+            />
+          </div>
+          <div className="fields-wrapper">
+            <span className="field-label">До</span>
+            <Input
+              min={min}
+              max={max}
+              value={maxVal}
+              suffix={<Suffix>₽</Suffix>}
+              style={{
+                maxWidth: '95px',
+                borderRadius: '4px',
+                backgroundColor: color.rangeBgcolor,
+              }}
+              onChange={handleMaxValChange}
+            />
+          </div>
         </FieldsWrapper>
         <SliderWrapper>
           <Slider
@@ -89,11 +101,19 @@ const RangeFilter: React.FC<Props> = ({ title, min, max, onChange }) => {
             step={10}
             min={min}
             max={max}
-            handleStyle={{ backgroundColor: '#F0BC5E', borderColor: '#F0BC5E' }}
+            handleStyle={{
+              // backgroundColor: color.textTertiary,
+              borderColor: color.textTertiary,
+            }}
             trackStyle={{
-              backgroundColor: '#F0BC5E',
-              height: '2px',
+              background:
+                'linear-gradient(90deg, #769A48 -17.97%, #C5D083 47.26%, #8BA46C 113.87%)',
+              height: '5px',
               marginTop: '1px',
+            }}
+            railStyle={{
+              backgroundColor: color.textTertiary,
+              height: '5px',
             }}
             defaultValue={[min, max]}
             onChange={handleSliderChange}
@@ -112,11 +132,40 @@ const SliderWrapper = styled.div`
     height: 2px;
     margin-top: 1px;
   }
+  .ant-slider {
+    .ant-slider-handle {
+      &::after {
+        box-shadow: 0 0 0 4px #737678;
+      }
+    }
+  }
 `;
 
 const FieldsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  .ant-input-affix-wrapper {
+    &:hover {
+      border-color: ${color.hoverBtnBg};
+    }
+    &:focus {
+      border-color: ${color.hoverBtnBg};
+    }
+  }
+  .ant-input-affix-wrapper-focused {
+    border-color: ${color.hoverBtnBg};
+  }
+  .fields-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    input {
+      background-color: ${color.rangeBgcolor};
+    }
+    .field-label {
+      font-size: 14px;
+    }
+  }
 `;
 
 const Suffix = styled.div`

@@ -2,7 +2,7 @@ export enum ManageProductFields {
   Name = 'name',
   Price = 'price',
   OldPrice = 'oldPrice',
-  wholeSalePrice = 'wholeSalePrice',
+  Artical = 'artical',
   Desc = 'desc',
   ShortDesc = 'shortDesc',
   Keywords = 'keywords',
@@ -10,8 +10,6 @@ export enum ManageProductFields {
   Color = 'color',
   Category = 'category',
   Images = 'images',
-  Brand = 'brand',
   Tags = 'tags',
-  Sizes = 'sizes',
   Url = 'url',
 }

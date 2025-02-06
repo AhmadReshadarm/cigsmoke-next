@@ -7,8 +7,8 @@ import variants from 'components/store/lib/variants';
 import { devices } from 'components/store/lib/Devices';
 import { PopupContainer } from '../common';
 import { InputsTooltip } from './helpers';
-import CloseSVG from '../../../../assets/close_black.svg';
 import { handleDataChange } from './helpers';
+import { useAppDispatch } from 'redux/hooks';
 const UserData = (props: any) => {
   const { isOpen, setOpen, user } = props;
   const [firstName, setFirstName] = useState(user.firstName);
@@ -25,6 +25,7 @@ const UserData = (props: any) => {
     firstName,
     lastName,
   };
+  const dispatch = useAppDispatch();
   return (
     <PopupContainer style={{ display: isOpen ? 'flex' : 'none' }}>
       <UserDataContainer
@@ -34,7 +35,34 @@ const UserData = (props: any) => {
         variants={variants.fadeOutSlideOut}
       >
         <span onClick={() => setOpen(false)} className="close-btn">
-          <CloseSVG />
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 21 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <line
+              x1="1"
+              y1="-1"
+              x2="26.3541"
+              y2="-1"
+              transform="matrix(0.683484 -0.729965 0.681649 0.731679 1.52267 21.0312)"
+              stroke="black"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <line
+              x1="1"
+              y1="-1"
+              x2="26.3044"
+              y2="-1"
+              transform="matrix(0.680786 0.732483 -0.684345 0.729158 0.21875 1.03125)"
+              stroke="black"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
         </span>
         <h2>Личные данные</h2>
         <InputsDvider>
@@ -129,96 +157,6 @@ const UserData = (props: any) => {
             />
           </InputsWrapper>
         </InputsDvider>
-        {/* <InputsWrapper>
-          <label htmlFor="user-phonenumber">
-            <b>
-              <span>Телефон</span>
-              <span className="required">*</span>
-            </b>
-            <InputsTooltip
-              enterTouchDelay={0}
-              leaveTouchDelay={5000}
-              key="phonenumber-tip"
-              title={
-                <React.Fragment>
-                  <span>Это поле обязательно к заполнению</span>
-                </React.Fragment>
-              }
-            >
-              <span className="tool-tip">?</span>
-            </InputsTooltip>
-          </label>
-          <AuthInput
-            whileHover="hover"
-            whileTap="tap"
-            variants={variants.boxShadow}
-            placeholder={phoneNumberInput ? 'не может быть пустым' : 'Телефон'}
-            type="text"
-            id="user-phonenumber"
-            value={phoneNumber}
-            style={{
-              border: `solid 1px ${
-                isEmpty(phoneNumber) && phoneNumberInput
-                  ? color.hover
-                  : color.btnPrimary
-              }`,
-            }}
-            onChange={(e) => {
-              setPhoneNumber(e.target.value);
-              setInputsErr([
-                firstNameInput ? true : false,
-                lastNameInput ? true : false,
-                true,
-                addressInput ? true : false,
-              ]);
-            }}
-          />
-        </InputsWrapper> */}
-        {/* <InputsWrapper>
-          <label htmlFor="user-address">
-            <b>
-              <span>Адресс</span>
-              <span className="required">*</span>
-            </b>
-            <InputsTooltip
-              enterTouchDelay={0}
-              leaveTouchDelay={5000}
-              key="address-tip"
-              title={
-                <React.Fragment>
-                  <span>Это поле обязательно к заполнению</span>
-                </React.Fragment>
-              }
-            >
-              <span className="tool-tip">?</span>
-            </InputsTooltip>
-          </label>
-          <AuthInput
-            whileHover="hover"
-            whileTap="tap"
-            variants={variants.boxShadow}
-            placeholder={addressInput ? 'не может быть пустым' : 'Адресс'}
-            type="text"
-            id="user-address"
-            value={address}
-            style={{
-              border: `solid 1px ${
-                isEmpty(address) && addressInput
-                  ? color.hover
-                  : color.btnPrimary
-              }`,
-            }}
-            onChange={(e) => {
-              setAddress(e.target.value);
-              setInputsErr([
-                firstNameInput ? true : false,
-                lastNameInput ? true : false,
-                phoneNumberInput ? true : false,
-                true,
-              ]);
-            }}
-          />
-        </InputsWrapper> */}
         <SaveBtn
           style={{
             backgroundColor:
@@ -239,7 +177,7 @@ const UserData = (props: any) => {
           }
           onClick={(e) => {
             e.preventDefault();
-            handleDataChange({ user, payload, setServerResponse });
+            handleDataChange({ user, payload, setServerResponse, dispatch });
             setOpen(false);
             setSuccess(serverResponse == 200 ? true : false);
             setTimeout(() => {
@@ -261,7 +199,7 @@ const UserData = (props: any) => {
 };
 
 const UserDataContainer = styled(motion.form)`
-  width: 500px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -280,6 +218,12 @@ const UserDataContainer = styled(motion.form)`
   }
   .success {
     color: ${color.ok};
+  }
+  @media ${devices.tabletL} {
+    width: 90%;
+  }
+  @media ${devices.tabletS} {
+    width: 90%;
   }
   @media ${devices.mobileL} {
     width: 90%;
@@ -310,9 +254,7 @@ const InputsWrapper = styled(motion.div)`
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
-    span {
-      font-family: 'intro';
-    }
+
     .tool-tip {
       width: 18px;
       height: 18px;
@@ -336,7 +278,7 @@ const AuthInput = styled(motion.input)`
   border-radius: 10px;
   padding: 0 10px;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 500;
 `;
 
 const SaveBtn = styled.button`

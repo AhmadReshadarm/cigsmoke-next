@@ -1,15 +1,18 @@
+import { baseUrl } from 'common/constant';
+
 const settings = {
   graphql: {
-    uri: 'http://www.wuluxe.ru',
+    uri: baseUrl,
   },
   meta: {
-    rootUrl: 'http://www.wuluxe.ru',
-    title: 'Wuluxe',
-    description: 'Wuluxe, где вы найдете удовольствие',
+    rootUrl: baseUrl,
+    title: 'NBHOZ.ru',
+    description:
+      'NBHOZ, Дешевые хозтовары оптом в интернет магазине nbhoz в Москва и все Россия, купить Кухонная утварь, Товары для сервировки стола, Товары для ванной комнаты',
     social: {
       graphic:
         'https://cheatcode-assets.s3.amazonaws.com/default-social-graphic.png',
-      twitter: '@wuluxe',
+      twitter: '@nbhoz',
     },
   },
   routes: {

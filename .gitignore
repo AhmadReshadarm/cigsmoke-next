@@ -1,10 +1,15 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
+.env
 # dependencies
 /node_modules
 /.next
+/out
+/android
+/resources
 /.env.local
-
+/public/temp/*
+package-lock.json
+**/package-lock.json
 # testing
 # /coverage
 
@@ -26,9 +31,10 @@ yarn-error.log*
 debug.log
 
 #sitemap
-/public/robots.txt
 /public/sitemap.xml
 /public/sitemap-0.xml
+robots.txt
 
 #cache
 /webprojnpm-cache
+nginx.conf

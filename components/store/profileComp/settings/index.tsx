@@ -1,14 +1,13 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 import color from 'components/store/lib/ui.colors';
-import variants from 'components/store/lib/variants';
 import { Container, Header } from '../common';
 import { useEffect, useMemo, useState } from 'react';
 import Notifactions from './Notification';
 import UserData from './userData';
+import { devices } from 'components/store/lib/Devices';
 
 const Settings = (props: any) => {
-  const { settingsRef, setActive, user } = props;
+  const { settingsRef, setActive } = props;
   const [isOpen, setOpen] = useState(false);
   const observer = useMemo(
     () =>
@@ -26,30 +25,64 @@ const Settings = (props: any) => {
     };
   }, [settingsRef, observer]);
   return (
-    <Container id="settings" ref={settingsRef}>
+    <Container id="settings" style={{ height: 'unset' }} ref={settingsRef}>
       <Header>Настройки</Header>
       <Notifactions {...props} />
-      <Header>Изменить личные данные</Header>
-      <ChangeDataBtn
-        whileHover="hover"
-        whileTap="tap"
-        variants={variants.boxShadow}
-        onClick={() => setOpen(true)}
-      >
-        Изменить данные
-      </ChangeDataBtn>
+      <ChangeDataWrapper>
+        <Header>Изменить личные данные</Header>
+        <ChangeDataBtn onClick={() => setOpen(true)}>
+          Изменить данные
+        </ChangeDataBtn>
+      </ChangeDataWrapper>
       <UserData isOpen={isOpen} setOpen={setOpen} {...props} />
     </Container>
   );
 };
 
-const ChangeDataBtn = styled(motion.button)`
-  width: 300px;
-  height: 50px;
-  border-radius: 10px;
-  background-color: ${color.btnPrimary};
-  color: ${color.textPrimary};
+const ChangeDataWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 50px 10px;
+`;
+
+const ChangeDataBtn = styled.button`
+  width: 200px;
+  height: 40px;
+  border-radius: 3px;
+  background-color: ${color.btnSecondery};
   cursor: pointer;
+  transition: 300ms;
+  &:hover {
+    background-color: ${color.btnPrimary};
+    color: ${color.textPrimary};
+    transform: scale(1.02);
+  }
+  &:active {
+    transform: scale(1);
+  }
+  span {
+    font-family: ver(--font-Jost);
+    font-size: 1rem;
+  }
+  @media ${devices.tabletL} {
+    width: 100%;
+  }
+  @media ${devices.tabletS} {
+    width: 100%;
+  }
+  @media ${devices.mobileL} {
+    width: 100%;
+  }
+  @media ${devices.mobileM} {
+    width: 100%;
+  }
+  @media ${devices.mobileS} {
+    width: 100%;
+  }
 `;
 
 export default Settings;

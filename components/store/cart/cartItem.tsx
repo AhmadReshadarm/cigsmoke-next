@@ -1,201 +1,271 @@
 import { getProductVariantsImages } from 'common/helpers/getProductVariantsImages.helper';
-import variants from 'components/store/lib/variants';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import styled from 'styled-components';
 import { OrderProduct, Product } from 'swagger/services';
-import FilterCheckbox from 'ui-kit/FilterCheckbox';
-import { FilterCheckboxSize } from 'ui-kit/FilterCheckbox/types';
-import ItemCounter from 'ui-kit/ItemCounter';
-import CloseSVG from '../../../assets/close_black.svg';
 import { devices } from '../lib/Devices';
-import { Rating } from '@mui/material';
-import { useAppSelector } from 'redux/hooks';
-import { TAuthState } from 'redux/types';
-import { Role } from 'common/enums/roles.enum';
+import color from '../lib/ui.colors';
+import { AddToCart, AddToWishlist } from 'ui-kit/ProductActionBtns';
 type Props = {
-  item: OrderProduct;
-  selected?: boolean;
-  onRemove: (product: Product) => void;
-  onCountChange: (counter: number, product: Product) => void;
-  onSelect: (item: OrderProduct) => void;
+  orderProduct: OrderProduct;
+  product?: Product;
 };
 
-const CartItem: React.FC<Props> = ({
-  item,
-  selected,
-  onRemove,
-  onCountChange,
-  onSelect,
-}) => {
-  const { name, url } = item.product!;
-
-  const curVariant = item.productVariant
-    ? item.productVariant
-    : item.product?.productVariants![0]
-    ? item.product?.productVariants![0]
-    : ({} as any);
-
-  const images = getProductVariantsImages(item.product?.productVariants);
-
-  const handleRemoveClick = (product: Product) => () => {
-    onRemove(product);
-  };
-
-  const handleSelectCheck = () => {
-    onSelect(item);
-  };
-  const { user } = useAppSelector<TAuthState>((state) => state.auth);
+const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
+  const images = getProductVariantsImages(
+    orderProduct.product?.productVariants,
+  );
 
   return (
-    <Item>
-      <FilterCheckbox
-        checked={selected}
-        size={FilterCheckboxSize.Big}
-        onChange={handleSelectCheck}
-      />
-      <Link href={`/product/${url}`}>
-        <ImageWrapper>
-          <motion.img
-            whileHover="hover"
-            whileTap="tap"
-            custom={1.05}
-            variants={variants.grow}
-            src={`/api/images/${images[0]}`}
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
-              currentTarget.src = '/assets/images/img_error.png';
-            }}
-          />
-        </ImageWrapper>
-      </Link>
-      <ItemDetails>
-        <h4>{name}</h4>
-        <ItemDetailDivider>
-          <h3>
-            {user?.role === Role.SuperUser
-              ? curVariant.wholeSalePrice
-              : curVariant.price}
+    <ProductItemWrapper>
+      <a href={`/product/${orderProduct!.product?.url}`}>
+        <img
+          src={`/api/images/${images[0]}`}
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null;
+            currentTarget.src = '/img_not_found.png';
+          }}
+        />
+      </a>
+      <div className="product-details-wrapper">
+        <div className="product-title-description-wrapper">
+          <Link href={`/product/${orderProduct!.product?.url}`}>
+            <h1>{orderProduct!?.product!?.name}</h1>
+          </Link>
+
+          <span
+            title={
+              orderProduct!?.product?.desc?.includes('|')
+                ? orderProduct!?.product?.desc?.split('|')[1]
+                : orderProduct!?.product?.desc?.slice(0, 60)
+            }
+          >
+            {orderProduct!?.product?.desc?.includes('|')
+              ? orderProduct!?.product?.desc?.split('|')[1].slice(0, 200) +
+                '...'
+              : orderProduct!?.product?.desc?.slice(0, 60).slice(0, 200) +
+                '...'}
+          </span>
+        </div>
+
+        <div className="price-sperator-wrapper">
+          <div className="old-new-price-wrapper">
+            <span
+              style={{
+                display: !orderProduct!.productVariant?.oldPrice
+                  ? 'none'
+                  : 'flex',
+              }}
+              className="old-price"
+            >
+              {orderProduct!?.productVariant?.oldPrice} ₽
+            </span>
+            <span>
+              {orderProduct!?.qty!}шт x {orderProduct!?.productVariant?.price} ₽
+            </span>
+          </div>
+          <span className="total-price-wrapper">
+            Итого:{orderProduct!?.qty! * orderProduct!?.productVariant?.price!}{' '}
             ₽
-          </h3>
-          <ItemCounter
-            qty={item.qty!}
-            inputStyle={{
-              width: '65px',
-              height: '45px',
-              background: '#C4C4C4',
-              border: 'none',
-            }}
-            product={item.product!}
-            onCountChange={onCountChange}
-          />
-        </ItemDetailDivider>
-        <RateWrapper>
-          <Rating value={item.product?.rating?.avg} size="medium" readOnly />
-        </RateWrapper>
-        <ReviewsNumber>{item.product?.reviews?.length} отзывов</ReviewsNumber>
-      </ItemDetails>
-      <motion.button
-        custom={1.1}
-        whileTap="tap"
-        whileHover="hover"
-        variants={variants.grow}
-        onClick={handleRemoveClick(item.product!)}
-      >
-        <CloseSVG />
-      </motion.button>
-    </Item>
+          </span>
+        </div>
+      </div>
+      <div className="action-buttons-wrapper">
+        <AddToWishlist product={orderProduct!?.product!} />
+        <AddToCart
+          product={orderProduct!?.product!}
+          qty={orderProduct!?.qty!}
+          variant={product?.productVariants![0]}
+        />
+      </div>
+    </ProductItemWrapper>
   );
 };
 
-const Item = styled.li`
+const ProductItemWrapper = styled.div`
   width: 100%;
+  height: 200px;
+  max-hight: 200px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  align-items: center;
-  padding: 15px;
-  gap: 15px;
-  position: relative;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 10px;
+  background-color: ${color.backgroundPrimary};
+  border: 1px solid #e5e2d9;
 
   img {
+    min-width: 180px;
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+  }
+
+  .product-details-wrapper {
     width: 100%;
     height: 100%;
-    min-width: 70px;
-    object-fit: contain;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    .product-title-description-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: 15px;
+
+      a {
+        padding: 0;
+        h1 {
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .price-sperator-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 40px;
+      .old-new-price-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 10px;
+        // span {
+        //   color: ${color.textBase};
+        // }
+        .old-price {
+          text-decoration: line-through;
+          font-size: 0.8rem;
+          color: ${color.textBase};
+        }
+      }
+      // .old-new-price-wishlist-wrapper {
+      //   width: 100%;
+      //   display: flex;
+      //   flex-direction: row;
+      //   justify-content: flex-end;
+      //   align-items: center;
+      //   gap: 20px;
+      //   span {
+      //     color: ${color.textSecondary};
+      //     font-size: 1.5rem;
+      //   }
+      //   .old-price {
+      //     text-decoration: line-through;
+      //     font-size: 0.8rem;
+      //     color: ${color.textBase};
+      //   }
+      // }
+      .total-price-wrapper {
+        font-size: 1.5rem;
+      }
+    }
   }
-  button {
-    justify-self: flex-end;
-    align-self: flex-start;
-    width: 30px;
-    height: 30px;
+
+  .action-buttons-wrapper {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 0 10px 10px 0;
+    gap: 20px;
   }
 
-  > button {
-    position: absolute;
-    right: 3px;
+  @media ${devices.laptopS} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+      min-width: unset;
+      min-height: unset;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+    }
   }
-`;
-
-const ImageWrapper = styled.div`
-  width: 220px;
-  height: 246px;
-  background: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 20px;
-  cursor: pointer;
-  margin-right: 30px;
-  padding: 25px;
-  @media ${devices.mobileL} {
-    margin-right: 0;
-    min-width: 140px;
+  @media ${devices.tabletL} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+      min-width: unset;
+      min-height: unset;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+    }
   }
-`;
-
-const ItemDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-
-  h4 {
-    font-size: 16px;
-    font-weight: 400;
-    margin: 0;
+  @media ${devices.tabletS} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+      min-width: unset;
+      min-height: unset;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+    }
   }
-
-  h3 {
-    font-size: 16px;
-    font-weight: 700;
-    margin: 0;
-  }
-`;
-
-const ItemDetailDivider = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-
   @media ${devices.mobileL} {
     flex-direction: column;
-    align-items: baseline;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+      min-width: unset;
+      min-height: unset;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+    }
   }
-`;
-
-const RateWrapper = styled.div`
-  display: flex;
-  gap: 7px;
-  margin-top: 15px;
-`;
-
-const ReviewsNumber = styled.div`
-  font-size: 14px;
-  margin-top: 10px;
+  @media ${devices.mobileM} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+      min-width: unset;
+      min-height: unset;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+  @media ${devices.mobileS} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+      min-width: unset;
+      min-height: unset;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
 `;
 
 export default CartItem;
