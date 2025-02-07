@@ -13,7 +13,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 20px 0;
 }
 
 .Content {
@@ -33,8 +33,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 40px;
-  background-color: var(--productCart);
+  background-color: #f0bc5e40;
   border: 1px #e5e2d9;
+  border-radius: 30px;
+}
+
+.product_cart_wrapper > a {
+  padding: 10px;
 }
 
 .not_found {
@@ -97,8 +102,8 @@
   background-color: var(--buttonPrimary);
 }
 .title_n_index_indecator_top_wrapper > a > h1 {
-  font-family: var(--font-ricordi);
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .title_n_index_indecator_top_wrapper > a > h1:hover {
@@ -135,15 +140,29 @@
 
 .artical_Wrapper {
   display: none;
-  width: 100%;
-  flex-direction: row;
-  justify-content: flex-start;
+  grid-template-columns: repeat(10, 1fr);
+  align-self: flex-start;
+  row-gap: 10px;
+  column-gap: 5px;
   align-items: center;
-  gap: 5px;
+}
+
+.artical_title {
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .artical_Wrapper > span {
-  font-weight: 500;
+  white-space: nowrap;
+}
+
+.colors_wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
 }
 .action_buttons_wrapper {
   width: 110%;
@@ -204,6 +223,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  border-radius: 30px;
 }
 .error_img {
   object-fit: contain;
@@ -233,8 +253,8 @@
 }
 
 .product_description_wrapper > a > h1 {
-  font-family: var(--font-ricordi);
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .product_description_wrapper > a > h1:hover {
@@ -277,16 +297,16 @@
     max-width: 1230px;
   }
   .title_n_index_indecator_top_wrapper > a > h1 {
-    font-size: 0.9rem;
+    font-size: 1.4rem;
   }
   .product_description_wrapper > a > h1 {
-    font-size: 0.9rem;
+    font-size: 1.4rem;
   }
 }
 /* laptopM */
 @media (min-width: 1024px) and (max-width: 1240px) {
   .Wrapper {
-    max-width: 1230px;
+    max-width: 99vw;
   }
   .Content {
     flex-direction: column;
@@ -306,11 +326,9 @@
     justify-content: flex-start;
   }
   .title_n_index_indecator_top_wrapper > a > h1 {
-    font-size: 0.9rem;
+    font-size: 1.3rem;
   }
-  .product_description_wrapper > a > h1 {
-    font-size: 0.9rem;
-  }
+
   .description_mobile {
     display: flex;
   }
@@ -323,22 +341,51 @@
 }
 /* tabletS */
 @media (min-width: 350px) and (max-width: 440px) {
+  .artical_Wrapper {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 /* mobileL */
 @media (min-width: 285px) and (max-width: 350px) {
+  .artical_Wrapper {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .action_buttons_wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 /* mobileM */
 @media (min-width: 200px) and (max-width: 285px) {
+  .artical_Wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .action_buttons_wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 /* mobileS */
 @media (min-width: 100px) and (max-width: 200px) {
+  .artical_Wrapper {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .action_buttons_wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+/* Global 1*/
+@media (min-width: 440px) and (max-width: 550px) {
+  .artical_Wrapper {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 
-/* Global */
+/* Global 0*/
 @media (min-width: 100px) and (max-width: 1024px) {
   .Wrapper {
-    max-width: unset;
-    width: 95%;
+    max-width: 95vw;
   }
   .Content {
     flex-direction: column;
@@ -365,6 +412,7 @@
   .cart_title_n_action_buttons_content {
     justify-content: flex-start;
     gap: 20px;
+    padding: 0 15px;
   }
 
   .description_mobile {
@@ -372,7 +420,7 @@
   }
 
   .artical_Wrapper {
-    display: flex;
+    display: inline-grid;
   }
   .product_description_wrapper {
     display: none;
@@ -387,9 +435,9 @@
     justify-content: flex-start;
   }
   .title_n_index_indecator_top_wrapper > a > h1 {
-    font-size: 0.8rem;
+    font-size: 1.2rem;
   }
-  .product_description_wrapper > a > h1 {
-    font-size: 0.8rem;
+  .images_scroll_wrapper {
+    display: none;
   }
 }

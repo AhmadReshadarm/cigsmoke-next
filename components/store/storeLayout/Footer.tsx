@@ -94,26 +94,7 @@ const Footer = (): JSX.Element => {
                             prefetch={false}
                           >
                             <span title="позвонить 8-925-486-54-44">
-                              8-925-486-54-44
-                            </span>
-                          </Link>
-                          <span className={styles.call_saperator}>|</span>
-                          <Link
-                            aria-label="позвонить 89266999952"
-                            href="tel:89266999952"
-                            prefetch={false}
-                          >
-                            <span title="позвонить 8-926-699-99-52">
-                              8-926-699-99-52
-                            </span>
-                          </Link>
-                          <span className={styles.call_saperator}>|</span>
-                          <Link
-                            aria-label="позвонить 89268999954"
-                            href="tel:89268999954"
-                          >
-                            <span title="позвонить 8-926-899-99-54">
-                              8-926-899-99-54
+                              8-800-700-17-41
                             </span>
                           </Link>
                         </div>

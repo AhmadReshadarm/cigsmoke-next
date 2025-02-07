@@ -15,6 +15,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  max-width: 1500px;
+  overflow: hidden;
 }
 
 .SliderWrapper {
@@ -29,13 +31,13 @@
 
 .banner_image_link_wrapper {
   width: 100%;
-  height: 800px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   position: relative;
+  border-radius: 50px;
 }
 
 .error_img {
@@ -53,6 +55,7 @@
   align-items: center;
   justify-content: space-between;
   position: absolute;
+  padding: 0 50px;
 }
 
 .dots_indecator_wrapper {
@@ -107,14 +110,18 @@
 }
 
 .Slider {
+  border-radius: 50px;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 .SliderSlide {
   width: 100%;
-  height: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
 .isDisplay {
@@ -153,77 +160,106 @@
 
 /* laptopL */
 @media (min-width: 1240px) and (max-width: 1550px) {
-  .banner_image_link_wrapper {
-    height: 515px;
+  .SliderSlide {
+    max-width: 1230px;
+  }
+
+  .SliderContainer {
+    max-width: 1230px;
   }
   .banner_arrows_wrapper {
     max-width: 1230px;
-    width: 75%;
-  }
-  .LoaderMask {
-    height: 515px;
+    width: 100%;
   }
 }
 /* laptopM */
 @media (min-width: 1024px) and (max-width: 1240px) {
-  .banner_image_link_wrapper {
-    height: 430px;
+  .SliderSlide {
+    max-width: 99vw;
+  }
+
+  .SliderContainer {
+    max-width: 99vw;
   }
   .banner_arrows_wrapper {
     width: 95%;
     max-width: unset;
-  }
-  .LoaderMask {
-    height: 430px;
   }
 }
 /* laptopS */
 @media (min-width: 768px) and (max-width: 1024px) {
-  .banner_image_link_wrapper {
-    height: 320px;
+  .SliderSlide {
+    max-width: 95vw;
+  }
+
+  .SliderContainer {
+    max-width: 95vw;
   }
   .banner_arrows_wrapper {
     width: 95%;
     max-width: unset;
   }
-  .LoaderMask {
-    height: 320px;
-  }
 }
 /* tabletL */
 @media (min-width: 440px) and (max-width: 768px) {
+  .SliderSlide {
+    max-width: 95vw;
+  }
+
+  .SliderContainer {
+    max-width: 95vw;
+  }
+
   .banner_image_link_wrapper {
-    height: 180px;
+    border-radius: 40px;
+  }
+  .Slider {
+    border-radius: 40px;
   }
   .banner_arrows_wrapper {
     display: none;
   }
   .dots_indecator_wrapper {
     display: flex;
-  }
-  .LoaderMask {
-    height: 180px;
   }
 }
 /* tabletS */
 @media (min-width: 350px) and (max-width: 440px) {
+  .SliderSlide {
+    max-width: 95vw;
+  }
+
+  .SliderContainer {
+    max-width: 95vw;
+  }
+
   .banner_image_link_wrapper {
-    height: 165px;
+    border-radius: 30px;
+  }
+  .Slider {
+    border-radius: 30px;
   }
   .banner_arrows_wrapper {
     display: none;
   }
   .dots_indecator_wrapper {
     display: flex;
-  }
-  .LoaderMask {
-    height: 165px;
   }
 }
 /* mobileL */
 @media (min-width: 285px) and (max-width: 350px) {
+  .SliderSlide {
+    max-width: 95vw;
+  }
+
+  .SliderContainer {
+    max-width: 95vw;
+  }
   .banner_image_link_wrapper {
-    height: 120px;
+    border-radius: 20px;
+  }
+  .Slider {
+    border-radius: 20px;
   }
   .banner_arrows_wrapper {
     display: none;
@@ -231,14 +267,22 @@
   .dots_indecator_wrapper {
     display: flex;
   }
-  .LoaderMask {
-    height: 120px;
-  }
 }
 /* mobileM */
 @media (min-width: 200px) and (max-width: 285px) {
+  .SliderSlide {
+    max-width: 95vw;
+  }
+
+  .SliderContainer {
+    max-width: 95vw;
+  }
+
   .banner_image_link_wrapper {
-    height: 80px;
+    border-radius: 10px;
+  }
+  .Slider {
+    border-radius: 10px;
   }
   .banner_arrows_wrapper {
     display: none;
@@ -252,8 +296,19 @@
 }
 /* mobileS */
 @media (min-width: 100px) and (max-width: 200px) {
+  .SliderSlide {
+    max-width: 95vw;
+  }
+
+  .SliderContainer {
+    max-width: 95vw;
+  }
   .banner_image_link_wrapper {
-    height: 80px;
+    border-radius: 5px;
+  }
+
+  .Slider {
+    border-radius: 5px;
   }
   .banner_arrows_wrapper {
     display: none;
@@ -263,12 +318,5 @@
   }
   .LoaderMask {
     height: 80px;
-  }
-}
-
-/* Global */
-@media (min-width: 100px) and (max-width: 1550px) {
-  .Slider {
-    object-fit: contain;
   }
 }

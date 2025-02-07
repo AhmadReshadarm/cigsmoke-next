@@ -20,6 +20,7 @@ import {
 import { SWIPE_CONFIDENCE_THRESHOLD } from './constants';
 import ZoomFullScreen from 'ui-kit/ZoomFullScreen';
 import styles from './styles/slider.module.css';
+import { CartWishlistBtn } from 'ui-kit/ProductActionBtns';
 
 type Props = {
   url?: string;
@@ -46,29 +47,29 @@ const Slider: React.FC<Props> = ({ product, url, images, windowWidth }) => {
       // laptopM
       case sizesNum.laptopS < windowWidth && windowWidth < sizesNum.laptopM:
         return {
-          minMaxheight: windowWidth / 3 - 90,
-          minMaxWidth: windowWidth / 3 - 70,
+          minMaxheight: windowWidth / 3 - 30,
+          minMaxWidth: windowWidth / 3 - 30,
           width: 100,
         };
       // laptopS
       case sizesNum.tabletL < windowWidth && windowWidth < sizesNum.laptopS:
         return {
-          minMaxheight: windowWidth / 2 - 90,
-          minMaxWidth: windowWidth / 2 - 70,
+          minMaxheight: windowWidth / 2 - 30,
+          minMaxWidth: windowWidth / 2 - 30,
           width: 100,
         };
       // tabletL
       case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletL:
         return {
-          minMaxheight: windowWidth / 2 - 90,
-          minMaxWidth: windowWidth / 2 - 70,
+          minMaxheight: windowWidth / 2 - 30,
+          minMaxWidth: windowWidth / 2 - 30,
           width: 100,
         };
       // tabletS, mobileL, mobileM, mobileS, mobileES
       case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.tabletS:
         return {
-          minMaxheight: windowWidth - 100,
-          minMaxWidth: windowWidth - 100,
+          minMaxheight: windowWidth / 2 - 30,
+          minMaxWidth: windowWidth / 2 - 30,
           width: 100,
         };
       default:
@@ -223,6 +224,7 @@ const Slider: React.FC<Props> = ({ product, url, images, windowWidth }) => {
             </ul>
           )}
         </Link>
+        <CartWishlistBtn product={product} />
         <div className={styles.ImageZoomButtonWrapper}>
           <button
             onClick={(e) => {

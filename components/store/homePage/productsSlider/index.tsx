@@ -54,6 +54,32 @@ const ProductsSlider: React.FC<Props> = ({ caroselProducts, base64Image }) => {
         <>
           {caroselProducts.map((product, index) => {
             const images = getProductVariantsImages(product?.productVariants);
+            const articals = product.productVariants?.map(
+              (variant) => variant.artical,
+            );
+            // remove the repated product artical from array to only show in UI once
+            const filteredArticals = articals!.filter(function (
+              value,
+              index,
+              array,
+            ) {
+              return array.indexOf(value) === index;
+            });
+
+            const colors: string[] = [];
+            product.productVariants!.map((variant) => {
+              if (variant.color?.url !== '-') {
+                colors.push(variant.color?.code!);
+              }
+            });
+            // remove the repated product colors from array to only show in UI once
+            const filteredColors = colors.filter(function (
+              value,
+              index,
+              array,
+            ) {
+              return array.indexOf(value) === index;
+            });
             return (
               <>
                 {caroselIndex === index ? (
@@ -83,29 +109,58 @@ const ProductsSlider: React.FC<Props> = ({ caroselProducts, base64Image }) => {
                               }`}</h1>
                             </Link>
                           </div>
-                          <div className={styles.description_mobile}>
-                            <p>
-                              {product?.desc?.includes('|')
-                                ? product?.desc?.split('|')[0]?.length! > 150
-                                  ? product?.desc?.split('|')[0].slice(0, 150) +
-                                    '...'
-                                  : product?.desc?.split('|')[0]
-                                : product?.desc?.length! > 150
-                                ? product?.desc?.slice(0, 150) + '...'
-                                : product?.desc?.slice(0, 150)}
-                            </p>
-                          </div>
                           <div
                             className={
                               styles.cart_price_n_action_button_wrapper
                             }
                           >
+                            {/* ---------------- artical start -------------- */}
                             <div className={styles.artical_Wrapper}>
-                              <span>Артикул: </span>
-                              <span>
-                                {product?.productVariants![0].artical!.toLocaleUpperCase()}
+                              <span className={styles.artical_title}>
+                                Артикул(ы):{' '}
                               </span>
+                              {filteredArticals.map((artical, index) => {
+                                return (
+                                  <span key={index}>
+                                    {artical!.includes('|')
+                                      ? artical!.split('|')[0].toUpperCase()
+                                      : artical!.toUpperCase()}
+                                    {filteredArticals.length - 1 !== index
+                                      ? ', '
+                                      : ''}
+                                  </span>
+                                );
+                              })}
                             </div>
+                            {/* ----------------- end of articals --------------- */}
+                            {/* ----------- color ------------------- */}
+                            <div
+                              style={{
+                                alignItems: 'center',
+                                display:
+                                  filteredColors.length !== 0 ? 'flex' : 'none',
+                              }}
+                              className={styles.colors_wrapper}
+                            >
+                              <span className={styles.artical_title}>
+                                Цвет(а) :{' '}
+                              </span>
+                              {filteredColors.map((color, index) => {
+                                return (
+                                  <span
+                                    style={{
+                                      width: '10px',
+                                      height: '10px',
+                                      borderRadius: '50%',
+                                      backgroundColor: color,
+                                      border: '1px solid rgb(129 129 129)',
+                                    }}
+                                    key={index}
+                                  />
+                                );
+                              })}
+                            </div>
+                            {/* ---------- end of color ----------- */}
                             <div className={styles.price_wrapper}>
                               {product?.productVariants![0].oldPrice ? (
                                 <span className={styles.old_price}>

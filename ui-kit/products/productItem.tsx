@@ -44,22 +44,22 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
       // laptopM
       case sizesNum.laptopS < windowWidth && windowWidth < sizesNum.laptopM:
         return {
-          minMaxWidth: windowWidth / 3 - 50,
+          minMaxWidth: windowWidth / 3 - 10,
         };
       // laptopS
       case sizesNum.tabletL < windowWidth && windowWidth < sizesNum.laptopS:
         return {
-          minMaxWidth: windowWidth / 2 - 50,
+          minMaxWidth: windowWidth / 2 - 10,
         };
       // tabletL
       case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletL:
         return {
-          minMaxWidth: windowWidth / 2 - 50,
+          minMaxWidth: windowWidth / 2 - 10,
         };
       // tabletS, mobileL, mobileM, mobileS, mobileES
       case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.tabletS:
         return {
-          minMaxWidth: windowWidth - 80,
+          minMaxWidth: windowWidth / 2 - 10,
         };
       default:
         return {
@@ -76,25 +76,9 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
       minMaxWidth: calculateImageSizeContainer(windowWidth).minMaxWidth,
     });
   }, [windowWidth]);
-  const articals = product.productVariants?.map((variant) => variant.artical);
-  // remove the repated product artical from array to only show in UI once
-  const filteredArticals = articals!.filter(function (value, index, array) {
-    return array.indexOf(value) === index;
-  });
-  const colors: string[] = [];
-  product.productVariants!.map((variant) => {
-    if (variant.color?.url !== '-') {
-      colors.push(variant.color?.code!);
-    }
-  });
-  // remove the repated product colors from array to only show in UI once
-  const filteredColors = colors.filter(function (value, index, array) {
-    return array.indexOf(value) === index;
-  });
 
   return (
     <li
-      // key={key}
       className={styles.ItemContainer}
       style={{
         minWidth: `${wrapperSizes.minMaxWidth}px`,
@@ -109,6 +93,16 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
           windowWidth={windowWidth}
         />
         <div className={styles.product_title_add_to_card_wrapper}>
+          <div className={styles.product_price_wrapper}>
+            {product.productVariants![0]?.oldPrice ? (
+              <span className={styles.old_price}>
+                {product.productVariants![0]?.oldPrice} ₽
+              </span>
+            ) : (
+              ''
+            )}
+            <span>{product.productVariants![0]?.price} ₽</span>
+          </div>
           <Link
             className={styles.product_title}
             onClick={() => {
@@ -120,53 +114,11 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
             prefetch={false}
           >
             <span title={product.name}>
-              {product.name?.length! > 80
-                ? `${product.name?.slice(0, 80)}...`
+              {product.name?.length! > 20
+                ? `${product.name?.slice(0, 20)}...`
                 : product.name}
             </span>
           </Link>
-          {/* ----------- aritcale ---------- */}
-          <div className={styles.artical_wrapper}>
-            <span>Артикул(ы) : </span>
-            <div className={styles.artical_content_wrapper}>
-              {filteredArticals.map((artical, index) => {
-                return (
-                  <span key={index}>
-                    {artical!.includes('|')
-                      ? artical!.split('|')[0].toUpperCase()
-                      : artical!.toUpperCase()}
-                    {filteredArticals.length - 1 !== index ? ', ' : ''}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-          {/* ----------- end of articale ------------ */}
-          {/* ----------- color ------------------- */}
-          <div
-            style={{
-              alignItems: 'center',
-              display: filteredColors.length !== 0 ? 'flex' : 'none',
-            }}
-            className={styles.artical_wrapper}
-          >
-            <span>Цвет(а) : </span>
-            {filteredColors.map((color, index) => {
-              return (
-                <span
-                  style={{
-                    width: '10px',
-                    height: '10px',
-                    borderRadius: '50%',
-                    backgroundColor: color,
-                    border: '1px solid rgb(129 129 129)',
-                  }}
-                  key={index}
-                />
-              );
-            })}
-          </div>
-          {/* ---------- end of color ----------- */}
           {/* ------------ rating --------------- */}
           <div
             title={`${
@@ -193,6 +145,20 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
                 />
               </svg>
             </span>
+            <span className={styles.review_text}>{product.rating?.avg}</span>
+            <span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                style={{ color: 'rgba(0, 26, 52, 0.4)' }}
+              >
+                <path
+                  fill="currentColor"
+                  d="M8.545 13C11.93 13 14 11.102 14 8s-2.07-5-5.455-5C5.161 3 3.091 4.897 3.091 8c0 1.202.31 2.223.889 3.023-.2.335-.42.643-.656.899-.494.539-.494 1.077.494 1.077.89 0 1.652-.15 2.308-.394.703.259 1.514.394 2.42.394"
+                ></path>
+              </svg>
+            </span>
             <span className={styles.review_text}>
               {Math.floor(product.reviews?.length!) == 1
                 ? Math.floor(product.reviews?.length!) + ' Оценка'
@@ -202,31 +168,9 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
             </span>
           </div>
           {/* ------------- end of rating ---------------- */}
-          {/* ------------------ description ---------------- */}
-          {/* <div className={styles.product_description_wrapper}>
-            <span title="Нажмите на карточку товара, чтобы узнать больше">
-              {product?.desc?.includes('|')
-                ? product?.desc?.split('|')[0]?.length! > 60
-                  ? product?.desc?.split('|')[0].slice(0, 60) + '...'
-                  : product?.desc?.split('|')[0]
-                : product?.desc?.length! > 60
-                ? product?.desc?.slice(0, 60) + '...'
-                : product?.desc?.slice(0, 60)}
-            </span>
-          </div> */}
-          {/* ----------------- end of description ---------- */}
-          <div className={styles.product_price_wrapper}>
-            {product.productVariants![0]?.oldPrice ? (
-              <span className={styles.old_price}>
-                {product.productVariants![0]?.oldPrice} ₽
-              </span>
-            ) : (
-              ''
-            )}
-            <span>{product.productVariants![0]?.price} ₽</span>
-          </div>
+
           <div className={styles.action_buttons_wrapper}>
-            <AddToWishlist product={product} />
+            {/* <AddToWishlist product={product} /> */}
             <AddToCart
               product={product}
               qty={findCartQTY(product, cart)}

@@ -10,6 +10,7 @@ import {
 import { useState } from 'react';
 import styles from './ProductActionBtns.module.css';
 import dynamic from 'next/dynamic';
+import { WishlistSVG } from 'components/store/storeLayout/utils/headerIcons/SVGIconsHeader';
 const ItemCounter = dynamic(() => import('ui-kit/ItemCounter'));
 
 type PropsCart = {
@@ -144,6 +145,44 @@ export const AddToWishlist: React.FC<PropsWishlist> = ({ product }) => {
         )}
         <div className={styles.content_indecator}></div>
       </div>
+    </button>
+  );
+};
+
+export const CartWishlistBtn: React.FC<PropsWishlist> = ({ product }) => {
+  const dispatch = useAppDispatch();
+  const { wishlist, loading }: TWishlistState = useAppSelector(
+    (state) => state.wishlist,
+  );
+  return (
+    <button
+      onClick={handleWishBtnClick(product, dispatch, wishlist!)}
+      className={styles.cartWishlistBtnWrapper}
+      disabled={loading ? true : false}
+      title={
+        checkIfItemInWishlist(product, wishlist!)
+          ? `Удалить ${product.name} из избранного`
+          : `Добавить ${product.name} в избранное`
+      }
+      type="button"
+    >
+      {checkIfItemInWishlist(product, wishlist!) ? (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+        >
+          <path
+            fill="#F8104B"
+            fill-rule="evenodd"
+            d="M12 22c-.316-.02-.56-.147-.848-.278a23.5 23.5 0 0 1-4.781-2.942C3.777 16.705 1 13.449 1 9a6 6 0 0 1 6-6 6.18 6.18 0 0 1 5 2.568A6.18 6.18 0 0 1 17 3a6 6 0 0 1 6 6c0 4.448-2.78 7.705-5.375 9.78a23.6 23.6 0 0 1-4.78 2.942c-.543.249-.732.278-.845.278"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+      ) : (
+        <WishlistSVG fill={'#545454'} />
+      )}
     </button>
   );
 };

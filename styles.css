@@ -1,7 +1,4 @@
 :root {
-  --font-Circe: 'Circe';
-  --font-Jost: 'Jost';
-  --font-ricordi: 'ricordi';
   --font-roboto: 'Roboto';
   --textPrimary: #ffffff;
   --buttonPrimary: #000000;
@@ -18,46 +15,6 @@
   --bgProduct: #f9f9f9;
   --hover: #ed3969;
   --yellow: #edba64;
-}
-
-/* @font-face {
-  font-family: 'Jost';
-  src: url('/fonts/Jost/Jost-Regular.woff2') format('woff2');
-  font-weight: normal;
-  font-style: 400;
-  font-display: swap;
-} */
-
-/* ---------------------------------- Circe font ----------------------------------------- */
-
-@font-face {
-  font-family: 'Circe';
-  src: url('/fonts/circe/circe-light.woff') format('woff');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Circe';
-  src: url('/fonts/circe/circe-regular.woff') format('woff');
-  font-weight: normal;
-  font-style: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Circe';
-  src: url('/fonts/circe/circe-bold.woff') format('woff');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ---------------------------------- Circe font end ----------------------------------------- */
-@font-face {
-  font-family: 'ricordi';
-  src: url('/fonts/tt-ricordi-marmo-trial-variable.woff') format('woff');
-  font-style: normal;
-  font-display: swap;
 }
 
 * {

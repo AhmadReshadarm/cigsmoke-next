@@ -1,4 +1,3 @@
-import color from 'components/store/lib/ui.colors';
 import variants from 'components/store/lib/variants';
 import { AnimatePresence, motion } from 'framer-motion';
 import { wrap } from 'popmotion';
@@ -75,7 +74,6 @@ const ImageBanner: React.FC<Props> = ({ slides, base64Image_2 }) => {
             ? evt.preventDefault()
             : '';
         }}
-        style={{ background: color.backgroundSecondery }}
         prefetch={false}
         title={`Перейти в ${slides[imageIndex].link}`}
       >
