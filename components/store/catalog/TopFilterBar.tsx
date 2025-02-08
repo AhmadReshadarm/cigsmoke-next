@@ -80,7 +80,7 @@ const TopFilterBar: React.FC<Props> = ({
     setSearchTerm('');
     setSelectedCategory(undefined);
     setCurrentPage(1);
-    setPageSize(12);
+    setPageSize(18);
     handleResetFilters();
     setResetSlider(true);
     setActivateResetBtn(false);
@@ -110,7 +110,7 @@ const TopFilterBar: React.FC<Props> = ({
     searchTerm !== '' ? setActivateResetBtn(true) : setActivateResetBtn(false);
     if (clearSearchTerm) {
       setCurrentPage(1);
-      setPageSize(12);
+      setPageSize(18);
 
       pushQueryParams([
         { name: 'name', value: searchTerm },
@@ -120,7 +120,7 @@ const TopFilterBar: React.FC<Props> = ({
     } else {
       const delayDebounceFn = setTimeout(() => {
         setCurrentPage(1);
-        setPageSize(12);
+        setPageSize(18);
 
         pushQueryParams([
           { name: 'name', value: searchTerm },
@@ -167,10 +167,21 @@ const TopFilterBar: React.FC<Props> = ({
   //   }
   //   isInPage(child) ? setHasActiveFilters(true) : setActivateResetBtn(false);
   // });
+  useEffect(() => {
+    if (expanded) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  }, [expanded]);
 
   return (
     <FilterBarContent expanded={expanded}>
-      <div className="mobile-background"></div>
+      <div
+        className="mobile-background"
+        onClick={() => {
+          setMoreFilters(!isMoreFilters);
+          handleExpantionChange();
+        }}
+      ></div>
       <FiltersWrapper
         expanded={expanded}
         animate={{ height: isMoreFilters ? 'unset' : '0px' }}
@@ -360,7 +371,7 @@ const TopFilterBar: React.FC<Props> = ({
               : color.textPrimary,
           }}
         >
-          <span style={{ fontWeight: '500', fontFamily: 'Circe' }}>
+          <span style={{ fontWeight: '600' }}>
             {isMoreFilters ? 'Закрыть категории' : 'Открытые категории'}
           </span>
           <span className="more-filter-icon">
@@ -398,6 +409,7 @@ const TopFilterBar: React.FC<Props> = ({
               onClick={() => {
                 setClearSearchTerm(true);
                 setSearchTerm('');
+                window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
               }}
             >
               <svg
@@ -458,6 +470,11 @@ const TopFilterBar: React.FC<Props> = ({
 
                             <span
                               onClick={() => {
+                                window.scrollTo({
+                                  top: 0,
+                                  left: 0,
+                                  behavior: 'smooth',
+                                });
                                 const curOption = selectedFilter.options?.find(
                                   (option) => option.id === selectedColor.id,
                                 );
@@ -523,6 +540,11 @@ const TopFilterBar: React.FC<Props> = ({
                             <span>{selectedType.name}</span>
                             <span
                               onClick={() => {
+                                window.scrollTo({
+                                  top: 0,
+                                  left: 0,
+                                  behavior: 'smooth',
+                                });
                                 const curOption = selectedFilter.options?.find(
                                   (option) => option.id === selectedType.id,
                                 );
@@ -588,6 +610,11 @@ const TopFilterBar: React.FC<Props> = ({
                             <span>{selectedCategory.name}</span>
                             <span
                               onClick={() => {
+                                window.scrollTo({
+                                  top: 0,
+                                  left: 0,
+                                  behavior: 'smooth',
+                                });
                                 const curOption: any =
                                   selectedFilter.options?.find(
                                     (option) =>
@@ -653,6 +680,11 @@ const TopFilterBar: React.FC<Props> = ({
                             <span>{selectedSubCategory.name}</span>
                             <span
                               onClick={() => {
+                                window.scrollTo({
+                                  top: 0,
+                                  left: 0,
+                                  behavior: 'smooth',
+                                });
                                 const curOption: any =
                                   selectedFilter.options?.find(
                                     (option) =>
@@ -731,6 +763,11 @@ const TopFilterBar: React.FC<Props> = ({
                           setSliderChanged(false);
                           const values: any = [null, null];
                           selectedFilter.onChange(values);
+                          window.scrollTo({
+                            top: 0,
+                            left: 0,
+                            behavior: 'smooth',
+                          });
                         }}
                       >
                         <svg
@@ -796,6 +833,10 @@ const FilterBarContent = styled.div<any>`
   padding: 10px 20px 10px 20px;
   background-color: #f3f2f0;
   border-radius: 30px;
+  position: ${(props) => (!props.expanded ? 'sticky' : 'unset;')};
+  top: 0;
+  left: 0;
+  z-index: 10;
   @media ${devices.laptopS} {
     .mobile-background {
       display: ${(props) => (!props.expanded ? 'none' : 'block;')};

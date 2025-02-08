@@ -47,35 +47,49 @@ const Slider: React.FC<Props> = ({ product, url, images, windowWidth }) => {
       // laptopM
       case sizesNum.laptopS < windowWidth && windowWidth < sizesNum.laptopM:
         return {
-          minMaxheight: windowWidth / 3 - 30,
-          minMaxWidth: windowWidth / 3 - 30,
+          minMaxheight: windowWidth / 5 - 20,
+          minMaxWidth: windowWidth / 5 - 30,
           width: 100,
         };
       // laptopS
       case sizesNum.tabletL < windowWidth && windowWidth < sizesNum.laptopS:
         return {
-          minMaxheight: windowWidth / 2 - 30,
-          minMaxWidth: windowWidth / 2 - 30,
+          minMaxheight: windowWidth / 4 - 10,
+          minMaxWidth: windowWidth / 4 - 30,
           width: 100,
         };
       // tabletL
-      case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletL:
+      case sizesNum.tabletM < windowWidth && windowWidth < sizesNum.tabletL:
         return {
-          minMaxheight: windowWidth / 2 - 30,
+          minMaxheight: windowWidth / 3 - 10,
+          minMaxWidth: windowWidth / 3 - 30,
+          width: 100,
+        };
+      // tabletM
+      case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletM:
+        return {
+          minMaxheight: windowWidth / 2 - 10,
           minMaxWidth: windowWidth / 2 - 30,
           width: 100,
         };
-      // tabletS, mobileL, mobileM, mobileS, mobileES
-      case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.tabletS:
+      // tabletS,
+      case sizesNum.mobileL < windowWidth && windowWidth < sizesNum.tabletS:
         return {
-          minMaxheight: windowWidth / 2 - 30,
+          minMaxheight: windowWidth / 2 - 10,
           minMaxWidth: windowWidth / 2 - 30,
+          width: 100,
+        };
+      // mobileL, mobileM, mobileS, mobileES
+      case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.mobileL:
+        return {
+          minMaxheight: windowWidth - 10,
+          minMaxWidth: windowWidth - 30,
           width: 100,
         };
       default:
         return {
-          minMaxWidth: 300,
-          minMaxheight: 300,
+          minMaxWidth: 190,
+          minMaxheight: 190,
           width: 100,
         };
     }
@@ -93,7 +107,7 @@ const Slider: React.FC<Props> = ({ product, url, images, windowWidth }) => {
       width: calculateImageSize(windowWidth).width,
     });
   }, [windowWidth]);
-
+  //
   // --------------------------------------------
   useEffect(() => {
     function hideOnClickOutside(element1, element2) {

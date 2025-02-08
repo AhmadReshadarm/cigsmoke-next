@@ -32,9 +32,7 @@ const Subscribers = (): JSX.Element => {
   return (
     <Container
       style={{
-        backgroundColor: isOrderCallFormActive
-          ? '#595959'
-          : color.backgroundSecondery,
+        backgroundColor: isOrderCallFormActive ? '#595959' : '#f0bc5e40',
       }}
       ref={ref}
     >
@@ -182,7 +180,7 @@ const Subscribers = (): JSX.Element => {
           </FormContent>
         </FormContainer>
       ) : (
-        <LoaderMask></LoaderMask>
+        <LoaderMask />
       )}
     </Container>
   );
@@ -265,6 +263,7 @@ const FormContent = styled.div`
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: 50px 0px 0px 50px;
     }
   }
 
@@ -278,6 +277,7 @@ const FormContent = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border-radius: 0px 50px 50px 0px;
     .news-letter-content-parent {
       width: 450px;
       height: 450px;
@@ -309,7 +309,13 @@ const FormContent = styled.div`
   }
   @media ${devices.tabletL} {
     flex-direction: column;
+    .news-letter-image-wrapper {
+      img {
+        border-radius: 50px 50px 0px 0px;
+      }
+    }
     .news-letter-form-wrapper {
+      border-radius: 0px 0px 50px 50px;
       .news-letter-content-parent {
         width: 95%;
       }
@@ -317,8 +323,14 @@ const FormContent = styled.div`
   }
   @media ${devices.tabletS} {
     flex-direction: column;
+    .news-letter-image-wrapper {
+      img {
+        border-radius: 40px 40px 0px 0px;
+      }
+    }
     .news-letter-form-wrapper {
       height: 75vh;
+      border-radius: 0px 0px 40px 40px;
       .news-letter-content-parent {
         width: 90vw;
         min-width: unset;
@@ -331,8 +343,14 @@ const FormContent = styled.div`
 
   @media ${devices.mobileL} {
     flex-direction: column;
+    .news-letter-image-wrapper {
+      img {
+        border-radius: 30px 30px 0px 0px;
+      }
+    }
     .news-letter-form-wrapper {
       height: 75vh;
+      border-radius: 0px 0px 30px 30px;
       .news-letter-content-parent {
         width: 90vw;
         min-width: unset;
@@ -344,8 +362,14 @@ const FormContent = styled.div`
   }
   @media ${devices.mobileM} {
     flex-direction: column;
+    .news-letter-image-wrapper {
+      img {
+        border-radius: 20px 20px 0px 0px;
+      }
+    }
     .news-letter-form-wrapper {
       height: 75vh;
+      border-radius: 0px 0px 20px 20px;
       .news-letter-content-parent {
         width: 90vw;
         min-width: unset;
@@ -358,8 +382,15 @@ const FormContent = styled.div`
   }
 
   @media ${devices.mobileS} {
+    flex-direction: column;
+    .news-letter-image-wrapper {
+      img {
+        border-radius: 10px 10px 0px 0px;
+      }
+    }
     .news-letter-form-wrapper {
       height: 75vh;
+      border-radius: 0px 0px 10px 10px;
       .news-letter-content-parent {
         width: 90vw;
         min-width: unset;
@@ -547,12 +578,18 @@ const ActionBtn = styled.button`
     background: #ffffff;
     color: #000000;
   }
+  @media ${devices.mobileL} {
+    width: 100%;
+    min-height: unset;
+  }
   @media ${devices.mobileM} {
     width: 100%;
+    min-height: unset;
   }
 
   @media ${devices.mobileS} {
     width: 100%;
+    min-height: unset;
   }
 `;
 

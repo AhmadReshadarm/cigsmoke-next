@@ -20,7 +20,7 @@ import { AppDispatch } from 'redux/store';
 import { FilterOption } from 'ui-kit/FilterCheckbox/types';
 import { TFiltersConfig } from './types';
 
-const PAGE_ITEMS_LIMIT = 12;
+const PAGE_ITEMS_LIMIT = 18;
 
 const convertQueryParams = (query: {
   [k: string]: string | string[] | undefined;

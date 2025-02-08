@@ -41,35 +41,49 @@ export const LoaderItem = ({ index }) => {
       // laptopM
       case sizesNum.laptopS < windowWidth && windowWidth < sizesNum.laptopM:
         return {
-          minMaxheight: windowWidth / 3 - 90,
-          minMaxWidth: windowWidth / 3 - 70,
+          minMaxheight: windowWidth / 5 - 20,
+          minMaxWidth: windowWidth / 5 - 30,
           width: 100,
         };
       // laptopS
       case sizesNum.tabletL < windowWidth && windowWidth < sizesNum.laptopS:
         return {
-          minMaxheight: windowWidth / 2 - 90,
-          minMaxWidth: windowWidth / 2 - 70,
+          minMaxheight: windowWidth / 4 - 10,
+          minMaxWidth: windowWidth / 4 - 30,
           width: 100,
         };
       // tabletL
-      case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletL:
+      case sizesNum.tabletM < windowWidth && windowWidth < sizesNum.tabletL:
         return {
-          minMaxheight: windowWidth / 2 - 90,
-          minMaxWidth: windowWidth / 2 - 70,
+          minMaxheight: windowWidth / 3 - 10,
+          minMaxWidth: windowWidth / 3 - 30,
           width: 100,
         };
-      // tabletS, mobileL, mobileM, mobileS, mobileES
-      case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.tabletS:
+      // tabletM
+      case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletM:
         return {
-          minMaxheight: '',
-          minMaxWidth: '',
-          width: 95,
+          minMaxheight: windowWidth / 2 - 10,
+          minMaxWidth: windowWidth / 2 - 30,
+          width: 100,
+        };
+      // tabletS,
+      case sizesNum.mobileL < windowWidth && windowWidth < sizesNum.tabletS:
+        return {
+          minMaxheight: windowWidth / 2 - 10,
+          minMaxWidth: windowWidth / 2 - 30,
+          width: 100,
+        };
+      // mobileL, mobileM, mobileS, mobileES
+      case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.mobileL:
+        return {
+          minMaxheight: windowWidth - 10,
+          minMaxWidth: windowWidth - 30,
+          width: 100,
         };
       default:
         return {
-          minMaxWidth: 300,
-          minMaxheight: 300,
+          minMaxWidth: 190,
+          minMaxheight: 190,
           width: 100,
         };
     }
@@ -86,26 +100,36 @@ export const LoaderItem = ({ index }) => {
       // laptopM
       case sizesNum.laptopS < windowWidth && windowWidth < sizesNum.laptopM:
         return {
-          minMaxWidth: windowWidth / 3 - 50,
+          minMaxWidth: windowWidth / 5 - 10,
         };
       // laptopS
       case sizesNum.tabletL < windowWidth && windowWidth < sizesNum.laptopS:
         return {
-          minMaxWidth: windowWidth / 2 - 50,
+          minMaxWidth: windowWidth / 4 - 10,
         };
       // tabletL
-      case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletL:
+      case sizesNum.tabletM < windowWidth && windowWidth < sizesNum.tabletL:
         return {
-          minMaxWidth: windowWidth / 2 - 50,
+          minMaxWidth: windowWidth / 3 - 10,
         };
-      // tabletS, mobileL, mobileM, mobileS, mobileES
-      case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.tabletS:
+      // tabletM
+      case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletM:
         return {
-          minMaxWidth: windowWidth - 80,
+          minMaxWidth: windowWidth / 2 - 10,
+        };
+      // tabletS
+      case sizesNum.mobileL < windowWidth && windowWidth < sizesNum.tabletS:
+        return {
+          minMaxWidth: windowWidth / 2 - 10,
+        };
+      // mobileL, mobileM, mobileS, mobileES
+      case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.mobileL:
+        return {
+          minMaxWidth: windowWidth - 20,
         };
       default:
         return {
-          minMaxWidth: 330,
+          minMaxWidth: 200,
         };
     }
   };
@@ -160,29 +184,7 @@ export const LoaderItem = ({ index }) => {
               />
             }
           </span>
-          <div className={styles.artical_wrapper}>
-            <span>
-              {
-                <div
-                  className={styles.LoaderMask}
-                  style={{ width: '100px', height: '15px' }}
-                />
-              }
-            </span>
-          </div>
-          <div className={styles.product_description_wrapper}>
-            <span style={{ display: 'flex', gap: '10px' }}>
-              <div
-                className={styles.LoaderMask}
-                style={{ width: '100%', height: '15px' }}
-              />
 
-              <div
-                className={styles.LoaderMask}
-                style={{ width: '100%', height: '15px' }}
-              />
-            </span>
-          </div>
           <div className={styles.product_price_wrapper}>
             <span>
               <div
@@ -191,15 +193,13 @@ export const LoaderItem = ({ index }) => {
               />
             </span>
           </div>
-          <div className={styles.action_buttons_wrapper}>
+          <div className={styles.product_title}>
             <div
               className={styles.LoaderMask}
-              style={{
-                width: '150px',
-                height: '50px',
-                borderRadius: '30px',
-              }}
+              style={{ width: '80px', height: '15px' }}
             />
+          </div>
+          <div className={styles.action_buttons_wrapper}>
             <div
               className={styles.LoaderMask}
               style={{

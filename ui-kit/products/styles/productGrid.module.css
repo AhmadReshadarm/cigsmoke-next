@@ -1,11 +1,10 @@
 .Grid {
   width: 100%;
   display: inline-grid;
-  grid-template-columns: repeat(4, 1fr);
-  column-gap: 50px;
+  grid-template-columns: repeat(6, 1fr);
   row-gap: 30px;
-  padding: 10px;
   justify-items: center;
+  padding: 10px;
 }
 
 .EmptyProductsTitle {
@@ -25,28 +24,34 @@
 /* laptopL */
 @media (min-width: 1240px) and (max-width: 1550px) {
   .Grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 /* laptopM */
 @media (min-width: 1024px) and (max-width: 1240px) {
   .Grid {
-    grid-template-columns: repeat(3, 1fr);
-    column-gap: 40px;
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 /* laptopS */
 @media (min-width: 768px) and (max-width: 1024px) {
   .Grid {
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 /* tabletL */
-@media (min-width: 440px) and (max-width: 768px) {
+@media (min-width: 540px) and (max-width: 768px) {
+  .Grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .EmptyProductsTitle > h3 {
+    font-size: 1.5rem;
+  }
+}
+/* tabletM */
+@media (min-width: 440px) and (max-width: 540px) {
   .Grid {
     grid-template-columns: repeat(2, 1fr);
-    column-gap: 15px;
   }
   .EmptyProductsTitle > h3 {
     font-size: 1.5rem;
@@ -55,8 +60,7 @@
 /* tabletS */
 @media (min-width: 350px) and (max-width: 440px) {
   .Grid {
-    grid-template-columns: repeat(1, 1fr);
-    column-gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
   }
   .EmptyProductsTitle > h3 {
     font-size: 1.2rem;
@@ -66,7 +70,6 @@
 @media (min-width: 285px) and (max-width: 350px) {
   .Grid {
     grid-template-columns: repeat(1, 1fr);
-    column-gap: 10px;
   }
   .EmptyProductsTitle > h3 {
     font-size: 1rem;
@@ -76,7 +79,6 @@
 @media (min-width: 200px) and (max-width: 285px) {
   .Grid {
     grid-template-columns: repeat(1, 1fr);
-    column-gap: 10px;
   }
   .EmptyProductsTitle > h3 {
     font-size: 1rem;
@@ -86,7 +88,6 @@
 @media (min-width: 100px) and (max-width: 200px) {
   .Grid {
     grid-template-columns: repeat(1, 1fr);
-    column-gap: 10px;
   }
   .EmptyProductsTitle > h3 {
     font-size: 1rem;

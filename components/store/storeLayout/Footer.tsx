@@ -89,11 +89,11 @@ const Footer = (): JSX.Element => {
                         <PhoneSVG />
                         <div className={styles.call_row_wrapper}>
                           <Link
-                            aria-label="позвонить 89254865444"
-                            href="tel:+79254865444"
+                            aria-label="позвонить 8-800-700-17-41"
+                            href="tel:+78007001741"
                             prefetch={false}
                           >
-                            <span title="позвонить 8-925-486-54-44">
+                            <span title="позвонить 8-800-700-17-41">
                               8-800-700-17-41
                             </span>
                           </Link>
@@ -103,24 +103,14 @@ const Footer = (): JSX.Element => {
                         <MailSVG />
                         <div className={styles.call_row_wrapper}>
                           <Link
-                            aria-label="отправьте письмо по адресу info@nbhoz.ru"
-                            href="mailto:info@nbhoz.ru"
+                            aria-label="отправьте письмо по адресу info@wuluxe.ru"
+                            href="mailto:info@wuluxe.ru"
                             prefetch={false}
                           >
-                            <span title="отправьте письмо по адресу info@nbhoz.ru">
+                            <span title="отправьте письмо по адресу info@wuluxe.ru">
                               info@wuluxe.ru
                             </span>
                           </Link>
-                          {/* <span className={styles.call_saperator}>|</span>
-                          <Link
-                            aria-label="отправьте письмо по адресу exelon@hoz-mardon.ru"
-                            href="mailto:exelon@hoz-mardon.ru"
-                            prefetch={false}
-                          >
-                            <span title="отправьте письмо по адресу exelon@hoz-mardon.ru">
-                              exelon@hoz-mardon.ru
-                            </span>
-                          </Link> */}
                         </div>
                       </div>
                       <div className={styles.right_column_content}>
@@ -207,7 +197,7 @@ const Footer = (): JSX.Element => {
                     </div>
                     <div className={styles.bottom_right_wrapper}>
                       <span
-                        title={`Nbhoz. All rights reserved. Все права защищены © ${copyRighYear}`}
+                        title={`WULUXE. All rights reserved. Все права защищены © ${copyRighYear}`}
                       >
                         WULUXE. All rights reserved. Все права защищены ©{' '}
                         {copyRighYear}

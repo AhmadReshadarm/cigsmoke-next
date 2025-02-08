@@ -136,6 +136,9 @@
   position: relative;
   float: left;
 }
+.box > span {
+  font-size: 0.875rem;
+}
 .helper_close_btn {
   position: absolute;
   top: 10px;

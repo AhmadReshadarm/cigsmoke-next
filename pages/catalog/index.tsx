@@ -5,7 +5,7 @@ import {
 } from 'components/store/catalog/helpers';
 import { devices } from 'components/store/lib/Devices';
 import variants from 'components/store/lib/variants';
-import { Container, Wrapper } from 'components/store/storeLayout/common';
+import { Container } from 'components/store/storeLayout/common';
 import StoreLayout from 'components/store/storeLayout/layouts';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -160,7 +160,7 @@ const CatalogPage = ({
 
   // ------------------------- pagination handlers ---------------------------
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize]: [number, any] = useState(12);
+  const [pageSize, setPageSize]: [number, any] = useState(18);
   const handlePageChange = (
     page: number,
     pageSize: number,
@@ -225,7 +225,7 @@ const CatalogPage = ({
           align_items="center"
           padding="10px 0"
         >
-          <Wrapper flex_direction="column">
+          <Wrapper>
             <CatelogContentWrapper>
               <TopFilterBar
                 categories={categories}
@@ -241,18 +241,14 @@ const CatalogPage = ({
               />
 
               <Content>
-                <Products>
-                  <ProductGrid
-                  // emptyProductsTitle={'По вашему запросу ничего не найдено.'}
-                  />
-                </Products>
+                <ProductGrid />
                 <Pagination
                   style={{ marginTop: '20px' }}
                   defaultCurrent={currentPage}
                   current={currentPage}
                   total={paginationLength}
                   pageSize={pageSize}
-                  pageSizeOptions={[12, 24, 36, 50, 100]}
+                  pageSizeOptions={[18, 36, 54, 100, 150]}
                   onChange={(current, pageSize) => {
                     handlePageChange(current, pageSize, current);
                   }}
@@ -289,7 +285,6 @@ const Content = styled.div`
   }
   @media ${devices.mobileL} {
     margin-left: 0;
-    padding: 10px 15px;
   }
 `;
 
@@ -310,28 +305,41 @@ const CatelogContentWrapper = styled.div`
   }
 `;
 
-const Products = styled.div`
+const Wrapper = styled.div`
   width: 100%;
-  height: 100vh;
-  overflow-y: scroll;
-  overflow-x: hidden;
-
-  &::-webkit-scrollbar {
-    width: 5px;
+  max-width: 1500px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  @media ${devices.laptopL} {
+    max-width: 1230px;
+  }
+  @media ${devices.laptopM} {
+    max-width: unset;
   }
   @media ${devices.laptopS} {
-    padding: 0 10px;
+    max-width: unset;
+    flex-direction: column;
   }
-
+  @media ${devices.tabletL} {
+    max-width: unset;
+    flex-direction: column;
+  }
+  @media ${devices.tabletS} {
+    max-width: unset;
+    flex-direction: column;
+  }
   @media ${devices.mobileL} {
-    padding: 0 10px;
+    max-width: unset;
+    flex-direction: column;
   }
   @media ${devices.mobileM} {
-    padding: 0 10px;
+    max-width: unset;
+    flex-direction: column;
   }
-
   @media ${devices.mobileS} {
-    padding: 0 10px;
+    max-width: unset;
+    flex-direction: column;
   }
 `;
 

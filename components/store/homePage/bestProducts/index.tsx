@@ -41,7 +41,7 @@ const BestProduct: React.FC<Props> = () => {
               {!loading && bestProduct ? (
                 <>
                   <div className="section-title-wrapper">
-                    <h1>ГОРЯЧИЕ ПРОДАЖИ</h1>
+                    <h1>ТОП ТОВАРЫ</h1>
                   </div>
                   <ul className="best-product-grid-wrapper">
                     {bestProduct.map((product, index) => {
@@ -124,8 +124,7 @@ const Wrapper = styled.div`
   .best-product-grid-wrapper {
     width: 100%;
     display: inline-grid;
-    grid-template-columns: repeat(4, 1fr);
-    column-gap: 50px;
+    grid-template-columns: repeat(6, 1fr);
     row-gap: 30px;
     padding: 10px;
     justify-items: center;
@@ -133,21 +132,19 @@ const Wrapper = styled.div`
   @media ${devices.laptopL} {
     max-width: 1230px;
     .best-product-grid-wrapper {
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
     }
   }
   @media ${devices.laptopM} {
     max-width: 1230px;
     .best-product-grid-wrapper {
-      grid-template-columns: repeat(4, 1fr);
-      column-gap: 40px;
+      grid-template-columns: repeat(5, 1fr);
     }
   }
   @media ${devices.laptopS} {
     max-width: unset;
     .best-product-grid-wrapper {
       grid-template-columns: repeat(4, 1fr);
-      column-gap: 5px;
     }
     .section-title-wrapper {
       h1 {
@@ -159,7 +156,17 @@ const Wrapper = styled.div`
     max-width: unset;
     .best-product-grid-wrapper {
       grid-template-columns: repeat(3, 1fr);
-      column-gap: 10px;
+    }
+    .section-title-wrapper {
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  }
+  @media ${devices.tabletM} {
+    max-width: unset;
+    .best-product-grid-wrapper {
+      grid-template-columns: repeat(2, 1fr);
     }
     .section-title-wrapper {
       h1 {
@@ -171,7 +178,6 @@ const Wrapper = styled.div`
     max-width: unset;
     .best-product-grid-wrapper {
       grid-template-columns: repeat(2, 1fr);
-      column-gap: 10px;
     }
     .section-title-wrapper {
       h1 {
@@ -182,8 +188,7 @@ const Wrapper = styled.div`
   @media ${devices.mobileL} {
     max-width: unset;
     .best-product-grid-wrapper {
-      grid-template-columns: repeat(2, 1fr);
-      column-gap: 10px;
+      grid-template-columns: repeat(1, 1fr);
     }
     .section-title-wrapper {
       h1 {
@@ -194,7 +199,7 @@ const Wrapper = styled.div`
   @media ${devices.mobileM} {
     max-width: unset;
     .best-product-grid-wrapper {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(1, 1fr);
     }
     .section-title-wrapper {
       h1 {

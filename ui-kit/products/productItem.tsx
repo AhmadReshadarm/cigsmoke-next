@@ -44,26 +44,36 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
       // laptopM
       case sizesNum.laptopS < windowWidth && windowWidth < sizesNum.laptopM:
         return {
-          minMaxWidth: windowWidth / 3 - 10,
+          minMaxWidth: windowWidth / 5 - 10,
         };
       // laptopS
       case sizesNum.tabletL < windowWidth && windowWidth < sizesNum.laptopS:
         return {
-          minMaxWidth: windowWidth / 2 - 10,
+          minMaxWidth: windowWidth / 4 - 10,
         };
       // tabletL
-      case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletL:
+      case sizesNum.tabletM < windowWidth && windowWidth < sizesNum.tabletL:
+        return {
+          minMaxWidth: windowWidth / 3 - 10,
+        };
+      // tabletM
+      case sizesNum.tabletS < windowWidth && windowWidth < sizesNum.tabletM:
         return {
           minMaxWidth: windowWidth / 2 - 10,
         };
-      // tabletS, mobileL, mobileM, mobileS, mobileES
-      case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.tabletS:
+      // tabletS
+      case sizesNum.mobileL < windowWidth && windowWidth < sizesNum.tabletS:
         return {
           minMaxWidth: windowWidth / 2 - 10,
+        };
+      // mobileL, mobileM, mobileS, mobileES
+      case sizesNum.mobileES < windowWidth && windowWidth < sizesNum.mobileL:
+        return {
+          minMaxWidth: windowWidth - 20,
         };
       default:
         return {
-          minMaxWidth: 330,
+          minMaxWidth: 200,
         };
     }
   };
@@ -76,6 +86,7 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
       minMaxWidth: calculateImageSizeContainer(windowWidth).minMaxWidth,
     });
   }, [windowWidth]);
+  //
 
   return (
     <li
@@ -114,8 +125,8 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
             prefetch={false}
           >
             <span title={product.name}>
-              {product.name?.length! > 20
-                ? `${product.name?.slice(0, 20)}...`
+              {product.name?.length! > 25
+                ? `${product.name?.slice(0, 25)}...`
                 : product.name}
             </span>
           </Link>
