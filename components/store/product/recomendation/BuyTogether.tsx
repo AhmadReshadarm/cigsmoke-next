@@ -21,14 +21,14 @@ const BuyTogether: React.FC<Props> = ({ product }) => {
     if (isInViewport) {
       (async () => {
         const response = (await ProductService.getProducts({
-          limit: 4,
+          limit: 18,
           categories: [product?.category?.url!],
         })) as unknown as { rows: Product[]; length: number };
         // .tags?.map((tag: any) => tag.url)
-        const offset = Math.floor(Math.random() * response.length) - 5;
+        const offset = Math.floor(Math.random() * response.length) - 19;
         const buyTogether = (await ProductService.getProducts({
-          limit: 4,
-          offset: `${offset < 5 ? 0 : offset}`,
+          limit: 18,
+          offset: `${offset < 19 ? 0 : offset}`,
           categories: [product?.category?.url!],
         })) as unknown as { rows: Product[]; length: number };
         //  tags: product?.tags?.map((tag: any) => tag.url),

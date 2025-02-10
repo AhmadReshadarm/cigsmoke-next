@@ -17,13 +17,13 @@ const WeRecomend = ({ product }) => {
     if (isInViewport) {
       (async () => {
         const response = (await ProductService.getProducts({
-          limit: 4,
+          limit: 18,
           parent: product?.category.parent?.url,
         })) as unknown as { rows: Product[]; length: number };
-        const offset = Math.floor(Math.random() * response.length) - 5;
+        const offset = Math.floor(Math.random() * response.length) - 19;
         const weRecomend = (await ProductService.getProducts({
-          limit: 4,
-          offset: `${offset < 5 ? 0 : offset}`,
+          limit: 19,
+          offset: `${offset < 19 ? 0 : offset}`,
           parent: product?.category.parent?.url,
         })) as unknown as { rows: Product[]; length: number };
         setProducts(weRecomend.rows.filter((item) => item.id != product.id));

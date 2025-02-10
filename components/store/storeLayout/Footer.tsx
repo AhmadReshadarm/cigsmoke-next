@@ -90,7 +90,7 @@ const Footer = (): JSX.Element => {
                         <div className={styles.call_row_wrapper}>
                           <Link
                             aria-label="позвонить 8-800-700-17-41"
-                            href="tel:+78007001741"
+                            href="tel:88007001741"
                             prefetch={false}
                           >
                             <span title="позвонить 8-800-700-17-41">
