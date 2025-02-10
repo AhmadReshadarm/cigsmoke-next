@@ -34,14 +34,14 @@ const ColorPicker: React.FC<Props> = ({
     ) =>
     () => {
       dispatch(setVariant(variant));
-      setSelectedIndex(index);
+      // setSelectedIndex(index);
 
-      if (index != selectedIndex) {
-        paginateImage(selectedIndex > index ? -1 : 1);
-      }
+      // if (index != selectedIndex) {
+      //   paginateImage(selectedIndex > index ? -1 : 1);
+      // }
     };
 
-  const variantImages = getFlatVariantImages(productVariants);
+  // const variantImages = getFlatVariantImages(productVariants);
 
   const [initialVariant, setInitialVariant] = useState(productVariants![0]);
   useEffect(() => {
@@ -52,8 +52,10 @@ const ColorPicker: React.FC<Props> = ({
   return (
     <div className={styles.ColorPickerContainer}>
       <ul className={styles.ColorPickerList}>
-        {variantImages?.map((variant, colIndex) => {
+        {productVariants?.map((variant, colIndex) => {
+          // variantImages?.map((variant, colIndex) => {
           if (!initialVariant) setInitialVariant(variant);
+          const images = variant.images ? variant.images.split(', ') : [];
 
           return (
             <ImageTooltip
@@ -68,8 +70,10 @@ const ColorPicker: React.FC<Props> = ({
                       height: '100px',
                       objectFit: 'cover',
                     }}
-                    src={`/api/images/${variant.image}`}
-                    alt={`${variant.image}`}
+                    // src={`/api/images/${variant.image}`}
+                    src={`/api/images/${images[0]}`}
+                    // alt={`${variant.image}`}
+                    alt={`${images[0]}`}
                     width={0}
                     height={0}
                     sizes="100vw"
@@ -97,7 +101,8 @@ const ColorPicker: React.FC<Props> = ({
                     >
                       <span>Цвет:</span>
                       <div
-                        style={{ backgroundColor: variant.color.code! }}
+                        // style={{ backgroundColor: variant.color.code! }}
+                        style={{ backgroundColor: variant.color?.code }}
                         className={styles.ColorItem}
                       />
                     </span>
@@ -105,12 +110,24 @@ const ColorPicker: React.FC<Props> = ({
                   <div className={styles.ArticalWrapper}>
                     <span>Артикул:</span>
                     <span>
-                      {variant.artical.includes('|')
+                      {/* {variant.artical.includes('|')
                         ? variant.artical.split('|')[0].toLocaleUpperCase()
-                        : variant.artical.toLocaleUpperCase()}
+                        : variant.artical.toLocaleUpperCase()} */}
+                      {variant.artical?.includes('|')
+                        ? variant.artical?.split('|')[0].toLocaleUpperCase()
+                        : variant.artical?.toLocaleUpperCase()}
                     </span>
                   </div>
-                  {variant.artical.includes('|') ? (
+                  {/* {variant.artical.includes('|') ? (
+                    <div className={styles.ArticalWrapper}>
+                      <span>
+                        {variant.artical.split('|')[1].toLocaleUpperCase()}
+                      </span>
+                    </div>
+                  ) : (
+                    ''
+                  )} */}
+                  {variant.artical?.includes('|') ? (
                     <div className={styles.ArticalWrapper}>
                       <span>
                         {variant.artical.split('|')[1].toLocaleUpperCase()}
@@ -170,9 +187,11 @@ const ColorPicker: React.FC<Props> = ({
                       position: loadingComplet ? 'inherit' : 'absolute',
                       zIndex: loadingComplet ? 1 : -1,
                     }}
-                    src={`/api/images/compress/${variant.image}?qlty=10&width=50&height=50&lossless=true`} // `/api/images/${variant.image}`
+                    // src={`/api/images/compress/${variant.image}?qlty=10&width=50&height=50&lossless=true`} // `/api/images/${variant.image}`
+                    src={`/api/images/compress/${images[0]}?qlty=10&width=50&height=50&lossless=true`} // `/api/images/${variant.image}`
                     // src={`/api/images/${variant.image}`}
-                    alt={variant.image}
+                    // alt={variant.image}
+                    alt={images[0]}
                     width={50}
                     height={50}
                     loading="lazy"
@@ -188,11 +207,16 @@ const ColorPicker: React.FC<Props> = ({
                   )}
                 </div>
                 <span className={styles.preview_artical}>
-                  {variant.artical.includes('|')
+                  {/* {variant.artical.includes('|')
                     ? variant.artical.split('|')[0].toLocaleUpperCase()
                     : variant.artical.includes(' ')
                     ? variant.artical.split(' ')[0].toLocaleUpperCase()
-                    : variant.artical.toLocaleUpperCase()}
+                    : variant.artical.toLocaleUpperCase()} */}
+                  {variant.artical?.includes('|')
+                    ? variant.artical.split('|')[0].toLocaleUpperCase()
+                    : variant.artical?.includes(' ')
+                    ? variant.artical.split(' ')[0].toLocaleUpperCase()
+                    : variant.artical?.toLocaleUpperCase()}
                 </span>
               </li>
             </ImageTooltip>

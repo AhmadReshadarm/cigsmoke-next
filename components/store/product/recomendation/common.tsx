@@ -12,6 +12,21 @@ type Props = {
 const ProductFlex: React.FC<Props> = ({ products, loading, seeMoreUrl }) => {
   return (
     <div className={styles.FlexWrapper}>
+      <ul className={styles.SliderWrapper}>
+        {!loading
+          ? products?.map((product, index) => {
+              return (
+                <ProductItem
+                  key={`product-item-${index}`}
+                  product={product}
+                  custom={index * 0.05}
+                />
+              );
+            })
+          : emptyLoading.map((item, index) => {
+              return <LoaderItem index={index} />;
+            })}
+      </ul>
       <div className={styles.seeMoreWrapper}>
         <Link href={seeMoreUrl}>
           <button className={styles.seeMoreButton}>
@@ -36,21 +51,6 @@ const ProductFlex: React.FC<Props> = ({ products, loading, seeMoreUrl }) => {
           </button>
         </Link>
       </div>
-      <ul className={styles.SliderWrapper}>
-        {!loading
-          ? products?.map((product, index) => {
-              return (
-                <ProductItem
-                  key={`product-item-${index}`}
-                  product={product}
-                  custom={index * 0.05}
-                />
-              );
-            })
-          : emptyLoading.map((item, index) => {
-              return <LoaderItem index={index} />;
-            })}
-      </ul>
     </div>
   );
 };

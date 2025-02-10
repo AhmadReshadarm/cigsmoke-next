@@ -45,7 +45,7 @@ const ProductInfo: React.FC<Props> = ({
   });
   const { variant } = useAppSelector<TCartState>((state) => state.cart);
 
-  const [isOrderNotify, setOrderNotify] = useState(false);
+  // const [isOrderNotify, setOrderNotify] = useState(false);
   const [zoomEnabeld, setZoomEnabled] = useState(false);
 
   return (
@@ -63,7 +63,7 @@ const ProductInfo: React.FC<Props> = ({
       }}
     >
       <div className={styles.Wrapper}>
-        <div
+        {/* <div
           className={styles.OrderNotifier}
           style={{ display: !isOrderNotify ? 'flex' : 'none' }}
         >
@@ -105,7 +105,7 @@ const ProductInfo: React.FC<Props> = ({
               />
             </svg>
           </span>
-        </div>
+        </div> */}
         <div className={styles.Content}>
           <div className={styles.NavWrapper}>
             <div className={styles.nav_rightWrapper}>

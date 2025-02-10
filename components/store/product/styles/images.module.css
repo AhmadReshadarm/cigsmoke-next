@@ -18,6 +18,42 @@
   overflow: hidden;
 }
 
+.thumbnails_wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.thumbnails_circle {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: linear-gradient(
+    45deg,
+    #f09433 0%,
+    #e6683c 25%,
+    #dc2743 50%,
+    #cc2366 75%,
+    #bc1888 100%
+  );
+  padding: 2px;
+}
+
+.thumbnails_circle img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid white;
+  object-fit: cover;
+}
+
 .image_indecator_mobile {
   width: 100%;
   position: absolute;
@@ -57,6 +93,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  border-radius: 30px;
 }
 
 .ImageZoomButtonWrapper {
@@ -154,5 +191,8 @@
 @media (min-width: 100px) and (max-width: 1024px) {
   .SliderWrapper {
     width: 100%;
+  }
+  .thumbnails_wrapper {
+    justify-content: flex-start;
   }
 }

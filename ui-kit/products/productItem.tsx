@@ -125,8 +125,8 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
             prefetch={false}
           >
             <span title={product.name}>
-              {product.name?.length! > 25
-                ? `${product.name?.slice(0, 25)}...`
+              {product.name?.length! > 35
+                ? `${product.name?.slice(0, 35)}...`
                 : product.name}
             </span>
           </Link>

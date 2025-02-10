@@ -41,6 +41,6 @@
 @media (min-width: 100px) and (max-width: 1024px) {
   .Wrapper {
     max-width: unset;
-    width: 95%;
+    width: 100%;
   }
 }
