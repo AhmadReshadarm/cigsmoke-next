@@ -5,7 +5,6 @@ import { SWIPE_CONFIDENCE_THRESHOLD } from '../../constants';
 import { useEffect, useState } from 'react';
 import ZoomFullScreen from 'ui-kit/ZoomFullScreen';
 import Image from 'next/image';
-// import { Dispatch, SetStateAction } from 'react';
 import styles from '../../styles/images.module.css';
 type Props = {
   images: string[];
@@ -99,6 +98,7 @@ const Slider: React.FC<Props> = ({
             placeholder="blur"
             blurDataURL={base64Image}
             className={styles.SliderImage}
+            sizes="(max-width: 768px) 100vw, 50vw"
           />
         </motion.div>
       </AnimatePresence>

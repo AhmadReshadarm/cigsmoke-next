@@ -16,23 +16,31 @@
   align-items: center;
   position: relative;
   overflow: hidden;
+  border-radius: 30px;
 }
 
 .thumbnails_wrapper {
-  width: 100%;
+  width: 600px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 15px;
-  padding: 20px;
-  overflow-x: auto;
+  padding: 0 0 10px 0;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.thumbnails_wrapper::-webkit-scrollbar {
+  height: 5px;
 }
 
 .thumbnails_circle {
   position: relative;
-  width: 70px;
-  height: 70px;
+  width: 65px;
+  height: 65px;
+  min-width: 65px;
+  min-height: 65px;
   border-radius: 50%;
   cursor: pointer;
   background: linear-gradient(
@@ -46,11 +54,42 @@
   padding: 2px;
 }
 
+.LoaderMask {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #cccccca3;
+  position: relative;
+  overflow: hidden;
+}
+@keyframes loading {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.LoaderMask:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-100px);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: loading 0.8s infinite;
+}
+
 .thumbnails_circle img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 2px solid white;
+  /* border: 2px solid white; */
   object-fit: cover;
 }
 
@@ -91,8 +130,9 @@
 
 .SliderImage {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
+  display: block;
+  object-fit: cover;
   border-radius: 30px;
 }
 
@@ -150,49 +190,105 @@
     width: 500px;
     height: 500px;
   }
+
+  .thumbnails_wrapper {
+    width: 500px;
+  }
 }
 /* laptopS */
 @media (min-width: 768px) and (max-width: 1024px) {
   .SliderWrapper {
+    width: 740px;
+    height: 740px;
+  }
+
+  .thumbnails_wrapper {
+    width: 500px;
+  }
+}
+
+/* laptopS2 */
+@media (min-width: 650px) and (max-width: 768px) {
+  .SliderWrapper {
+    width: 625px;
+    height: 625px;
+  }
+}
+
+/* tabletL1 */
+@media (min-width: 540px) and (max-width: 650px) {
+  .SliderWrapper {
+    width: 500px;
     height: 500px;
+  }
+}
+
+/* tabletL2 */
+@media (min-width: 440px) and (max-width: 540px) {
+  .SliderWrapper {
+    width: 430px;
+    height: 430px;
   }
 }
 /* tabletL */
 @media (min-width: 440px) and (max-width: 768px) {
-  .SliderWrapper {
-    height: 350px;
+  .thumbnails_wrapper {
+    width: 350px;
   }
 }
 /* tabletS */
 @media (min-width: 350px) and (max-width: 440px) {
   .SliderWrapper {
+    width: 350px;
     height: 350px;
+  }
+
+  .thumbnails_wrapper {
+    width: 350px;
   }
 }
 /* mobileL */
 @media (min-width: 285px) and (max-width: 350px) {
   .SliderWrapper {
-    height: 300px;
+    width: 285px;
+    height: 285px;
+  }
+
+  .thumbnails_wrapper {
+    width: 300px;
   }
 }
 /* mobileM */
 @media (min-width: 200px) and (max-width: 285px) {
   .SliderWrapper {
-    height: 280px;
+    width: 200px;
+    height: 200px;
+  }
+
+  .thumbnails_wrapper {
+    width: 280px;
   }
 }
 /* mobileS */
 @media (min-width: 100px) and (max-width: 200px) {
   .SliderWrapper {
-    height: 280px;
+    width: 100px;
+    height: 100px;
+  }
+
+  .thumbnails_wrapper {
+    width: 280px;
   }
 }
 /* Global */
 @media (min-width: 100px) and (max-width: 1024px) {
+  .ImagesContainer {
+    align-items: flex-start;
+  }
   .SliderWrapper {
-    width: 100%;
+    align-self: center;
   }
   .thumbnails_wrapper {
-    justify-content: flex-start;
+    width: 90vw;
   }
 }

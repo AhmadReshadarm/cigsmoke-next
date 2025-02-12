@@ -186,7 +186,7 @@ const CatalogPage = ({
       {repo.length !== 0 ? (
         <SEOstatic
           page={{
-            realName: `${selectedCategory?.name ?? 'Каталог'} | NBHOZ`,
+            realName: `${selectedCategory?.name ?? 'Каталог'} | WULUXE`,
             name: `${
               repo[randomProduct].category?.parent?.name +
               ' > ' +
@@ -195,7 +195,7 @@ const CatalogPage = ({
             url: `${router.asPath}`,
             desc: `${
               repo[0].category?.name ?? 'Каталог'
-            } - покупайте Опт на NBHOZ по выгодным ценам! оптом ${
+            } - покупайте на WULUXE по выгодным ценам! ${
               repo[randomProduct]?.shortDesc ?? selectedCategory?.desc
             }`,
             keywords: `${repo[randomProduct]?.keywords}`,

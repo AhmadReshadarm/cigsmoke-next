@@ -5,6 +5,7 @@ import styles from '../../styles/images.module.css';
 import { useAppSelector } from 'redux/hooks';
 import { TCartState } from 'redux/types';
 import Image from 'next/image';
+import { emptyLoading } from 'common/constants';
 
 type Props = {
   product?: Product;
@@ -31,10 +32,29 @@ const Images: React.FC<Props> = ({
   zoomEnabeld,
 }) => {
   const { variant } = useAppSelector<TCartState>((state) => state.cart);
-  let imagess;
+  let thumbnaiImages: string[] = [];
+  const imagesWithUrlUI: string[] = [];
   if (variant) {
-    imagess = variant!.images ? variant!.images.split(', ') : [];
+    thumbnaiImages = variant!.images ? variant!.images.split(', ') : [];
+    for (let i = 0; i < thumbnaiImages?.length; i++) {
+      imagesWithUrlUI.push(`/api/images/${thumbnaiImages[i]}`);
+    }
   }
+  const handleImageChange =
+    (
+      index: number,
+      selectedIndex: number,
+      setSelectedIndex: (index: number) => void,
+      paginateImage: (index: number) => void,
+    ) =>
+    () => {
+      setSelectedIndex(index);
+
+      if (index != selectedIndex) {
+        paginateImage(selectedIndex > index ? -1 : 1);
+      }
+    };
+
   return (
     <div className={styles.ImagesContainer}>
       {variant ? (
@@ -42,37 +62,50 @@ const Images: React.FC<Props> = ({
           className={styles.thumbnails_wrapper}
           style={{ display: 'flex', flexDirection: 'row' }}
         >
-          {imagess.map((image, index) => {
-            console.log(`/api/images/${image}`);
-
+          {thumbnaiImages.map((image, index) => {
             return (
-              <li className={styles.thumbnails_circle} key={index}>
-                {' '}
+              <li
+                className={styles.thumbnails_circle}
+                key={index}
+                onClick={handleImageChange(
+                  index,
+                  selectedIndex,
+                  setSelectedIndex,
+                  paginateImage,
+                )}
+                onMouseOver={handleImageChange(
+                  index,
+                  selectedIndex,
+                  setSelectedIndex,
+                  paginateImage,
+                )}
+              >
                 <Image
-                  // style={{
-                  //   width: '50px',
-                  //   height: '50px',
-                  // }}
-                  // src={`/api/images/compress/${variant.image}?qlty=10&width=50&height=50&lossless=true`} // `/api/images/${variant.image}`
                   src={`/api/images/${image}`}
-                  // src={`/api/images/${variant.image}`}
-                  // alt={variant.image}
                   alt={image}
-                  width={50}
-                  height={50}
+                  width={65}
+                  height={65}
                   loading="lazy"
                   priority={false}
-                  // onLoadingComplete={() => setLoadingComplet(true)}
+                  style={{
+                    border: selectedIndex == index ? '2px solid white' : 'none',
+                  }}
                 />
               </li>
             );
           })}
         </ul>
       ) : (
-        <>loading...</>
+        <ul className={styles.thumbnails_wrapper}>
+          {emptyLoading.map((data, index) => (
+            <li key={index} className={styles.thumbnails_circle}>
+              <div className={styles.LoaderMask}></div>
+            </li>
+          ))}
+        </ul>
       )}
       <Slider
-        images={images}
+        images={variant ? imagesWithUrlUI : images}
         selectedIndex={selectedIndex}
         setSelectedIndex={setSelectedIndex}
         direction={direction}

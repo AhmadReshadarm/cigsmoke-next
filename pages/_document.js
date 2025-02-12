@@ -21,6 +21,13 @@ class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+              window.__initialWindowWidth = document.documentElement.clientWidth;
+            `,
+            }}
+          />
         </body>
       </Html>
     );

@@ -21,6 +21,6 @@
     "checkJs": true,
     "incremental": true
   },
-  "include": [".", "additional.d.ts"],
+  "include": [".", "additional.d.ts", "/*.d.ts"],
   "exclude": ["node_modules"]
 }

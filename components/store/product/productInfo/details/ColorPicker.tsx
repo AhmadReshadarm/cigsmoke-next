@@ -2,58 +2,43 @@ import color from 'components/store/lib/ui.colors';
 import { getFlatVariantImages, ImageTooltip } from './helpers';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Color, ProductVariant } from 'swagger/services';
-import { useAppDispatch } from 'redux/hooks';
+import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { setVariant } from 'redux/slicers/store/cartSlicer';
 import Image from 'next/image';
 import styles from '../../styles/detail.module.css';
+import { TCartState } from 'redux/types';
 
 type Props = {
   variantColor: Color | undefined;
   productVariants: ProductVariant[] | undefined;
-  selectedIndex: number;
   setSelectedIndex: Dispatch<SetStateAction<number>>;
-  paginateImage: Dispatch<SetStateAction<number>>;
 };
 
 const ColorPicker: React.FC<Props> = ({
   variantColor,
   productVariants,
-  selectedIndex,
   setSelectedIndex,
-  paginateImage,
 }) => {
   const dispatch = useAppDispatch();
-
+  const SelectedVariant = useAppSelector<TCartState>(
+    (state) => state.cart.variant,
+  );
   const handleImageChange =
-    (
-      variant: ProductVariant,
-      index: number,
-      selectedIndex: number,
-      setSelectedIndex: (index: number) => void,
-      paginateImage: (index: number) => void,
-    ) =>
+    (variant: ProductVariant, setSelectedIndex: (index: number) => void) =>
     () => {
       dispatch(setVariant(variant));
-      // setSelectedIndex(index);
-
-      // if (index != selectedIndex) {
-      //   paginateImage(selectedIndex > index ? -1 : 1);
-      // }
+      setSelectedIndex(0);
     };
-
-  // const variantImages = getFlatVariantImages(productVariants);
 
   const [initialVariant, setInitialVariant] = useState(productVariants![0]);
   useEffect(() => {
     dispatch(setVariant(initialVariant));
   }, []);
-  const [loadingComplet, setLoadingComplet] = useState(false);
 
   return (
     <div className={styles.ColorPickerContainer}>
       <ul className={styles.ColorPickerList}>
         {productVariants?.map((variant, colIndex) => {
-          // variantImages?.map((variant, colIndex) => {
           if (!initialVariant) setInitialVariant(variant);
           const images = variant.images ? variant.images.split(', ') : [];
 
@@ -70,9 +55,7 @@ const ColorPicker: React.FC<Props> = ({
                       height: '100px',
                       objectFit: 'cover',
                     }}
-                    // src={`/api/images/${variant.image}`}
                     src={`/api/images/${images[0]}`}
-                    // alt={`${variant.image}`}
                     alt={`${images[0]}`}
                     width={0}
                     height={0}
@@ -101,7 +84,6 @@ const ColorPicker: React.FC<Props> = ({
                     >
                       <span>Цвет:</span>
                       <div
-                        // style={{ backgroundColor: variant.color.code! }}
                         style={{ backgroundColor: variant.color?.code }}
                         className={styles.ColorItem}
                       />
@@ -110,23 +92,12 @@ const ColorPicker: React.FC<Props> = ({
                   <div className={styles.ArticalWrapper}>
                     <span>Артикул:</span>
                     <span>
-                      {/* {variant.artical.includes('|')
-                        ? variant.artical.split('|')[0].toLocaleUpperCase()
-                        : variant.artical.toLocaleUpperCase()} */}
                       {variant.artical?.includes('|')
                         ? variant.artical?.split('|')[0].toLocaleUpperCase()
                         : variant.artical?.toLocaleUpperCase()}
                     </span>
                   </div>
-                  {/* {variant.artical.includes('|') ? (
-                    <div className={styles.ArticalWrapper}>
-                      <span>
-                        {variant.artical.split('|')[1].toLocaleUpperCase()}
-                      </span>
-                    </div>
-                  ) : (
-                    ''
-                  )} */}
+
                   {variant.artical?.includes('|') ? (
                     <div className={styles.ArticalWrapper}>
                       <span>
@@ -150,54 +121,31 @@ const ColorPicker: React.FC<Props> = ({
                 </React.Fragment>
               }
             >
-              <li className={styles.ColorPickerThumbnailWrapper}>
+              <li
+                style={{
+                  border:
+                    variant === SelectedVariant
+                      ? '1px solid #00000075'
+                      : 'none',
+                }}
+                className={styles.ColorPickerThumbnailWrapper}
+                onClick={handleImageChange(
+                  variant,
+
+                  setSelectedIndex,
+                )}
+                onTouchStart={handleImageChange(
+                  variant,
+
+                  setSelectedIndex,
+                )}
+              >
                 <div
                   className={styles.ColorPickerItems}
-                  onClick={handleImageChange(
-                    variant,
-                    colIndex,
-                    selectedIndex,
-                    setSelectedIndex,
-                    paginateImage,
-                  )}
-                  onTouchStart={handleImageChange(
-                    variant,
-                    colIndex,
-                    selectedIndex,
-                    setSelectedIndex,
-                    paginateImage,
-                  )}
                   style={{
-                    border:
-                      selectedIndex == colIndex
-                        ? `solid 1px ${color.searchBtnBg}`
-                        : 'none',
+                    backgroundColor: variant.color?.code,
                   }}
                 >
-                  <div
-                    style={{ display: loadingComplet ? 'none' : 'flex' }}
-                    className={styles.LoaderMask}
-                  />
-                  <Image
-                    style={{
-                      width: selectedIndex == colIndex ? '48px' : '50px',
-                      height: selectedIndex == colIndex ? '48px' : '50px',
-
-                      opacity: loadingComplet ? 1 : 0,
-                      position: loadingComplet ? 'inherit' : 'absolute',
-                      zIndex: loadingComplet ? 1 : -1,
-                    }}
-                    // src={`/api/images/compress/${variant.image}?qlty=10&width=50&height=50&lossless=true`} // `/api/images/${variant.image}`
-                    src={`/api/images/compress/${images[0]}?qlty=10&width=50&height=50&lossless=true`} // `/api/images/${variant.image}`
-                    // src={`/api/images/${variant.image}`}
-                    // alt={variant.image}
-                    alt={images[0]}
-                    width={50}
-                    height={50}
-                    loading="lazy"
-                    priority={false}
-                    onLoadingComplete={() => setLoadingComplet(true)}
-                  />
                   {!variant.available ? (
                     <div className={styles.not_available_mask}>
                       <div className={styles.inner_not_available_mask}></div>
@@ -207,11 +155,6 @@ const ColorPicker: React.FC<Props> = ({
                   )}
                 </div>
                 <span className={styles.preview_artical}>
-                  {/* {variant.artical.includes('|')
-                    ? variant.artical.split('|')[0].toLocaleUpperCase()
-                    : variant.artical.includes(' ')
-                    ? variant.artical.split(' ')[0].toLocaleUpperCase()
-                    : variant.artical.toLocaleUpperCase()} */}
                   {variant.artical?.includes('|')
                     ? variant.artical.split('|')[0].toLocaleUpperCase()
                     : variant.artical?.includes(' ')

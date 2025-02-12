@@ -26,7 +26,7 @@
 
 .product_header_1 {
   font-family: var(--font-ricordi);
-  font-size: 1.2rem;
+  font-size: 1.5rem;
 }
 
 .product_title_wrapper {
@@ -146,8 +146,8 @@
 .ColorPickerList {
   display: inline-grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-column-gap: 15px;
-  grid-row-gap: 15px;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
   justify-content: center;
   align-items: center;
   justify-items: flex-start;
@@ -197,6 +197,9 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
+  padding: 3px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .preview_artical {
@@ -204,17 +207,17 @@
 }
 
 .ColorPickerItems {
-  max-width: 50px;
-  min-width: 50px;
-  height: 50px;
+  max-width: 30px;
+  min-width: 30px;
+  height: 30px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   position: relative;
-  border-radius: 5px;
+  border-radius: 50%;
   box-shadow: 0px 5px 10px 0px var(--boxShadowBtn);
-  cursor: pointer;
+  /* cursor: pointer; */
   overflow: hidden;
 }
 
@@ -343,16 +346,26 @@
   color: var(--buttonPrimary);
 }
 
+/* laptopM */
+@media (min-width: 1024px) and (max-width: 1240px) {
+  .product_header_1 {
+    font-size: 1.3rem;
+  }
+}
+
 /* laptopS */
 @media (min-width: 768px) and (max-width: 1024px) {
   .ColorPickerList {
     grid-template-columns: repeat(4, 1fr);
   }
+  .product_header_1 {
+    font-size: 1.4rem;
+  }
 }
 /* tabletL */
 @media (min-width: 440px) and (max-width: 768px) {
   .product_header_1 {
-    font-size: 1rem;
+    font-size: 1.3rem;
   }
   .ColorPickerList {
     grid-template-columns: repeat(4, 1fr);
@@ -361,7 +374,7 @@
 /* tabletS */
 @media (min-width: 350px) and (max-width: 440px) {
   .product_header_1 {
-    font-size: 0.8rem;
+    font-size: 1.2rem;
   }
   .ColorPickerList {
     grid-template-columns: repeat(4, 1fr);
@@ -370,7 +383,7 @@
 /* mobileL */
 @media (min-width: 285px) and (max-width: 350px) {
   .product_header_1 {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
   .ColorPickerList {
     grid-template-columns: repeat(4, 1fr);
@@ -383,7 +396,7 @@
 /* mobileM */
 @media (min-width: 200px) and (max-width: 285px) {
   .product_header_1 {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
   .ColorPickerList {
     grid-template-columns: repeat(3, 1fr);
@@ -396,7 +409,7 @@
 /* mobileS */
 @media (min-width: 100px) and (max-width: 200px) {
   .product_header_1 {
-    font-size: 0.8rem;
+    font-size: 0.875rem;
   }
   .ColorPickerList {
     grid-template-columns: repeat(3, 1fr);
@@ -410,10 +423,11 @@
 /* Global 1 */
 @media (min-width: 100px) and (max-width: 768px) {
   .ConvoContainer {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
   .PriceWrapper {
-    justify-content: flex-start;
+    /* justify-content: flex-start; */
+    flex-direction: row-reverse;
   }
 }
 /* Global 2 */

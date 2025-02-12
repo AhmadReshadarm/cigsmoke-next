@@ -8,27 +8,20 @@ import { TCartState } from 'redux/types';
 import styles from '../../styles/detail.module.css';
 type Props = {
   product?: Product;
-  selectedIndex: number;
   reviewRef: MutableRefObject<any>;
   questionRef: MutableRefObject<any>;
   setSelectedIndex: Dispatch<SetStateAction<number>>;
-  paginateImage: Dispatch<SetStateAction<number>>;
 };
 
 const Details: React.FC<Props> = ({
   product,
-  selectedIndex,
   questionRef,
   reviewRef,
   setSelectedIndex,
-  paginateImage,
 }) => {
   const { variant } = useAppSelector<TCartState>((state) => state.cart);
 
   const cart: Basket = useAppSelector((state) => state.cart.cart);
-  // const orderProduct = cart?.orderProducts?.find(
-  //   (orderProduct) => orderProduct.product?.id === product?.id,
-  // );
 
   const checkHasOldPrice = (productVariant: ProductVariant) => {
     if (productVariant?.oldPrice) return true;
@@ -44,8 +37,10 @@ const Details: React.FC<Props> = ({
             {product?.name}
           </h1>
         </div>
-
-        <div className={styles.short_description_wrapper}>
+        {/* <div>
+          <h1>charictristic</h1>
+        </div> */}
+        {/* <div className={styles.short_description_wrapper}>
           <p>
             <span itemProp="description">
               {product?.desc?.includes('|')
@@ -57,7 +52,7 @@ const Details: React.FC<Props> = ({
                 : product?.desc?.slice(0, 150)}
             </span>
           </p>
-        </div>
+        </div> */}
         <div className={styles.ConvoContainer}>
           <div className={styles.convo_contentWrapper}>
             <div className={styles.ConvoWrappers}>
@@ -131,9 +126,7 @@ const Details: React.FC<Props> = ({
           <ColorPicker
             variantColor={variant?.color ?? product?.productVariants![0]?.color}
             productVariants={product?.productVariants}
-            selectedIndex={selectedIndex}
             setSelectedIndex={setSelectedIndex}
-            paginateImage={paginateImage}
           />
         </div>
       </div>
