@@ -15,20 +15,27 @@ const WeRecomend = ({ product }) => {
   const { isInViewport, ref } = useInViewportNoDelay();
   useEffect(() => {
     if (isInViewport) {
-      (async () => {
-        const response = (await ProductService.getProducts({
-          limit: 17,
-          parent: product?.category.parent?.url,
-        })) as unknown as { rows: Product[]; length: number };
-        const offset = Math.floor(Math.random() * response.length) - 18;
-        const weRecomend = (await ProductService.getProducts({
-          limit: 18,
-          offset: `${offset < 18 ? 0 : offset}`,
-          parent: product?.category.parent?.url,
-        })) as unknown as { rows: Product[]; length: number };
-        setProducts(weRecomend.rows.filter((item) => item.id != product.id));
+      try {
+        (async () => {
+          const response = (await ProductService.getProducts({
+            limit: 17,
+            parent: product?.category.parent?.url,
+          })) as unknown as { rows: Product[]; length: number };
+          const offset = Math.floor(Math.random() * response.length) - 18;
+          const weRecomend = (await ProductService.getProducts({
+            limit: 18,
+            offset: `${offset < 18 ? 0 : offset}`,
+            parent: product?.category.parent?.url,
+          })) as unknown as { rows: Product[]; length: number };
+          setProducts(weRecomend.rows.filter((item) => item.id != product.id));
+          setLoading(false);
+        })();
+      } catch (error) {
+        console.log(error);
+
+        setProducts([]);
         setLoading(false);
-      })();
+      }
     }
   }, [isInViewport]);
 

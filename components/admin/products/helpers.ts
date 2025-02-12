@@ -47,6 +47,7 @@ const handleDataConvertation = (
   imagesMap: Object,
   parameterProducts: ParameterProduct[],
   variantsLength: number,
+  specsLenght: number,
 ) => {
   const newForm = { ...form };
   newForm.price = Number.parseInt(newForm.price, 10);
@@ -68,6 +69,13 @@ const handleDataConvertation = (
     const available: boolean =
       form[`${ManageProductFields.Available}[${index}]`];
     const color: number = form[`${ManageProductFields.Color}[${index}]`];
+    const parameterProduct: any[] = [];
+    for (let indexParam = 0; indexParam < specsLenght; indexParam++) {
+      const key: string =
+        form[`${ManageProductFields.KeyValue}[${indexParam}]`];
+      const value: string = form[`${ManageProductFields.Value}[${indexParam}]`];
+      parameterProduct.push({ key, value });
+    }
     const payload = {
       id,
       price,
@@ -77,6 +85,7 @@ const handleDataConvertation = (
       available,
       color,
       images: null,
+      parameterProduct,
     };
     const images = imagesMap[index];
 
@@ -114,16 +123,17 @@ const handleFormSubmitProduct =
     imagesMap: Object,
     parameterProducts: ParameterProduct[],
     variantsLength: number,
+    specsLenght: number,
     // desc: string,
   ) =>
   async (form) => {
     // form.desc = desc;
-
     const convertedForm = handleDataConvertation(
       form,
       imagesMap,
       parameterProducts,
       variantsLength,
+      specsLenght,
     );
 
     if (hasWhiteSpace(form.url)) {

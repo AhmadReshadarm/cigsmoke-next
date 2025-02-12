@@ -66,6 +66,7 @@ const ManageProductForm = ({
   const initialValues = initialValuesConverter(product as Product);
   const [curCategory, setCurCategory] = useState<Category>();
   const [variants, setVariants] = useState<any[]>([]);
+  const [specs, setSpecs] = useState<any[]>([]);
   const [parameterProducts, setParameterProducts] = useState<
     ParameterProduct[]
   >([]);
@@ -122,6 +123,7 @@ const ManageProductForm = ({
             imagesMap,
             parameterProducts,
             variants.length,
+            specs.length,
             // editorModal,
           )}
           form={form}
@@ -271,6 +273,8 @@ const ManageProductForm = ({
                 index={index}
                 setVariants={setVariants}
                 imagesList={imagesMap[index]}
+                specs={specs}
+                setSpecs={setSpecs}
               />
             ))}
             <Button type="primary" onClick={handleAddVariant}>

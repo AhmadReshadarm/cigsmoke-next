@@ -15,12 +15,16 @@ type Props = {
   index: number;
   setVariants: any;
   imagesList: Image[];
+  specs: any[];
+  setSpecs: any;
 };
 const ProductVariant: React.FC<Props> = ({
   colors,
   index,
   setVariants,
   imagesList,
+  specs,
+  setSpecs,
 }) => {
   const handleRemove = (index) => () => {
     setVariants((prev) => {
@@ -31,6 +35,10 @@ const ProductVariant: React.FC<Props> = ({
     });
   };
   const [isOpen, setOpen] = useState(false);
+
+  const handleAddSpecs = () => {
+    setSpecs((prev) => prev.concat({}));
+  };
 
   return (
     <div className={styles['product-variant']}>
@@ -147,6 +155,39 @@ const ProductVariant: React.FC<Props> = ({
           ''
         )}
       </Form.Item>
+      <div className={styles['product-variants']}>
+        <h2 style={{ marginBottom: '10px' }}>Список характеристик</h2>
+        {specs.map((spec, index) => (
+          <div key={index} className={styles['product-specs-wrapper']}>
+            <div>
+              <span style={{ marginBottom: '10px' }}>
+                название характеристики
+              </span>
+              <Form.Item name={`${ManageProductFields.KeyValue}[${index}]`}>
+                <Input
+                  required={true}
+                  placeholder="Введите название характеристики"
+                />
+              </Form.Item>
+            </div>
+
+            <div>
+              <span style={{ marginBottom: '10px' }}>
+                данные для характерного поля
+              </span>
+              <Form.Item name={`${ManageProductFields.Value}[${index}]`}>
+                <Input
+                  required={true}
+                  placeholder="Введите данные для характерного поля"
+                />
+              </Form.Item>
+            </div>
+          </div>
+        ))}
+        <Button type="primary" onClick={handleAddSpecs}>
+          Добавить поле характеристики
+        </Button>
+      </div>
     </div>
   );
 };

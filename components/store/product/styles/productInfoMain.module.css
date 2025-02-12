@@ -170,6 +170,9 @@
 
 /* Global */
 @media (min-width: 100px) and (max-width: 1024px) {
+  .Container {
+    padding: 0;
+  }
   .Wrapper {
     max-width: unset;
     width: 95%;

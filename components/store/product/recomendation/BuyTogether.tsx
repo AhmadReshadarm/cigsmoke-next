@@ -20,20 +20,27 @@ const BuyTogether: React.FC<Props> = ({ product }) => {
   useEffect(() => {
     if (isInViewport) {
       (async () => {
-        const response = (await ProductService.getProducts({
-          limit: 17,
-          categories: [product?.category?.url!],
-        })) as unknown as { rows: Product[]; length: number };
-        // .tags?.map((tag: any) => tag.url)
-        const offset = Math.floor(Math.random() * response.length) - 18;
-        const buyTogether = (await ProductService.getProducts({
-          limit: 18,
-          offset: `${offset < 18 ? 0 : offset}`,
-          categories: [product?.category?.url!],
-        })) as unknown as { rows: Product[]; length: number };
-        //  tags: product?.tags?.map((tag: any) => tag.url),
-        setProducts(buyTogether.rows.filter((item) => item.id != product.id));
-        setLoading(false);
+        try {
+          const response = (await ProductService.getProducts({
+            limit: 17,
+            categories: [product?.category?.url!],
+          })) as unknown as { rows: Product[]; length: number };
+          // .tags?.map((tag: any) => tag.url)
+          const offset = Math.floor(Math.random() * response.length) - 18;
+          const buyTogether = (await ProductService.getProducts({
+            limit: 18,
+            offset: `${offset < 18 ? 0 : offset}`,
+            categories: [product?.category?.url!],
+          })) as unknown as { rows: Product[]; length: number };
+          //  tags: product?.tags?.map((tag: any) => tag.url),
+          setProducts(buyTogether.rows.filter((item) => item.id != product.id));
+          setLoading(false);
+        } catch (error) {
+          console.log(error);
+
+          setProducts([]);
+          setLoading(false);
+        }
       })();
     }
   }, [isInViewport]);

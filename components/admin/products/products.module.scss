@@ -93,6 +93,12 @@
 .product-variants {
   padding-bottom: 20px;
 }
+.product-specs-wrapper {
+  // width: 80%;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
 
 .product-variant {
   padding-left: 20px;
