@@ -10,6 +10,7 @@ import Image from 'next/image';
 import ShareToSocial from './details/ShareToSocial';
 import DropDowns from './details/DropDowns';
 import styles from '../styles/productInfoMain.module.css';
+import backArrow from '../../../../public/icons/back_arrow_min.png';
 
 type Props = {
   product?: Product;
@@ -71,8 +72,8 @@ const ProductInfo: React.FC<Props> = ({
                   quality={20}
                   priority={false}
                   src={'/icons/back_arrow_min.png'}
-                  // placeholder="blur"
-                  // blurDataURL={backArrow}
+                  placeholder="blur"
+                  blurDataURL={backArrow}
                   alt="Back to main arrow"
                 />
                 <span>Обратно на главную</span>
