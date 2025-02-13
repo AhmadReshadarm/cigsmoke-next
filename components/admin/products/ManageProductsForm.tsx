@@ -63,13 +63,15 @@ const ManageProductForm = ({
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [form] = Form.useForm();
-  const initialValues = initialValuesConverter(product as Product);
+
   const [curCategory, setCurCategory] = useState<Category>();
   const [variants, setVariants] = useState<any[]>([]);
-  const [specs, setSpecs] = useState<any[]>([]);
+  const [charictristicProduct, setCharictristicProduct] = useState<any[]>([]);
   const [parameterProducts, setParameterProducts] = useState<
     ParameterProduct[]
   >([]);
+  // const initialValues = initialValuesConverter(product as Product, variants);
+  const [initialValues, setInitialValues] = useState<any>({});
   const { imagesMap } = useAppSelector<TMultipleImageState>(
     (state) => state.multipleImages,
   );
@@ -79,6 +81,12 @@ const ManageProductForm = ({
       initialValues[index]?.forEach((image) => {
         dispatch(setDefaultImageList({ file: image, index }));
       });
+    }
+
+    if (product && variants.length > 0) {
+      const values = initialValuesConverter(product, variants);
+      setInitialValues(values);
+      form.setFieldsValue(values); // Update form fields
     }
     setCurCategory(product?.category);
     setParameterProducts(
@@ -93,14 +101,21 @@ const ManageProductForm = ({
         };
       })!,
     );
-    setVariants(generateArrayOfNumbers(product?.productVariants?.length ?? 0));
+    if (product?.productVariants && editMode) {
+      const initialVariants = product.productVariants.map((v) => ({
+        id: v.id,
+      }));
+      setVariants(initialVariants);
+    }
+    // setVariants(generateArrayOfNumbers(product?.productVariants?.length ?? 0));
     return () => {
       dispatch(clearImageList());
     };
   }, [product]);
 
   const handleAddVariant = () => {
-    setVariants((prev) => prev.concat({}));
+    const uniqueId = Math.floor(Math.random() * 5000);
+    setVariants((prev) => prev.concat({ id: uniqueId }));
   };
 
   const filteredTags = tags.map((tag) => {
@@ -123,11 +138,12 @@ const ManageProductForm = ({
             imagesMap,
             parameterProducts,
             variants.length,
-            specs.length,
+            charictristicProduct,
+            variants,
             // editorModal,
           )}
           form={form}
-          initialValues={initialValues}
+          // initialValues={initialValues}
           requiredMark={true}
           className={styles.createProductForm}
         >
@@ -271,13 +287,19 @@ const ManageProductForm = ({
                 key={`product-variant-${index}`}
                 colors={colors}
                 index={index}
+                variants={variants}
                 setVariants={setVariants}
                 imagesList={imagesMap[index]}
-                specs={specs}
-                setSpecs={setSpecs}
+                charictristicProduct={charictristicProduct}
+                setCharictristicProduct={setCharictristicProduct}
+                variant={variant}
               />
             ))}
-            <Button type="primary" onClick={handleAddVariant}>
+            <Button
+              style={{ width: '200px' }}
+              type="primary"
+              onClick={handleAddVariant}
+            >
               Добавить вариант
             </Button>
           </div>

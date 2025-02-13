@@ -5,7 +5,7 @@ import styles from './products.module.scss';
 import MultipleImageUpload from '../generalComponents/MultipleImageUpload';
 import { InsertRowLeftOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DatabaseImages from 'ui-kit/DatabaseImages';
 
 const { Option } = Select;
@@ -13,32 +13,68 @@ const { Option } = Select;
 type Props = {
   colors: Color[];
   index: number;
+  variants: any[];
   setVariants: any;
   imagesList: Image[];
-  specs: any[];
-  setSpecs: any;
+  charictristicProduct: any[];
+  setCharictristicProduct: any;
+  variant: { id: number };
 };
 const ProductVariant: React.FC<Props> = ({
   colors,
   index,
+  variants,
   setVariants,
   imagesList,
-  specs,
-  setSpecs,
+  charictristicProduct,
+  setCharictristicProduct,
+  variant,
 }) => {
-  const handleRemove = (index) => () => {
+  const [isOpen, setOpen] = useState(false);
+  const [specs, setSpecs] = useState<any[]>([]);
+
+  const handleRemove = (index) => async () => {
+    for (let index = 0; index < specs.length; index++) {
+      setSpecs([]);
+    }
+
     setVariants((prev) => {
       const array = [...prev];
       array.splice(index, 1);
 
       return array;
     });
+
+    const newChars = [...charictristicProduct];
+    newChars[index] = [];
+    setCharictristicProduct(newChars);
   };
-  const [isOpen, setOpen] = useState(false);
 
   const handleAddSpecs = () => {
-    setSpecs((prev) => prev.concat({}));
+    const uniqueId = Math.floor(Math.random() * 5000);
+
+    setSpecs((prev) => prev.concat({ id: uniqueId }));
   };
+
+  const handleRemoveSpecs = (index) => () => {
+    setSpecs((prev) => {
+      const array = [...prev];
+      array.splice(index, 1);
+
+      return array;
+    });
+  };
+
+  useEffect(() => {
+    if (charictristicProduct.length == 0) {
+      setCharictristicProduct((prev) => prev.concat(specs));
+    }
+    if (charictristicProduct.length !== 0) {
+      const newChars = [...charictristicProduct];
+      newChars[index] = specs;
+      setCharictristicProduct(newChars);
+    }
+  }, [specs, variants]);
 
   return (
     <div className={styles['product-variant']}>
@@ -79,11 +115,17 @@ const ProductVariant: React.FC<Props> = ({
           />
         </svg>
       </button>
-      <Form.Item name={`id[${index}]`} style={{ display: 'none' }}>
-        <Input name={`id[${index}]`} />
+      <Form.Item
+        name={`id[${index}][${variant.id}]`}
+        style={{ display: 'none' }}
+      >
+        <Input name={`id[${index}][${variant.id}]`} />
       </Form.Item>
       {/* ----------------------PRICE---------------------- */}
-      <Form.Item name={`${ManageProductFields.Price}[${index}]`} required>
+      <Form.Item
+        name={`${ManageProductFields.Price}[${index}][${variant.id}]`}
+        required
+      >
         <Input
           min={1}
           required={true}
@@ -93,7 +135,9 @@ const ProductVariant: React.FC<Props> = ({
       </Form.Item>
       {/* ----------------------OLD PRICE---------------------- */}
 
-      <Form.Item name={`${ManageProductFields.OldPrice}[${index}]`}>
+      <Form.Item
+        name={`${ManageProductFields.OldPrice}[${index}][${variant.id}]`}
+      >
         <Input
           // required={true}
           type={'number'}
@@ -101,13 +145,16 @@ const ProductVariant: React.FC<Props> = ({
         />
       </Form.Item>
       {/* ----------------------Artical---------------------- */}
-      <Form.Item name={`${ManageProductFields.Artical}[${index}]`} required>
+      <Form.Item
+        name={`${ManageProductFields.Artical}[${index}][${variant.id}]`}
+        required
+      >
         <Input required={true} placeholder="введите Артикул" />
       </Form.Item>
       {/* ----------------------AVAILABLE---------------------- */}
       <Form.Item
         label="В наличии"
-        name={`${ManageProductFields.Available}[${index}]`}
+        name={`${ManageProductFields.Available}[${index}][${variant.id}]`}
         valuePropName="checked"
         required={true}
       >
@@ -116,7 +163,7 @@ const ProductVariant: React.FC<Props> = ({
       {/* ----------------------COLORS---------------------- */}
       <Form.Item
         label="Цвет"
-        name={`${ManageProductFields.Color}[${index}]`}
+        name={`${ManageProductFields.Color}[${index}][${variant.id}]`}
         required={true}
       >
         <Select
@@ -129,7 +176,10 @@ const ProductVariant: React.FC<Props> = ({
           ))}
         </Select>
       </Form.Item>
-      <Form.Item name={`${ManageProductFields.Images}[${index}]`} required>
+      <Form.Item
+        name={`${ManageProductFields.Images}[${index}][${variant.id}]`}
+        required
+      >
         <MultipleImageUpload
           fileList={imagesList}
           isProduct={true}
@@ -155,32 +205,75 @@ const ProductVariant: React.FC<Props> = ({
           ''
         )}
       </Form.Item>
-      <div className={styles['product-variants']}>
+      <div className={styles['product-variants-specs']}>
         <h2 style={{ marginBottom: '10px' }}>Список характеристик</h2>
-        {specs.map((spec, index) => (
-          <div key={index} className={styles['product-specs-wrapper']}>
-            <div>
-              <span style={{ marginBottom: '10px' }}>
-                название характеристики
-              </span>
-              <Form.Item name={`${ManageProductFields.KeyValue}[${index}]`}>
-                <Input
-                  required={true}
-                  placeholder="Введите название характеристики"
-                />
-              </Form.Item>
+        {specs.map((spec, indexParams) => (
+          <div style={{ width: '100%' }} key={indexParams}>
+            <div className={styles['specs-header-close-btn-wrapper']}>
+              <button type={'button'} onClick={handleRemoveSpecs(indexParams)}>
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 21 22"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <line
+                    x1="1"
+                    y1="-1"
+                    x2="26.3541"
+                    y2="-1"
+                    transform="matrix(0.683484 -0.729965 0.681649 0.731679 1.52267 21.0312)"
+                    stroke="black"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <line
+                    x1="1"
+                    y1="-1"
+                    x2="26.3044"
+                    y2="-1"
+                    transform="matrix(0.680786 0.732483 -0.684345 0.729158 0.21875 1.03125)"
+                    stroke="black"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
+              <h2 className={styles['product-variant__title']}>
+                Характеристик № {indexParams + 1}
+              </h2>
             </div>
+            <div className={styles['product-specs-wrapper']}>
+              <div style={{ width: '100%' }}>
+                <span style={{ marginBottom: '10px' }}>
+                  название характеристики
+                </span>
+                <Form.Item
+                  name={`${ManageProductFields.KeyValue}[${index}][${spec.id}]`}
+                >
+                  <Input
+                    placeholder="Введите название характеристики"
+                    style={{ width: '100%' }}
+                    required={true}
+                  />
+                </Form.Item>
+              </div>
 
-            <div>
-              <span style={{ marginBottom: '10px' }}>
-                данные для характерного поля
-              </span>
-              <Form.Item name={`${ManageProductFields.Value}[${index}]`}>
-                <Input
-                  required={true}
-                  placeholder="Введите данные для характерного поля"
-                />
-              </Form.Item>
+              <div style={{ width: '100%' }}>
+                <span style={{ marginBottom: '10px' }}>
+                  данные для характерного поля
+                </span>
+                <Form.Item
+                  name={`${ManageProductFields.Value}[${index}][${spec.id}]`}
+                >
+                  <Input
+                    placeholder="Введите данные для характерного поля"
+                    style={{ width: '100%' }}
+                    required={true}
+                  />
+                </Form.Item>
+              </div>
             </div>
           </div>
         ))}
