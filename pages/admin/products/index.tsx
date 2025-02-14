@@ -1,6 +1,6 @@
 import { Button, Spin, Table } from 'antd';
 import { ColumnGroupType, ColumnType } from 'antd/lib/table/interface';
-import { navigateTo } from 'common/helpers';
+import { navigateTo, openErrorNotification } from 'common/helpers';
 import { DataType } from 'common/interfaces/data-type.interface';
 import AdminLayout from 'components/admin/adminLayout/layout';
 import { columns } from 'components/admin/products/constants';
@@ -259,10 +259,10 @@ const ProductsPage = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Продукты | NBHOZ</title>
+        <title>Администрирование {`>`} Товары | NBHOZ</title>
       </Head>
       <div className={styles.productsHeader}>
-        <h1 className={styles.productsHeader__title}>Продукты</h1>
+        <h1 className={styles.productsHeader__title}>Товары</h1>
         <HeaderActionBtnWrapper>
           {/* <Button
             className={styles.productsHeader__createProductButton}
@@ -276,7 +276,23 @@ const ProductsPage = () => {
           <Button
             className={styles.productsHeader__createProductButton}
             type="primary"
-            onClick={navigateTo(router, Page.ADMIN_CREATE_PRODUCT)}
+            onClick={() => {
+              if (!categories || !subCategories) {
+                openErrorNotification(
+                  'Сначала создайте категории и подкатегории',
+                );
+                return;
+              }
+              if (!colors) {
+                openErrorNotification('Сначала создайте цвета');
+                return;
+              }
+              if (!tags) {
+                openErrorNotification('Сначала создайте коллекции');
+                return;
+              }
+              navigateTo(router, Page.ADMIN_CREATE_PRODUCT)();
+            }}
           >
             Создать новый продукт
           </Button>

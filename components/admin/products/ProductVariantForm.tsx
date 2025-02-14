@@ -7,53 +7,53 @@ import { InsertRowLeftOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import DatabaseImages from 'ui-kit/DatabaseImages';
+import { useAppDispatch } from 'redux/hooks';
+import { clearImageListForVariant } from 'redux/slicers/mutipleImagesSlicer';
+import { InputField } from 'common/enums/inputField.enum';
+import { capitalizeFirstLetter } from 'common/helpers/capitalizeFirstLetter.helper';
 
 const { Option } = Select;
 
 type Props = {
   colors: Color[];
   index: number;
-  variants: any[];
+  variantId: number;
+  // variants: any[];
   setVariants: any;
   imagesList: Image[];
-  charictristicProduct: any[];
+  initialSpecs: any[];
   setCharictristicProduct: any;
-  variant: { id: number };
+  // variant: { id: number };
 };
 const ProductVariant: React.FC<Props> = ({
   colors,
   index,
-  variants,
+  variantId,
   setVariants,
   imagesList,
-  charictristicProduct,
+  initialSpecs,
   setCharictristicProduct,
-  variant,
 }) => {
   const [isOpen, setOpen] = useState(false);
   const [specs, setSpecs] = useState<any[]>([]);
 
-  const handleRemove = (index) => async () => {
-    for (let index = 0; index < specs.length; index++) {
-      setSpecs([]);
-    }
+  const dispatch = useAppDispatch();
 
-    setVariants((prev) => {
-      const array = [...prev];
-      array.splice(index, 1);
+  const handleRemove = (variantId: number) => async () => {
+    setVariants((prev) => prev.filter((v) => v.id !== variantId));
 
-      return array;
+    dispatch(clearImageListForVariant(variantId));
+
+    setCharictristicProduct((prev) => {
+      const newChars = { ...prev };
+      delete newChars[variantId];
+      return newChars;
     });
-
-    const newChars = [...charictristicProduct];
-    newChars[index] = [];
-    setCharictristicProduct(newChars);
   };
 
   const handleAddSpecs = () => {
     const uniqueId = Math.floor(Math.random() * 5000);
-
-    setSpecs((prev) => prev.concat({ id: uniqueId }));
+    setSpecs((prev) => [...prev, { id: uniqueId }]);
   };
 
   const handleRemoveSpecs = (index) => () => {
@@ -66,15 +66,11 @@ const ProductVariant: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (charictristicProduct.length == 0) {
-      setCharictristicProduct((prev) => prev.concat(specs));
-    }
-    if (charictristicProduct.length !== 0) {
-      const newChars = [...charictristicProduct];
-      newChars[index] = specs;
-      setCharictristicProduct(newChars);
-    }
-  }, [specs, variants]);
+    setCharictristicProduct((prev) => ({
+      ...prev,
+      [variantId]: specs,
+    }));
+  }, [specs, variantId]);
 
   return (
     <div className={styles['product-variant']}>
@@ -84,7 +80,7 @@ const ProductVariant: React.FC<Props> = ({
       <button
         type={'button'}
         className={styles['product-variant__remove']}
-        onClick={handleRemove(index)}
+        onClick={handleRemove(variantId)}
       >
         <svg
           width="15"
@@ -115,15 +111,13 @@ const ProductVariant: React.FC<Props> = ({
           />
         </svg>
       </button>
-      <Form.Item
-        name={`id[${index}][${variant.id}]`}
-        style={{ display: 'none' }}
-      >
-        <Input name={`id[${index}][${variant.id}]`} />
+      <Form.Item name={`id[${variantId}]`} style={{ display: 'none' }}>
+        <Input name={`id[${variantId}]`} />
       </Form.Item>
       {/* ----------------------PRICE---------------------- */}
       <Form.Item
-        name={`${ManageProductFields.Price}[${index}][${variant.id}]`}
+        label={InputField[capitalizeFirstLetter(ManageProductFields.Price)]}
+        name={`${ManageProductFields.Price}[${variantId}]`}
         required
       >
         <Input
@@ -136,7 +130,8 @@ const ProductVariant: React.FC<Props> = ({
       {/* ----------------------OLD PRICE---------------------- */}
 
       <Form.Item
-        name={`${ManageProductFields.OldPrice}[${index}][${variant.id}]`}
+        label={InputField[capitalizeFirstLetter(ManageProductFields.OldPrice)]}
+        name={`${ManageProductFields.OldPrice}[${variantId}]`}
       >
         <Input
           // required={true}
@@ -146,15 +141,16 @@ const ProductVariant: React.FC<Props> = ({
       </Form.Item>
       {/* ----------------------Artical---------------------- */}
       <Form.Item
-        name={`${ManageProductFields.Artical}[${index}][${variant.id}]`}
+        label={InputField[capitalizeFirstLetter(ManageProductFields.Artical)]}
+        name={`${ManageProductFields.Artical}[${variantId}]`}
         required
       >
         <Input required={true} placeholder="введите Артикул" />
       </Form.Item>
       {/* ----------------------AVAILABLE---------------------- */}
       <Form.Item
-        label="В наличии"
-        name={`${ManageProductFields.Available}[${index}][${variant.id}]`}
+        label={InputField[capitalizeFirstLetter(ManageProductFields.Available)]}
+        name={`${ManageProductFields.Available}[${variantId}]`}
         valuePropName="checked"
         required={true}
       >
@@ -163,7 +159,7 @@ const ProductVariant: React.FC<Props> = ({
       {/* ----------------------COLORS---------------------- */}
       <Form.Item
         label="Цвет"
-        name={`${ManageProductFields.Color}[${index}][${variant.id}]`}
+        name={`${ManageProductFields.Color}[${variantId}]`}
         required={true}
       >
         <Select
@@ -177,13 +173,14 @@ const ProductVariant: React.FC<Props> = ({
         </Select>
       </Form.Item>
       <Form.Item
-        name={`${ManageProductFields.Images}[${index}][${variant.id}]`}
+        label="Параметры загрузки изображений"
+        name={`${ManageProductFields.Images}[${variantId}]`}
         required
       >
         <MultipleImageUpload
           fileList={imagesList}
           isProduct={true}
-          index={index}
+          index={variantId}
         />
         <ButtonDevider>
           <Button
@@ -199,7 +196,7 @@ const ProductVariant: React.FC<Props> = ({
             isProducts={true}
             setOpen={setOpen}
             isOpen={isOpen}
-            prodcutVariantIndex={index}
+            prodcutVariantIndex={variantId}
           />
         ) : (
           ''
@@ -246,11 +243,10 @@ const ProductVariant: React.FC<Props> = ({
             </div>
             <div className={styles['product-specs-wrapper']}>
               <div style={{ width: '100%' }}>
-                <span style={{ marginBottom: '10px' }}>
-                  название характеристики
-                </span>
                 <Form.Item
-                  name={`${ManageProductFields.KeyValue}[${index}][${spec.id}]`}
+                  label="название характеристики"
+                  name={`${ManageProductFields.KeyValue}[${spec.id}]`}
+                  required
                 >
                   <Input
                     placeholder="Введите название характеристики"
@@ -261,11 +257,10 @@ const ProductVariant: React.FC<Props> = ({
               </div>
 
               <div style={{ width: '100%' }}>
-                <span style={{ marginBottom: '10px' }}>
-                  данные для характерного поля
-                </span>
                 <Form.Item
-                  name={`${ManageProductFields.Value}[${index}][${spec.id}]`}
+                  label="данные для характерного поля"
+                  name={`${ManageProductFields.Value}[${spec.id}]`}
+                  required
                 >
                   <Input
                     placeholder="Введите данные для характерного поля"

@@ -39,11 +39,11 @@ const IncreaseOrDecreasePrice = () => {
     increaseDecrease: boolean,
   ) => {
     if (selectedProducts.length === 0) {
-      openErrorNotification('please select products');
+      openErrorNotification('Сначала выберите товар');
       return;
     }
     if (increaseDecreaseValue < 1 || increaseDecreaseValue > 100) {
-      openErrorNotification('value between 0 to 100');
+      openErrorNotification('Значение увеличения от 0 до 100');
       return;
     }
     dispatch(handleCheckBoxEnabled(!isCheckBoxEnabled));
@@ -122,7 +122,7 @@ const IncreaseOrDecreasePrice = () => {
     dataLength: number,
     increaseDecrease: boolean,
   ) => {
-    openErrorNotification('feching products');
+    openErrorNotification('Привозим товары');
     const payload: any = {
       sortBy: 'id',
       orderBy: 'DESC',
@@ -132,15 +132,15 @@ const IncreaseOrDecreasePrice = () => {
     const selectedProducts: string[] = [];
     const fetchData = async (payload) => {
       const fetchedProducts: any = await dispatch(fetchProducts(payload));
-      openSuccessNotification('products fetched');
+      openSuccessNotification('Товары получены');
 
-      openErrorNotification('starting serialization');
+      openErrorNotification('Начало сериализации');
       const serializeIds = async (products) => {
         await products.map((product, index) => {
           selectedProducts.push(product.id);
           setProgress(Math.floor((100 * index + 1) / products.length));
           if (index > products.length - 2) {
-            openSuccessNotification('serialization complete');
+            openSuccessNotification('Сериализация завершена');
           }
         });
       };
@@ -166,13 +166,13 @@ const IncreaseOrDecreasePrice = () => {
         <Buttons
           onClick={() => {
             if (decreasePrice) {
-              openErrorNotification('close decrease price fist');
+              openErrorNotification('Сначала закройте (уменьшите цену товара)');
               return;
             }
             setIncreasePrice(true);
           }}
         >
-          <span>Увеличить цену</span>
+          <span>Увеличить цену товары</span>
         </Buttons>
       ) : (
         <FormWrapper>
@@ -282,13 +282,13 @@ const IncreaseOrDecreasePrice = () => {
         <Buttons
           onClick={() => {
             if (increasePrice) {
-              openErrorNotification('close increase price first');
+              openErrorNotification('Сначала закройте (увеличить цену товара)');
               return;
             }
             setDecreasePrice(!decreasePrice);
           }}
         >
-          <span>Уменьшить цену</span>
+          <span>Уменьшить цену товары</span>
         </Buttons>
       ) : (
         <FormWrapper>

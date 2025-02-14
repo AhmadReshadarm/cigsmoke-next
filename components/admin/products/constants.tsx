@@ -74,8 +74,11 @@ export const columns: ColumnsType<any> = [
         return (
           <div
             style={{
-              width: '120px',
-              height: '120px',
+              width: '80px',
+              height: '80px',
+              borderRadius: '10px',
+              overflow: 'hidden',
+              border: '1px solid',
             }}
           >
             <Carousel effect="fade">
@@ -104,7 +107,7 @@ export const columns: ColumnsType<any> = [
         );
       }
     },
-    width: '10%',
+    width: '8%',
   },
   {
     title: 'Имя',
@@ -117,12 +120,16 @@ export const columns: ColumnsType<any> = [
       return (
         <TableLink
           id={record.category!.id as string}
-          name={record.category!.name as string}
+          name={
+            `${record.category?.parent?.name} > ${
+              record.category!.name
+            }` as string
+          }
           handleRedirect={handleRedirectCategory}
         />
       );
     },
-    width: '7.5%',
+    width: '12%',
   },
   {
     title: 'URL',
@@ -155,7 +162,7 @@ export const columns: ColumnsType<any> = [
     width: '10%',
   },
   {
-    title: 'Теги',
+    title: 'Коллекции',
     dataIndex: 'tags',
     render: (_, record) => {
       return (
@@ -172,7 +179,7 @@ export const columns: ColumnsType<any> = [
         </ul>
       );
     },
-    width: '8.5%',
+    width: '8%',
   },
   {
     title: 'Артикул | Цена | Статус на складе',

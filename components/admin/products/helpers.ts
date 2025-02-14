@@ -53,51 +53,38 @@ const handleDataConvertation = (
   const newForm = { ...form };
   newForm.price = Number.parseInt(newForm.price, 10);
   newForm.available && (newForm.available = JSON.parse(newForm.available));
-  newForm.parameterProducts = parameterProducts.map((parameterProduct) => ({
-    parameterId: parameterProduct.parameter?.id,
-    value: parameterProduct.value,
-  }));
+  // newForm.parameterProducts = parameterProducts.map((parameterProduct) => ({
+  //   parameterId: parameterProduct.parameter?.id,
+  //   value: parameterProduct.value,
+  // }));
 
   const productVariants: any[] = [];
 
   for (let index = 0; index < variantsLength; index++) {
-    const id: string = form[`id[${index}][${variantsUIArray[index].id}]`];
-    const price: number =
-      form[
-        `${ManageProductFields.Price}[${index}][${variantsUIArray[index].id}]`
-      ];
+    const variantId = variantsUIArray[index].id;
+    const id: string = form[`id[${variantsUIArray[index].id}]`];
+    const price: number = form[`${ManageProductFields.Price}[${variantId}]`];
     const oldPrice: number =
-      form[
-        `${ManageProductFields.OldPrice}[${index}][${variantsUIArray[index].id}]`
-      ];
+      form[`${ManageProductFields.OldPrice}[${variantId}]`];
     const artical: string =
-      form[
-        `${ManageProductFields.Artical}[${index}][${variantsUIArray[index].id}]`
-      ];
-    // const wholeSalePrice: number =
-    //   form[`${ManageProductFields.wholeSalePrice}[${index}]`];
+      form[`${ManageProductFields.Artical}[${variantId}]`];
     const available: boolean =
-      form[
-        `${ManageProductFields.Available}[${index}][${variantsUIArray[index].id}]`
-      ];
-    const color: number =
-      form[
-        `${ManageProductFields.Color}[${index}][${variantsUIArray[index].id}]`
-      ];
+      form[`${ManageProductFields.Available}[${variantId}]`];
+    const color: number = form[`${ManageProductFields.Color}[${variantId}]`];
     const parameterProduct: any[] = [];
     if (charictristicProduct.length !== 0) {
       for (
         let indexParam = 0;
-        indexParam < charictristicProduct[index].length;
+        indexParam < charictristicProduct[variantId].length;
         indexParam++
       ) {
         const key: string =
           form[
-            `${ManageProductFields.KeyValue}[${index}][${charictristicProduct[index][indexParam].id}]`
+            `${ManageProductFields.KeyValue}[${charictristicProduct[variantId][indexParam].id}]`
           ];
         const value: string =
           form[
-            `${ManageProductFields.Value}[${index}][${charictristicProduct[index][indexParam].id}]`
+            `${ManageProductFields.Value}[${charictristicProduct[variantId][indexParam].id}]`
           ];
         parameterProduct.push({ key, value });
       }
@@ -106,14 +93,13 @@ const handleDataConvertation = (
       id,
       price,
       oldPrice,
-      // wholeSalePrice,
       artical,
       available,
       color,
       images: null,
       parameterProduct,
     };
-    const images = imagesMap[index];
+    const images = imagesMap[variantId];
 
     if (images?.length) {
       const imageNameArray = images.map((image) => {
@@ -149,15 +135,10 @@ const handleFormSubmitProduct =
     imagesMap: Object,
     parameterProducts: ParameterProduct[],
     variantsLength: number,
-    charictristicProduct: any,
+    charictristicProduct: Record<number, any[]>,
     variantsUIArray: any,
-    // desc: string,
   ) =>
   async (form) => {
-    // form.desc = desc;
-    // console.log(form);
-
-    // return;
     const convertedForm = handleDataConvertation(
       form,
       imagesMap,
@@ -166,9 +147,6 @@ const handleFormSubmitProduct =
       variantsUIArray,
       charictristicProduct,
     );
-    console.log(convertedForm);
-
-    return;
 
     if (hasWhiteSpace(form.url)) {
       openErrorNotification(
@@ -195,6 +173,9 @@ const handleFormSubmitProduct =
       );
       return;
     }
+    console.log(convertedForm);
+
+    return;
 
     if (router.query.id) {
       const isSaved: any = await dispatch(
@@ -235,43 +216,26 @@ const multipleItemsConverter = (items) => {
   return items?.map((item) => item.id);
 };
 
-const imagesConverter = (images) => {
-  const imagesArray = images?.split(',');
-
-  const imagesUrlArray = imagesArray?.map((image, index) => {
-    const newImage = {
-      name: image.trim(),
-      url: `/api/images/${image.trim()}`,
-      uid: index,
-    };
-    return newImage;
-  });
-
-  return imagesUrlArray;
-};
-
 const initialValuesConverter = (product: Product, variants: any[]) => {
   const newProduct: any & Product = { ...product };
-  newProduct.available = newProduct.available?.toString();
   newProduct.category = newProduct.category?.id;
   newProduct.tags = multipleItemsConverter(newProduct.tags);
 
-  for (let index = 0; index < product?.productVariants?.length!; index++) {
-    const variant = product.productVariants![index];
-    const variantId = variants[index]?.id;
-    newProduct[`id[${index}][${variantId}]`] = variant.id;
-    newProduct[`${ManageProductFields.Price}[${index}][${variantId}]`] =
-      variant.price;
-    newProduct[`${ManageProductFields.OldPrice}[${index}][${variantId}]`] =
-      variant.oldPrice;
-    newProduct[`${ManageProductFields.Artical}[${index}][${variantId}]`] =
-      variant.artical;
-    newProduct[`${ManageProductFields.Available}[${index}][${variantId}]`] =
-      variant.available;
-    newProduct[`${ManageProductFields.Color}[${index}][${variantId}]`] =
-      variant.color?.id;
-    newProduct[index] = imagesConverter(variant.images);
-  }
+  variants.forEach((variant, index) => {
+    const dbVariant = product.productVariants?.[index];
+    if (!dbVariant) return;
+
+    newProduct[`id[${variant.id}]`] = variant.id;
+    newProduct[`${ManageProductFields.Price}[${variant.id}]`] = dbVariant.price;
+    newProduct[`${ManageProductFields.OldPrice}[${variant.id}]`] =
+      dbVariant.oldPrice;
+    newProduct[`${ManageProductFields.Artical}[${variant.id}]`] =
+      dbVariant.artical;
+    newProduct[`${ManageProductFields.Available}[${variant.id}]`] =
+      dbVariant.available;
+    newProduct[`${ManageProductFields.Color}[${variant.id}]`] =
+      dbVariant.color?.id;
+  });
 
   return newProduct;
 };

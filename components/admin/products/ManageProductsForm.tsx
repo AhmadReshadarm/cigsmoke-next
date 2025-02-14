@@ -1,10 +1,8 @@
 import { Button, Form, Input, List, Select, Spin } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
-import { generateArrayOfNumbers } from 'common/helpers/array.helper';
 import { navigateTo } from 'common/helpers/navigateTo.helper';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import {
   clearImageList,
@@ -13,12 +11,10 @@ import {
 import { TMultipleImageState } from 'redux/types';
 import { Page } from 'routes/constants';
 import {
-  // Brand,
   Category,
   Color,
   ParameterProduct,
   Product,
-  // Size,
   Tag,
 } from 'swagger/services';
 
@@ -43,7 +39,6 @@ type Props = {
   isSaveLoading: boolean;
   editMode: boolean;
   tags: Tag[];
-  // sizes: Size[];
   colors: Color[];
   categories: Category[];
 };
@@ -56,38 +51,33 @@ const ManageProductForm = ({
   isSaveLoading,
   editMode,
   tags,
-  // sizes,
   colors,
   categories,
 }: Props) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [form] = Form.useForm();
-
   const [curCategory, setCurCategory] = useState<Category>();
   const [variants, setVariants] = useState<any[]>([]);
-  const [charictristicProduct, setCharictristicProduct] = useState<any[]>([]);
+  const [charictristicProduct, setCharictristicProduct] = useState<
+    Record<number, any[]>
+  >({});
   const [parameterProducts, setParameterProducts] = useState<
     ParameterProduct[]
   >([]);
-  // const initialValues = initialValuesConverter(product as Product, variants);
-  const [initialValues, setInitialValues] = useState<any>({});
+
   const { imagesMap } = useAppSelector<TMultipleImageState>(
     (state) => state.multipleImages,
   );
 
   useEffect(() => {
-    for (let index = 0; index < product?.productVariants?.length!; index++) {
-      initialValues[index]?.forEach((image) => {
-        dispatch(setDefaultImageList({ file: image, index }));
-      });
-    }
-
+    //  set intial values from DB in edit mode
     if (product && variants.length > 0) {
       const values = initialValuesConverter(product, variants);
-      setInitialValues(values);
       form.setFieldsValue(values); // Update form fields
     }
+
+    // ---------------------------------------------------------------
     setCurCategory(product?.category);
     setParameterProducts(
       product?.category?.parameters?.map((parameter) => {
@@ -101,17 +91,34 @@ const ManageProductForm = ({
         };
       })!,
     );
+
+    // ---------------------------------------------------------------
+    // set UI Varaints Ids in edit mode from DB id
     if (product?.productVariants && editMode) {
       const initialVariants = product.productVariants.map((v) => ({
         id: v.id,
       }));
       setVariants(initialVariants);
     }
-    // setVariants(generateArrayOfNumbers(product?.productVariants?.length ?? 0));
+
+    // ---------------------------------------------------------------
+    // Initialize images
+    if (product) {
+      product!.productVariants?.forEach((variant, index) => {
+        const images = variant.images?.split(', ').map((image, index) => ({
+          uid: `${variant.id}-${index}`,
+          name: image,
+          url: `/api/images/${image}`,
+        }));
+        images?.forEach((image) => {
+          dispatch(setDefaultImageList({ file: image, index: variant.id }));
+        });
+      });
+    }
     return () => {
       dispatch(clearImageList());
     };
-  }, [product]);
+  }, [product, editMode]);
 
   const handleAddVariant = () => {
     const uniqueId = Math.floor(Math.random() * 5000);
@@ -177,7 +184,7 @@ const ManageProductForm = ({
               <TextArea
                 required={true}
                 rows={10}
-                placeholder="Краткое описание, Не более 350 символов"
+                placeholder="Краткое описание"
               />
             }
           />
@@ -188,7 +195,7 @@ const ManageProductForm = ({
               <TextArea
                 required={true}
                 rows={10}
-                placeholder="Введите keywords | Пользователь ',' между каждым ключевым словом, Например: ключевое слово-1, ключевое слово-2."
+                placeholder="ключевые слова SEO"
               />
             }
           />
@@ -257,42 +264,23 @@ const ManageProductForm = ({
               }
               options={filteredTags}
             />
-            {/* {tags?.map((item) => (
-                <Option
-                  key={item.id}
-                  value={item.id}
-                  style={{ padding: '10px' }}
-                >
-                  <p
-                    style={{
-                      fontWeight: '600',
-                      fontSize: '1rem',
-                      borderBottom: '1px solid #4096FF',
-                    }}
-                  >
-                    {`${item.name}`}
-                  </p>
-                </Option>
-              ))} */}
-            {/* </Select> */}
           </Form.Item>
 
           {/* ----------------------PRODUCT VARIANTS---------------------- */}
-          <h2 style={{ fontSize: '26px', marginBottom: '20px' }}>
-            Варианты продукта
+          <h2 style={{ fontSize: '2rem', padding: '30px 0' }}>
+            Варианты товара
           </h2>
           <div className={styles['product-variants']}>
             {variants.map((variant, index) => (
               <ProductVariantForm
-                key={`product-variant-${index}`}
+                key={`product-variant-${variant.id}`}
                 colors={colors}
                 index={index}
-                variants={variants}
+                variantId={variant.id}
                 setVariants={setVariants}
-                imagesList={imagesMap[index]}
-                charictristicProduct={charictristicProduct}
+                imagesList={imagesMap[variant.id] || []}
+                initialSpecs={charictristicProduct[variant.id] || []}
                 setCharictristicProduct={setCharictristicProduct}
-                variant={variant}
               />
             ))}
             <Button
@@ -303,8 +291,8 @@ const ManageProductForm = ({
               Добавить вариант
             </Button>
           </div>
-          {/* ----------------------IMAGES LIST---------------------- */}
-          {!!curCategory?.parameters?.length && (
+
+          {/* {!!curCategory?.parameters?.length && (
             <>
               <h2 style={{ marginBottom: '10px' }}>Список характеристик</h2>
               <span>
@@ -333,7 +321,7 @@ const ManageProductForm = ({
                 )}
               />
             </>
-          )}
+          )} */}
           {/* ----------------------THE END OF INPUTS---------------------- */}
           <Form.Item className={styles.createProductForm__buttonsStack}>
             <Button

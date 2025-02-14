@@ -58,6 +58,9 @@ const multipleImagesSlicer = createSlice({
     clearImageList(state) {
       state.imagesMap = initialState.imagesMap;
     },
+    clearImageListForVariant(state, action) {
+      delete state.imagesMap[action.payload];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -77,7 +80,11 @@ const multipleImagesSlicer = createSlice({
   },
 });
 
-export const { setDefaultImageList, removeImageFromList, clearImageList } =
-  multipleImagesSlicer.actions;
+export const {
+  setDefaultImageList,
+  removeImageFromList,
+  clearImageList,
+  clearImageListForVariant,
+} = multipleImagesSlicer.actions;
 
 export default multipleImagesSlicer.reducer;

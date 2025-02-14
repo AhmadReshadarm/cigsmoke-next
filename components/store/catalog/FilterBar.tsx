@@ -179,8 +179,7 @@ const FilterBar: React.FC<Props> = ({
               setIsresetBtn(false);
             }}
           >
-            Сортировать по{' '}
-            {orderBy == 'ASC' ? 'возрастанию (ASC)' : 'убыванию (DESC)'}
+            Сортировать по {orderBy == 'ASC' ? '(От А до Я)' : '(От Я до А)'}
           </button>
           {isSortByBtn ? (
             <div className="order-btn-content sort-by-content-wrapper">
@@ -215,7 +214,7 @@ const FilterBar: React.FC<Props> = ({
                   setIsSortBy(false);
                 }}
               >
-                Сортировать по возрастанию (ASC)
+                Сортировать по (От А до Я)
               </button>
               <button
                 onClick={() => {
@@ -224,7 +223,7 @@ const FilterBar: React.FC<Props> = ({
                   setIsSortBy(false);
                 }}
               >
-                Сортировать по убыванию (DESC)
+                Сортировать по (От Я до А)
               </button>
             </div>
           ) : (
