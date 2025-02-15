@@ -2,17 +2,8 @@ import variants from 'components/store/lib/variants';
 import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { FilterOption } from '../../../../ui-kit/FilterCheckbox/types';
-import {
-  Filter,
-  FilterBody,
-  FilterTitle,
-  TopFilter,
-  TopFilterBody,
-  TopFilterTitle,
-} from '../common';
-import color from 'components/store/lib/ui.colors';
+import { TopFilter, TopFilterBody, TopFilterTitle } from '../common';
 import { devices } from 'components/store/lib/Devices';
-import { pushQueryParams } from 'common/helpers/manageQueryParams.helper';
 type Props = {
   title: string;
   options?: FilterOption[];
@@ -81,15 +72,8 @@ const SingleSelectionFilter: React.FC<Props> = ({
             key={`filter-selection-${option.id}`}
             selected={!!option.checked}
             onClick={handleChange(option.id)}
-            // onMouseOver={() => setHoverdIndex(index)}
-            // onMouseLeave={() => setHoverdIndex(null)}
           >
-            <span>
-              {option.name}
-              {/* {hoveredIndex == index
-                ? option.name
-                : option.name.slice(0, 9) + '...'} */}
-            </span>
+            <span>{option.name}</span>
           </Selection>
         ))}
       </TopFilterBody>
@@ -168,23 +152,5 @@ const Selection = styled.div<{
     }
   }
 `;
-
-//  ${(props) => {
-//     if (props.selected) {
-//       return css`
-//         box-shadow: 0px 5px 10px 0px ${color.boxShadowBtn};
-//       `;
-//     }
-//   }}
-
-// ${(props) => {
-//   if (props.selected) {
-//     return css`
-//       background: ${color.selected};
-//       color: ${color.btnPrimary};
-//       text-align: center;
-//     `;
-//   }
-// }}
 
 export default SingleSelectionFilter;

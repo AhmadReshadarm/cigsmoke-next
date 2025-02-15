@@ -1,4 +1,3 @@
-// import { Input, Slider as SliderInit } from 'antd';
 import SliderInit from 'antd/es/slider';
 import Input from 'antd/es/input';
 import { useCallback, useEffect } from 'react';

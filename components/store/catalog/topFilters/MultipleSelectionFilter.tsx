@@ -1,13 +1,6 @@
 import FilterCheckbox from '../../../../ui-kit/FilterCheckbox';
 import { FilterOption } from '../../../../ui-kit/FilterCheckbox/types';
-import {
-  Filter,
-  FilterBody,
-  FilterTitle,
-  TopFilter,
-  TopFilterBody,
-  TopFilterTitle,
-} from '../common';
+import { TopFilter, TopFilterBody, TopFilterTitle } from '../common';
 import variants from '../../lib/variants';
 
 type Props = {

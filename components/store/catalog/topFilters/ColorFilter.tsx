@@ -1,17 +1,7 @@
 import variants from 'components/store/lib/variants';
 import ColorCheckbox from 'ui-kit/ColorCheckbox';
 import { FilterOption } from '../../../../ui-kit/FilterCheckbox/types';
-import {
-  Filter,
-  FilterBody,
-  FilterTitle,
-  TopFilter,
-  TopFilterBody,
-  TopFilterTitle,
-} from '../common';
-import { getQueryParams } from 'common/helpers/manageQueryParams.helper';
-import { convertQueryParams } from '../helpers';
-import { useEffect, useState } from 'react';
+import { TopFilter, TopFilterBody, TopFilterTitle } from '../common';
 
 type Props = {
   title: string;

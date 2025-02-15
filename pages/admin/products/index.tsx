@@ -277,20 +277,23 @@ const ProductsPage = () => {
             className={styles.productsHeader__createProductButton}
             type="primary"
             onClick={() => {
-              if (!categories || !subCategories) {
-                openErrorNotification(
-                  'Сначала создайте категории и подкатегории',
-                );
-                return;
-              }
-              if (!colors) {
-                openErrorNotification('Сначала создайте цвета');
-                return;
-              }
-              if (!tags) {
-                openErrorNotification('Сначала создайте коллекции');
-                return;
-              }
+              // if (categories.length == 0 || subCategories.length == 0) {
+              //   console.log(categories);
+              //   console.log(subCategories);
+
+              //   openErrorNotification(
+              //     'Сначала создайте категории и подкатегории',
+              //   );
+              //   return;
+              // }
+              // if (!colors.length) {
+              //   openErrorNotification('Сначала создайте цвета');
+              //   return;
+              // }
+              // if (!tags.length) {
+              //   openErrorNotification('Сначала создайте коллекции');
+              //   return;
+              // }
               navigateTo(router, Page.ADMIN_CREATE_PRODUCT)();
             }}
           >

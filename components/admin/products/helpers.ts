@@ -173,9 +173,9 @@ const handleFormSubmitProduct =
       );
       return;
     }
-    console.log(convertedForm);
+    // console.log(convertedForm);
 
-    return;
+    // return;
 
     if (router.query.id) {
       const isSaved: any = await dispatch(
