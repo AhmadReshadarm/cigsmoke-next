@@ -7,10 +7,11 @@ import { InsertRowLeftOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import DatabaseImages from 'ui-kit/DatabaseImages';
-import { useAppDispatch } from 'redux/hooks';
+import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { clearImageListForVariant } from 'redux/slicers/mutipleImagesSlicer';
 import { InputField } from 'common/enums/inputField.enum';
 import { capitalizeFirstLetter } from 'common/helpers/capitalizeFirstLetter.helper';
+import { TProductState } from 'redux/types';
 
 const { Option } = Select;
 
@@ -18,12 +19,12 @@ type Props = {
   colors: Color[];
   index: number;
   variantId: number;
-  // variants: any[];
   setVariants: any;
   imagesList: Image[];
-  initialSpecs: any[];
+  isInitialSpecs?: boolean;
   setCharictristicProduct: any;
-  // variant: { id: number };
+  editMode: boolean;
+  setIsInitialSpecs: any;
 };
 const ProductVariant: React.FC<Props> = ({
   colors,
@@ -31,15 +32,21 @@ const ProductVariant: React.FC<Props> = ({
   variantId,
   setVariants,
   imagesList,
-  initialSpecs,
+  isInitialSpecs,
   setCharictristicProduct,
+  editMode,
+  setIsInitialSpecs,
 }) => {
+  const { chosenProduct } = useAppSelector<TProductState>(
+    (state) => state.products,
+  );
   const [isOpen, setOpen] = useState(false);
   const [specs, setSpecs] = useState<any[]>([]);
 
   const dispatch = useAppDispatch();
 
   const handleRemove = (variantId: number) => async () => {
+    setIsInitialSpecs(true);
     setVariants((prev) => prev.filter((v) => v.id !== variantId));
 
     dispatch(clearImageListForVariant(variantId));
@@ -52,11 +59,13 @@ const ProductVariant: React.FC<Props> = ({
   };
 
   const handleAddSpecs = () => {
+    setIsInitialSpecs(true);
     const uniqueId = Math.floor(Math.random() * 5000);
     setSpecs((prev) => [...prev, { id: uniqueId }]);
   };
 
   const handleRemoveSpecs = (index) => () => {
+    setIsInitialSpecs(true);
     setSpecs((prev) => {
       const array = [...prev];
       array.splice(index, 1);
@@ -71,6 +80,17 @@ const ProductVariant: React.FC<Props> = ({
       [variantId]: specs,
     }));
   }, [specs, variantId]);
+
+  useEffect(() => {
+    if (chosenProduct?.productVariants && editMode && !isInitialSpecs) {
+      const dbVaranit: any = chosenProduct.productVariants[index];
+      setSpecs(
+        dbVaranit.parameters.map((param) => {
+          return { id: param.id };
+        }),
+      );
+    }
+  }, []);
 
   return (
     <div className={styles['product-variant']}>
@@ -168,7 +188,27 @@ const ProductVariant: React.FC<Props> = ({
           placeholder={`Выберите цвета`}
         >
           {colors?.map((item) => (
-            <Option key={item.id} value={item.id}>{`${item.name}`}</Option>
+            <Option key={item.id} value={item.id}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: '10px',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <span
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    backgroundColor: item.code,
+                    borderRadius: '50%',
+                  }}
+                ></span>
+                <span>{`${item.name}`}</span>
+              </div>
+            </Option>
           ))}
         </Select>
       </Form.Item>
@@ -243,6 +283,12 @@ const ProductVariant: React.FC<Props> = ({
             </div>
             <div className={styles['product-specs-wrapper']}>
               <div style={{ width: '100%' }}>
+                <Form.Item
+                  name={`paramId[${spec.id}]`}
+                  style={{ display: 'none' }}
+                >
+                  <Input name={`paramId[${spec.id}]`} />
+                </Form.Item>
                 <Form.Item
                   label="название характеристики"
                   name={`${ManageProductFields.KeyValue}[${spec.id}]`}

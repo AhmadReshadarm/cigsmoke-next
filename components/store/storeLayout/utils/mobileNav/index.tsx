@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {
   BasketSVG,
   WishlistSVG,
-  HomePageIconSVG,
+  // HomePageIconSVG,
 } from '../../utils/headerIcons/SVGIconsHeader';
 import { TCartState } from 'redux/types';
 import { useAppSelector } from 'redux/hooks';

@@ -45,7 +45,7 @@ const handleDeleteProduct =
 const handleDataConvertation = (
   form,
   imagesMap: Object,
-  parameterProducts: ParameterProduct[],
+  // parameterProducts: ParameterProduct[],
   variantsLength: number,
   variantsUIArray: [{ id: number }],
   charictristicProduct: any,
@@ -71,13 +71,15 @@ const handleDataConvertation = (
     const available: boolean =
       form[`${ManageProductFields.Available}[${variantId}]`];
     const color: number = form[`${ManageProductFields.Color}[${variantId}]`];
-    const parameterProduct: any[] = [];
+    const parameters: any[] = [];
     if (charictristicProduct.length !== 0) {
       for (
         let indexParam = 0;
         indexParam < charictristicProduct[variantId].length;
         indexParam++
       ) {
+        const id: string =
+          form[`paramId[${charictristicProduct[variantId][indexParam].id}]`];
         const key: string =
           form[
             `${ManageProductFields.KeyValue}[${charictristicProduct[variantId][indexParam].id}]`
@@ -86,7 +88,7 @@ const handleDataConvertation = (
           form[
             `${ManageProductFields.Value}[${charictristicProduct[variantId][indexParam].id}]`
           ];
-        parameterProduct.push({ key, value });
+        parameters.push({ id, key, value });
       }
     }
     const payload = {
@@ -97,7 +99,7 @@ const handleDataConvertation = (
       available,
       color,
       images: null,
-      parameterProduct,
+      parameters,
     };
     const images = imagesMap[variantId];
 
@@ -133,7 +135,7 @@ const handleFormSubmitProduct =
     router: NextRouter,
     dispatch: AppDispatch,
     imagesMap: Object,
-    parameterProducts: ParameterProduct[],
+    // parameterProducts: ParameterProduct[],
     variantsLength: number,
     charictristicProduct: Record<number, any[]>,
     variantsUIArray: any,
@@ -142,7 +144,7 @@ const handleFormSubmitProduct =
     const convertedForm = handleDataConvertation(
       form,
       imagesMap,
-      parameterProducts,
+      // parameterProducts,
       variantsLength,
       variantsUIArray,
       charictristicProduct,
@@ -216,13 +218,17 @@ const multipleItemsConverter = (items) => {
   return items?.map((item) => item.id);
 };
 
-const initialValuesConverter = (product: Product, variants: any[]) => {
+const initialValuesConverter = (
+  product: Product,
+  variants: any[],
+  charictristicProduct: any,
+) => {
   const newProduct: any & Product = { ...product };
   newProduct.category = newProduct.category?.id;
   newProduct.tags = multipleItemsConverter(newProduct.tags);
 
   variants.forEach((variant, index) => {
-    const dbVariant = product.productVariants?.[index];
+    const dbVariant: any = product.productVariants?.[index];
     if (!dbVariant) return;
 
     newProduct[`id[${variant.id}]`] = variant.id;
@@ -235,42 +241,64 @@ const initialValuesConverter = (product: Product, variants: any[]) => {
       dbVariant.available;
     newProduct[`${ManageProductFields.Color}[${variant.id}]`] =
       dbVariant.color?.id;
+
+    if (Object.keys(charictristicProduct).length > 0) {
+      for (
+        let indexParam = 0;
+        indexParam < charictristicProduct[variant.id].length;
+        indexParam++
+      ) {
+        newProduct[
+          `paramId[${charictristicProduct[variant.id][indexParam].id}]`
+        ] = dbVariant.parameters[indexParam].id;
+        newProduct[
+          `${ManageProductFields.KeyValue}[${
+            charictristicProduct[variant.id][indexParam].id
+          }]`
+        ] = dbVariant.parameters[indexParam].key;
+        newProduct[
+          `${ManageProductFields.Value}[${
+            charictristicProduct[variant.id][indexParam].id
+          }]`
+        ] = dbVariant.parameters[indexParam].value;
+      }
+    }
   });
 
   return newProduct;
 };
 
-const handleParameterChange =
-  (
-    index: number,
-    setParameterProducts: Dispatch<SetStateAction<ParameterProduct[]>>,
-  ) =>
-  (e) => {
-    setParameterProducts((prev) => {
-      const parameterProducts = cloneDeep(prev);
+// const handleParameterChange =
+//   (
+//     index: number,
+//     setParameterProducts: Dispatch<SetStateAction<ParameterProduct[]>>,
+//   ) =>
+//   (e) => {
+//     setParameterProducts((prev) => {
+//       const parameterProducts = cloneDeep(prev);
 
-      parameterProducts[index].value = e.target.value;
+//       parameterProducts[index].value = e.target.value;
 
-      return parameterProducts;
-    });
-  };
+//       return parameterProducts;
+//     });
+//   };
 
-const handleCategoryChange =
-  (
-    categories: Category[],
-    setCurCategory: Dispatch<SetStateAction<Category | undefined>>,
-    setParameterProducts: Dispatch<SetStateAction<ParameterProduct[]>>,
-  ) =>
-  (id: string) => {
-    const category = categories.find((category) => category.id === id)!;
-    setCurCategory(category);
-    setParameterProducts(
-      category?.parameters?.map((parameter) => ({
-        parameter: parameter,
-        value: '',
-      }))!,
-    );
-  };
+// const handleCategoryChange =
+//   (
+//     categories: Category[],
+//     // setCurCategory: Dispatch<SetStateAction<Category | undefined>>,
+//     // setParameterProducts: Dispatch<SetStateAction<ParameterProduct[]>>,
+//   ) =>
+//   (id: string) => {
+//     const category = categories.find((category) => category.id === id)!;
+//     // setCurCategory(category);
+//     // setParameterProducts(
+//     //   category?.parameters?.map((parameter) => ({
+//     //     parameter: parameter,
+//     //     value: '',
+//     //   }))!,
+//     // );
+//   };
 
 async function uploadImage(file, dispatch) {
   const config = {
@@ -295,7 +323,7 @@ export {
   handleRedirectProducts,
   handleTableChange,
   initialValuesConverter,
-  handleParameterChange,
-  handleCategoryChange,
+  // handleParameterChange,
+  // handleCategoryChange,
   uploadImage,
 };

@@ -20,15 +20,6 @@ import Head from 'next/head';
 const ManageProduct = () => {
   const title = 'Редактирование Товара';
   const router = useRouter();
-  const products = useAppSelector((state) => state.products.products);
-  const filteredProducts = products.filter(
-    (product) => product.id !== Number(router.query.id),
-  );
-
-  const isLoading = useAppSelector((state) => state.products.loading);
-  const isSaveLoading = useAppSelector((state) => state.products.saveLoading);
-
-  const product = useAppSelector((state) => state.products.chosenProduct);
 
   const colors = useAppSelector((state) => state.colors.colors);
   const categories = useAppSelector((state) => state.categories.categories);
@@ -76,15 +67,10 @@ const ManageProduct = () => {
       </Head>
       <ManageProductForm
         tags={tags}
-        // sizes={sizes}
         categories={filteredCategories}
         colors={colors}
         title={title}
         editMode={true}
-        products={filteredProducts}
-        product={product}
-        isLoading={isLoading}
-        isSaveLoading={isSaveLoading}
       />
     </>
   );
