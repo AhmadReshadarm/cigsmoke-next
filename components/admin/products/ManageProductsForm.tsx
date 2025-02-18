@@ -98,7 +98,7 @@ const ManageProductForm = ({
       form.setFieldsValue(values); // Update form fields
     }
   }, [variants, charictristicProduct]);
-
+  //
   const handleAddVariant = () => {
     setIsInitialSpecs(true);
     const uniqueId = Math.floor(Math.random() * 5000);
