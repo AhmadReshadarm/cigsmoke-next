@@ -49,11 +49,9 @@ const ProductsPage = () => {
     productsLength,
     categories,
     subCategories,
-    // brands,
     colors,
     tags,
     priceRange,
-    // loading,
     productsLoading,
     // page,
   } = useAppSelector<TCatalogState>((state) => state.catalog);
@@ -132,25 +130,13 @@ const ProductsPage = () => {
 
   // ___________________________________________________________________
   let dataSource = products?.map(
-    ({
-      id,
-      name,
-      desc,
-      category,
-      brand,
-      tags,
-      sizes,
-      url,
-      productVariants,
-      ...rest
-    }) => ({
+    ({ id, name, desc, category, tags, url, productVariants, ...rest }) => ({
       key: id,
       id,
       name,
       desc,
       category,
       tags,
-      sizes,
       url,
       productVariants,
       isCheckBoxEnabled,

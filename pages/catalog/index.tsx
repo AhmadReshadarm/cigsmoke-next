@@ -92,15 +92,8 @@ const CatalogPage = ({
     Category | undefined
   >();
 
-  const {
-    // products,
-    categories,
-    subCategories,
-    colors,
-    tags,
-    priceRange,
-    // loading,
-  } = useAppSelector<TCatalogState>((state) => state.catalog);
+  const { categories, subCategories, colors, tags, priceRange } =
+    useAppSelector<TCatalogState>((state) => state.catalog);
 
   const handleLocationChange = onLocationChange(dispatch);
   const [firstLoad, setFirstLoad] = useState(true);

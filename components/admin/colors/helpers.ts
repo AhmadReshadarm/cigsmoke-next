@@ -12,8 +12,6 @@ import {
 } from '../../../common/helpers';
 import { NextRouter } from 'next/router';
 import { Page, paths } from 'routes/constants';
-import { TableProps } from 'antd';
-import { DataType } from 'common/interfaces/data-type.interface';
 
 export const handleDeleteColor =
   (id: string, dispatch: AppDispatch, setVisible: any, offset: number) =>
@@ -65,13 +63,4 @@ export const handleFormSubmitColors =
 
 export const handleRedirectColors = (id: string, router: NextRouter) => () => {
   router.push(`${paths[Page.ADMIN_COLORS]}/${id}`);
-};
-
-export const handleTableChange: TableProps<DataType>['onChange'] = (
-  pagination,
-  filters,
-  sorter,
-  extra,
-) => {
-  // console.log('params', pagination, filters, sorter, extra);
 };

@@ -32,6 +32,7 @@ export function useUploadImage(slideNum: number | undefined): any {
       openErrorNotification(
         `Размер изображения должен быть (ширина: 820 пикселей и высота: 1024 пикселя)`,
       );
+      setCatalogUpload(false);
       return;
     }
     const config = {

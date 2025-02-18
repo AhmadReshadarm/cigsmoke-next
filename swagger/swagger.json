@@ -1299,13 +1299,6 @@
                   "type": "string",
                   "readOnly": true
                 },
-                "parameters": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/definitions/Parameter"
-                  }
-                },
                 "url": {
                   "type": "string"
                 }
@@ -1662,6 +1655,48 @@
           },
           "404": {
             "description": "Color not found"
+          }
+        }
+      }
+    },
+    "/parameters": {
+      "get": {
+        "tags": ["parameter"],
+        "summary": "Get array of paramters",
+        "description": "Fech products parameters",
+        "operationId": "getParameters",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "variantId",
+            "in": "query",
+            "description": "Filtering products parameters by variant id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "Filtering products parameters by key",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "value",
+            "in": "query",
+            "description": "Filtering products parameters by value"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/parametersRespons"
+              }
+            }
           }
         }
       }
@@ -6779,13 +6814,7 @@
           "type": "object",
           "$ref": "#/definitions/Category"
         },
-        "parameters": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/Parameter"
-          }
-        },
+
         "url": {
           "type": "string"
         }
@@ -6865,7 +6894,7 @@
       }
     },
     "CategoryDTO": {
-      "required": ["name", "parameters", "url"],
+      "required": ["name", "url"],
       "properties": {
         "name": {
           "type": "string"
@@ -6886,13 +6915,6 @@
             "type": "string"
           },
           "description": "array of children categories IDs"
-        },
-        "parameters": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/Parameter"
-          }
         },
         "url": {
           "type": "string"
@@ -6925,6 +6947,21 @@
         }
       }
     },
+    "parameters": {
+      "required": ["key", "value"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "readOnly": true
+        },
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "ColorWithoutJoins": {
       "required": ["name", "url", "code"],
       "properties": {
@@ -6943,6 +6980,17 @@
         }
       }
     },
+    "parametersRespons": {
+      "properties": {
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/parameters"
+          }
+        },
+        "length": { "type": "number" }
+      }
+    },
     "ColorResponse": {
       "properties": {
         "rows": {
@@ -6953,18 +7001,6 @@
         },
         "length": {
           "type": "number"
-        }
-      }
-    },
-    "Parameter": {
-      "required": ["name"],
-      "properties": {
-        "id": {
-          "type": "string",
-          "readOnly": true
-        },
-        "name": {
-          "type": "string"
         }
       }
     },
@@ -6987,33 +7023,6 @@
         },
         "avg": {
           "type": "number"
-        }
-      }
-    },
-    "ParameterProduct": {
-      "properties": {
-        "productId": {
-          "type": "string"
-        },
-        "parameterId": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        },
-        "parameter": {
-          "$ref": "#/definitions/Parameter"
-        }
-      }
-    },
-    "ParameterProductsDTO": {
-      "required": ["parameterId", "value"],
-      "properties": {
-        "parameterId": {
-          "type": "number"
-        },
-        "value": {
-          "type": "string"
         }
       }
     },
@@ -7047,10 +7056,7 @@
           "type": "object",
           "$ref": "#/definitions/Category"
         },
-        "brand": {
-          "type": "object",
-          "$ref": "#/definitions/Brand"
-        },
+
         "tags": {
           "type": "array",
           "items": {
@@ -7058,13 +7064,7 @@
             "$ref": "#/definitions/TagWithoutJoins"
           }
         },
-        "sizes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/SizeWithoutJoins"
-          }
-        },
+
         "url": {
           "type": "string"
         },
@@ -7083,12 +7083,7 @@
             "$ref": "#/definitions/Question"
           }
         },
-        "parameterProducts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ParameterProduct"
-          }
-        },
+
         "productVariants": {
           "type": "array",
           "items": {
@@ -7163,9 +7158,17 @@
         "color": {
           "type": "object",
           "$ref": "#/definitions/Color"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/parameters"
+          }
         }
       }
     },
+
     "ProductDTO": {
       "required": ["name", "category", "brand", "url"],
       "properties": {
@@ -7210,12 +7213,6 @@
         },
         "url": {
           "type": "string"
-        },
-        "parameterProducts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ParameterProductsDTO"
-          }
         },
         "productVariants": {
           "type": "array",

@@ -1,5 +1,5 @@
 import { BgColorsOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, Spin } from 'antd';
+import { Button, Form, Input, Spin } from 'antd';
 import { navigateTo } from 'common/helpers/navigateTo.helper';
 import { useRouter } from 'next/router';
 import { useAppDispatch } from 'redux/hooks';
@@ -12,8 +12,6 @@ import { Colorpicker } from 'antd-colorpicker';
 import { useEffect, useState } from 'react';
 import FormItem from '../generalComponents/FormItem';
 import { handleFalsyValuesCheck } from '../../../common/helpers/handleFalsyValuesCheck.helper';
-
-const { Option } = Select;
 
 type Props = {
   colors: Color[];

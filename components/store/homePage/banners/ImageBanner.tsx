@@ -62,7 +62,7 @@ const ImageBanner: React.FC<Props> = ({ slides, base64Image_2 }) => {
       }}
     >
       <Link
-        href={slides![imageIndex]?.link!}
+        href={slides![imageIndex]?.link! ?? '/'}
         className={styles.banner_image_link_wrapper}
         onClick={(evt) => {
           isCatalogOpen ||
@@ -75,7 +75,7 @@ const ImageBanner: React.FC<Props> = ({ slides, base64Image_2 }) => {
             : '';
         }}
         prefetch={false}
-        title={`Перейти в ${slides[imageIndex].link}`}
+        title={slides.length == 0 ? '' : `Перейти в ${slides[imageIndex].link}`}
       >
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           <motion.div
@@ -111,12 +111,18 @@ const ImageBanner: React.FC<Props> = ({ slides, base64Image_2 }) => {
                   ? styles.isDisplay
                   : ''
               } slider-img`}
-              alt={`${slides[imageIndex]?.link}`}
-              src={`/api/images/${slides[imageIndex]?.image}`}
+              alt={
+                slides.length == 0 ? 'Not found' : `${slides[imageIndex]?.link}`
+              }
+              src={
+                slides.length == 0
+                  ? '/demo.webp'
+                  : `/api/images/${slides[imageIndex]?.image}`
+              }
               priority={true}
               width={1920}
               height={800}
-              placeholder="blur"
+              placeholder={slides.length == 0 ? 'empty' : 'blur'}
               blurDataURL={base64Image_2}
             />
           </motion.div>

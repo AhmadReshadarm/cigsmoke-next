@@ -3,7 +3,6 @@ import {
   navigateTo,
   openErrorNotification,
 } from 'common/helpers';
-import cloneDeep from 'lodash/cloneDeep';
 import { NextRouter } from 'next/router';
 import { Dispatch } from 'react';
 import { SetStateAction } from 'react';
@@ -15,18 +14,9 @@ import {
 } from 'redux/slicers/categoriesSlicer';
 import { AppDispatch } from 'redux/store';
 import { Page, paths } from 'routes/constants';
-import { Image, Parameter } from 'swagger/services';
-import { FormInstance } from 'antd';
-import { imageToCheck, valueToCheck } from '../types';
 
 const handleFormSubmit =
-  (
-    router: NextRouter,
-    dispatch: AppDispatch,
-    image: any,
-    parameters: Parameter[],
-  ) =>
-  async (form) => {
+  (router: NextRouter, dispatch: AppDispatch, image: any) => async (form) => {
     if (hasWhiteSpace(form.url)) {
       openErrorNotification(
         'В URL-адресе не допускается использование пробелов.',
@@ -38,7 +28,6 @@ const handleFormSubmit =
         ...form,
         image: image[0] ? image[0]?.url?.split('/api/images/')[1] : undefined,
         id: router.query.id,
-        parameters,
       };
 
       const isSaved: any = await dispatch(editCategory(payload));
@@ -54,7 +43,6 @@ const handleFormSubmit =
       createCategory({
         ...form,
         image: image[0] ? image[0]?.url?.split('/api/images/')[1] : undefined,
-        parameters,
       }),
     );
 
@@ -86,43 +74,6 @@ const handleRedirectProduct = (url: string, router: NextRouter) => () => {
   router.push(`/product/${url}`);
 };
 
-const handleParameterChange =
-  (index: number, setParameters: Dispatch<SetStateAction<Parameter[]>>) =>
-  (e) => {
-    setParameters((prev) => {
-      const parameters = cloneDeep(prev);
-
-      parameters[index].name = e.target.value;
-
-      return parameters;
-    });
-  };
-
-const handleAddParameter =
-  (setParameters: Dispatch<SetStateAction<Parameter[]>>) => () => {
-    setParameters((prev) => {
-      const parameters = cloneDeep(prev);
-
-      parameters.push({
-        name: '',
-      });
-
-      return parameters;
-    });
-  };
-
-const handleRemoveParameter =
-  (index: number, setParameters: Dispatch<SetStateAction<Parameter[]>>) =>
-  () => {
-    setParameters((prev) => {
-      const parameters = cloneDeep(prev);
-
-      parameters.splice(index, 1);
-
-      return parameters;
-    });
-  };
-
 const handleChangeParent =
   (setHasParent: Dispatch<SetStateAction<boolean>>) => (id: string) => {
     setHasParent(!!id);
@@ -133,8 +84,5 @@ export {
   handleDeleteCategory,
   handleRedirectCategory,
   handleRedirectProduct,
-  handleParameterChange,
-  handleRemoveParameter,
-  handleAddParameter,
   handleChangeParent,
 };

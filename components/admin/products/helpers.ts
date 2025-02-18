@@ -15,8 +15,8 @@ import { Page, paths } from 'routes/constants';
 import { TableProps } from 'antd';
 import { DataType } from 'common/interfaces/data-type.interface';
 import {
-  Category,
-  ParameterProduct,
+  // Category,
+  // ParameterProduct,
   Product,
   ProductVariant,
 } from 'swagger/services';

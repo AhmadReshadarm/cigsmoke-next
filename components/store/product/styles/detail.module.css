@@ -346,6 +346,60 @@
   color: var(--buttonPrimary);
 }
 
+.SpecsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.SpecsKeyValueWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.wrapper_key_vlaue {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 15px;
+}
+.key_wrapper {
+  white-space: nowrap;
+}
+.wrapper_key_vlaue > span {
+  font-size: 0.9rem;
+}
+
+.see_more_specs_btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  transition: 250ms;
+}
+
+.see_more_specs_btn:hover {
+  transform: scale(1.01);
+}
+
+.see_more_specs_btn:active {
+  transform: scale(1);
+}
+
+.see_more_icon {
+  margin-top: 4px;
+}
+
 /* laptopM */
 @media (min-width: 1024px) and (max-width: 1240px) {
   .product_header_1 {

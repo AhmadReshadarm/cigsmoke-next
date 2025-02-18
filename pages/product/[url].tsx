@@ -1,7 +1,7 @@
 import SEO from 'components/store/SEO';
 import StoreLayout from 'components/store/storeLayout/layouts';
 import { useEffect, useRef, useState } from 'react';
-import { getProductVariantsImages } from 'common/helpers/getProductVariantsImages.helper';
+// import { getProductVariantsImages } from 'common/helpers/getProductVariantsImages.helper';
 import type { InferGetServerSidePropsType, GetServerSideProps } from 'next';
 import { Product } from 'swagger/services';
 import dynamic from 'next/dynamic';

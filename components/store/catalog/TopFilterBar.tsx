@@ -32,7 +32,6 @@ type Props = {
   setSelectedCategory: any;
   setCurrentPage: any;
   setPageSize: any;
-  // setHasActiveFilters: any;
 };
 
 type StyleProps = {
@@ -50,7 +49,6 @@ const TopFilterBar: React.FC<Props> = ({
   setSelectedCategory,
   setCurrentPage,
   setPageSize,
-  // setHasActiveFilters,
 }) => {
   const router = useRouter();
   const filters = convertQueryParams(router.query);
@@ -159,14 +157,7 @@ const TopFilterBar: React.FC<Props> = ({
   const { uiPriceRang } = useAppSelector<TCatalogState>(
     (state) => state.catalog,
   );
-  // useEffect(() => {
-  //   const child = document.querySelector('.selected-filter-child');
 
-  //   function isInPage(node) {
-  //     return node === document.body ? false : document.body.contains(node);
-  //   }
-  //   isInPage(child) ? setHasActiveFilters(true) : setActivateResetBtn(false);
-  // });
   useEffect(() => {
     if (expanded) {
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });

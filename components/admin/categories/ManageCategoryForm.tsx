@@ -1,4 +1,4 @@
-import { Button, Form, Input, List, Select, Spin } from 'antd';
+import { Button, Form, Input, Select, Spin } from 'antd';
 import { InsertRowLeftOutlined } from '@ant-design/icons';
 import TextArea from 'antd/lib/input/TextArea';
 import { navigateTo } from 'common/helpers/navigateTo.helper';
@@ -10,21 +10,14 @@ import {
   setDefaultSingleImageList,
 } from 'redux/slicers/imagesSlicer';
 import { Page } from 'routes/constants';
-import { Category, Parameter } from 'swagger/services';
+import { Category } from 'swagger/services';
 import FormItem from '../generalComponents/FormItem';
 import ImageUpload from '../generalComponents/ImageUpload';
 import styles from './categories.module.scss';
-import {
-  handleAddParameter,
-  handleChangeParent,
-  handleFormSubmit,
-  handleParameterChange,
-  handleRemoveParameter,
-} from './helpers';
+import { handleFormSubmit } from './helpers';
 import { ManageCategoryFields } from './ManageCategoryFields.enum';
 import DatabaseImages from 'ui-kit/DatabaseImages';
 import styled from 'styled-components';
-// import { handleFalsyValuesCheck } from 'common/helpers/handleFalsyValuesCheck.helper';
 
 const { Option } = Select;
 
@@ -48,8 +41,6 @@ const ManageCategoryForm = ({
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [form] = Form.useForm();
-  const [parameters, setParameters] = useState<Parameter[]>([]);
-  const [hasParent, setHasParent] = useState<boolean>(false);
   const imageList = useAppSelector((state) => state.images.imageList);
   const initialValues = {
     name: category?.name,
@@ -58,17 +49,6 @@ const ManageCategoryForm = ({
     image: category?.image,
     parent: category?.parent?.id?.toString(),
   };
-
-  // const [name, setName] = useState<string>();
-  // const [url, setUrl] = useState<string>();
-  // const [desc, setDesc] = useState<string>();
-
-  // useEffect(() => {
-  //   if (category) {
-  //     setName(category?.name);
-  //     setUrl(category?.url);
-  //   }
-  // }, [category]);
 
   useEffect(() => {
     dispatch(clearImageList());
@@ -83,16 +63,8 @@ const ManageCategoryForm = ({
         }),
       );
     }
-    setHasParent(!!category?.parent);
-    setParameters(category?.parameters! ? [...category?.parameters!] : []);
   }, [category]);
 
-  // const isDisabled: boolean = handleFalsyValuesCheck(
-  //   name,
-  //   url,
-  //   desc,
-  //   imageList,
-  // );
   const [isOpen, setOpen] = useState(false);
 
   return (
@@ -105,7 +77,7 @@ const ManageCategoryForm = ({
       ) : (
         <Form
           layout="vertical"
-          onFinish={handleFormSubmit(router, dispatch, imageList, parameters)}
+          onFinish={handleFormSubmit(router, dispatch, imageList)}
           form={form}
           initialValues={initialValues}
           requiredMark={true}
@@ -114,11 +86,7 @@ const ManageCategoryForm = ({
           <FormItem
             option={ManageCategoryFields.Name}
             children={
-              <Input
-                required={true}
-                placeholder="Введите имя категории"
-                // onChange={(e) => setName(e.target.value)}
-              />
+              <Input required={true} placeholder="Введите имя категории" />
             }
           />
           <FormItem
@@ -128,7 +96,6 @@ const ManageCategoryForm = ({
                 required={true}
                 rows={4}
                 placeholder="Краткое описание"
-                // onChange={(e) => setDesc(e.target.value)}
               />
             }
           />
@@ -139,7 +106,6 @@ const ManageCategoryForm = ({
                 required={true}
                 placeholder="Введите URL категории"
                 disabled={editMode}
-                // onChange={(e) => setUrl(e.target.value)}
               />
             }
           />
@@ -178,11 +144,7 @@ const ManageCategoryForm = ({
             name={ManageCategoryFields.Parent}
             label="Выберите родительскую категорию"
           >
-            <Select
-              onChange={handleChangeParent(setHasParent)}
-              defaultValue="Не выбрано"
-              disabled={editMode}
-            >
+            <Select defaultValue="Не выбрано" disabled={editMode}>
               <Option value="">Не выбрано</Option>
               {categories?.map((category) => (
                 <Option
@@ -195,48 +157,12 @@ const ManageCategoryForm = ({
             </Select>
           </Form.Item>
 
-          {hasParent && (
-            <>
-              <h2 style={{ marginBottom: '10px' }}>Список характеристик</h2>
-              <List
-                footer={
-                  <Button onClick={handleAddParameter(setParameters)}>
-                    Добавить
-                  </Button>
-                }
-                bordered={true}
-                itemLayout="horizontal"
-                dataSource={parameters}
-                style={{ marginBottom: '20px' }}
-                renderItem={(parameter, index) => (
-                  <List.Item
-                    actions={[
-                      <a
-                        key={`remove-btn`}
-                        onClick={handleRemoveParameter(index, setParameters)}
-                      >
-                        удалить
-                      </a>,
-                    ]}
-                  >
-                    <Input
-                      value={parameter.name}
-                      placeholder={'Ввдедите название характеристики'}
-                      onChange={handleParameterChange(index, setParameters)}
-                    />
-                  </List.Item>
-                )}
-              />
-            </>
-          )}
-
           <Form.Item className={styles.createCategoryForm__buttonsStack}>
             <Button
               type="primary"
               htmlType="submit"
               className={styles.createCategoryForm__buttonsStack__submitButton}
               loading={isSaveLoading}
-              // disabled={isDisabled}
             >
               {category ? 'Сохранить' : 'Создать'}
             </Button>

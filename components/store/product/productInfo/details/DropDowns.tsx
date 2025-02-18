@@ -1,21 +1,23 @@
 import InfoDropdown from './DropDownsParrent';
-import { ParameterProduct } from 'swagger/services';
 import { useAppSelector } from 'redux/hooks';
 import { TProductInfoState } from 'redux/types';
 import Link from 'next/link';
 import InfoDropdownReturn from './DropDownsParrentReturn';
 import styles from '../../styles/dropDowns.module.css';
+import { parameters } from 'swagger/services';
+import { MutableRefObject } from 'react';
 type Props = {
-  parameterProducts?: ParameterProduct[];
+  parameterProducts?: parameters[];
+  specsRef: MutableRefObject<any>;
 };
 
-const DropDowns: React.FC<Props> = ({ parameterProducts }) => {
+const DropDowns: React.FC<Props> = ({ parameterProducts, specsRef }) => {
   const { product, loading }: TProductInfoState = useAppSelector(
     (state) => state.productInfo,
   );
 
   return (
-    <div className={styles.InfoContainer}>
+    <div ref={specsRef} className={styles.InfoContainer}>
       <InfoDropdown title="Описание">
         <p>
           {!loading
@@ -41,22 +43,16 @@ const DropDowns: React.FC<Props> = ({ parameterProducts }) => {
       <InfoDropdown title="Характеристики">
         <div className={styles.SpecsContainer}>
           <ul className={styles.SpecsKeyValueWrapper}>
-            {parameterProducts?.map((item, index) => {
-              if (item.value == '_' || item.value == '-' || item.value == '') {
-                return <></>;
-              }
+            {parameterProducts?.map((param) => {
               return (
                 <li
                   className={styles.wrapper_key_vlaue}
-                  key={`parameter-product-label-${index}`}
+                  key={`parameter-product-label-${param.id}`}
                 >
-                  <span
-                    title={item.parameter?.name}
-                    className={styles.key_wrapper}
-                  >
-                    {item.parameter?.name}:{' '}
+                  <span title={param.key} className={styles.key_wrapper}>
+                    {param.key}:{' '}
                   </span>
-                  <span title={item.value}>{item.value}</span>
+                  <span title={param.value}>{param.value}</span>
                 </li>
               );
             })}

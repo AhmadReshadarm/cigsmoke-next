@@ -79,6 +79,9 @@ export const getServerSideProps = (async () => {
       },
     };
   } catch (error) {
+    // return {
+    //   notFound: true,
+    // };
     return {
       props: {
         slides: [],

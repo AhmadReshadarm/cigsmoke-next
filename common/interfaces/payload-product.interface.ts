@@ -1,5 +1,3 @@
-import { ParameterProductsDTO } from 'swagger/services';
-
 export interface PayloadProduct {
   name: string;
   price: number;
@@ -9,7 +7,6 @@ export interface PayloadProduct {
   colors: string[] | [];
   category: string;
   brand: string;
-  parameterProducts: ParameterProductsDTO[];
   url: string;
   desc?: string;
   shortDesc?: string;

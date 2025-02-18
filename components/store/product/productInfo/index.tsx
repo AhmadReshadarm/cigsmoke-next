@@ -1,4 +1,4 @@
-import { MutableRefObject, useState, useEffect } from 'react';
+import { MutableRefObject, useState, useEffect, useRef } from 'react';
 import Images from './images';
 import Details from './details';
 import { UseImagePaginat } from 'components/store/storeLayout/helpers';
@@ -47,6 +47,8 @@ const ProductInfo: React.FC<Props> = ({
 
   const [zoomEnabeld, setZoomEnabled] = useState(false);
 
+  const specsRef = useRef(null);
+
   return (
     <div
       className={styles.Container}
@@ -72,8 +74,8 @@ const ProductInfo: React.FC<Props> = ({
                   quality={20}
                   priority={false}
                   src={'/icons/back_arrow_min.png'}
-                  placeholder="blur"
-                  blurDataURL={backArrow}
+                  // placeholder="blur"
+                  // blurDataURL={backArrow}
                   alt="Back to main arrow"
                 />
                 <span>Обратно на главную</span>
@@ -184,10 +186,16 @@ const ProductInfo: React.FC<Props> = ({
                 reviewRef={reviewRef}
                 questionRef={questionRef}
                 setSelectedIndex={setSelectedIndex}
+                specsRef={specsRef}
               />
             </div>
           </div>
-          <DropDowns parameterProducts={product?.parameterProducts} />
+          <DropDowns
+            parameterProducts={
+              variant?.parameters ?? product?.productVariants![0].parameters
+            }
+            specsRef={specsRef}
+          />
         </div>
       </div>
     </div>

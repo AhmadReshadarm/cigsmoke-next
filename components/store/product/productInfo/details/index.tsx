@@ -11,6 +11,7 @@ type Props = {
   reviewRef: MutableRefObject<any>;
   questionRef: MutableRefObject<any>;
   setSelectedIndex: Dispatch<SetStateAction<number>>;
+  specsRef: MutableRefObject<any>;
 };
 
 const Details: React.FC<Props> = ({
@@ -18,6 +19,7 @@ const Details: React.FC<Props> = ({
   questionRef,
   reviewRef,
   setSelectedIndex,
+  specsRef,
 }) => {
   const { variant } = useAppSelector<TCartState>((state) => state.cart);
 
@@ -27,7 +29,7 @@ const Details: React.FC<Props> = ({
     if (productVariant?.oldPrice) return true;
     return false;
   };
-
+  const params = variant?.parameters ?? product?.productVariants![0].parameters;
   return (
     <div className={styles.DetailsContainer}>
       <div className={styles.UserSelectWrapper}>
@@ -37,22 +39,6 @@ const Details: React.FC<Props> = ({
             {product?.name}
           </h1>
         </div>
-        {/* <div>
-          <h1>charictristic</h1>
-        </div> */}
-        {/* <div className={styles.short_description_wrapper}>
-          <p>
-            <span itemProp="description">
-              {product?.desc?.includes('|')
-                ? product?.desc?.split('|')[0]?.length! > 150
-                  ? product?.desc?.split('|')[0].slice(0, 150) + '...'
-                  : product?.desc?.split('|')[0]
-                : product?.desc?.length! > 150
-                ? product?.desc?.slice(0, 150) + '...'
-                : product?.desc?.slice(0, 150)}
-            </span>
-          </p>
-        </div> */}
         <div className={styles.ConvoContainer}>
           <div className={styles.convo_contentWrapper}>
             <div className={styles.ConvoWrappers}>
@@ -68,7 +54,10 @@ const Details: React.FC<Props> = ({
                 className={styles.reviews_text_wrapper}
                 onClick={() => {
                   reviewRef.current.click();
-                  reviewRef.current.scrollIntoView();
+                  reviewRef.current.scrollIntoView({
+                    inline: 'center',
+                    behavior: 'smooth',
+                  });
                 }}
               >
                 <span>{product?.reviews?.length ?? 0}</span>
@@ -98,7 +87,10 @@ const Details: React.FC<Props> = ({
               <span
                 onClick={() => {
                   questionRef.current.click();
-                  questionRef.current.scrollIntoView();
+                  questionRef.current.scrollIntoView({
+                    inline: 'center',
+                    behavior: 'smooth',
+                  });
                 }}
               >
                 <span>{product?.questions?.length} вопрос(ов) о товаре</span>
@@ -132,6 +124,90 @@ const Details: React.FC<Props> = ({
       </div>
 
       <ActionBtns cart={cart} product={product!} />
+      <div>
+        <h3>Характеристики</h3>
+      </div>
+      <div className={styles.SpecsContainer}>
+        <ul className={styles.SpecsKeyValueWrapper}>
+          {params!.slice(0, 2).map((param) => {
+            return (
+              <li
+                className={styles.wrapper_key_vlaue}
+                key={`parameter-product-label-${param.id}`}
+              >
+                <span title={param.key} className={styles.key_wrapper}>
+                  {param.key}:{' '}
+                </span>
+                <span title={param.value}>{param.value}</span>
+              </li>
+            );
+          })}
+          <li>
+            <button
+              onClick={() =>
+                specsRef.current.scrollIntoView({
+                  inline: 'center',
+                  behavior: 'smooth',
+                })
+              }
+              className={styles.see_more_specs_btn}
+            >
+              <span>Полные характеристики</span>
+              <span className={styles.see_more_icon}>
+                <svg
+                  width="30"
+                  height="30"
+                  viewBox="0 0 30 30"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    x="5"
+                    y="18"
+                    width="10"
+                    height="3"
+                    rx="1.5"
+                    fill="black"
+                  />
+                  <rect
+                    x="5"
+                    y="8"
+                    width="10"
+                    height="3"
+                    rx="1.5"
+                    fill="black"
+                  />
+                  <rect
+                    x="5"
+                    y="13"
+                    width="15"
+                    height="3"
+                    rx="1.5"
+                    fill="black"
+                  />
+                  <rect
+                    x="17"
+                    y="18"
+                    width="10"
+                    height="3"
+                    rx="1.5"
+                    fill="black"
+                  />
+                  <rect
+                    x="20.5"
+                    y="24.5"
+                    width="10"
+                    height="3"
+                    rx="1.5"
+                    transform="rotate(-90 20.5 24.5)"
+                    fill="black"
+                  />
+                </svg>
+              </span>
+            </button>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };

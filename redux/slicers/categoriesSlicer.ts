@@ -61,7 +61,6 @@ export const createCategory = createAsyncThunk<
           image: payload.image,
           url: payload.url,
           parentId: payload.parent,
-          parameters: payload.parameters,
         },
       });
     } catch (error: any) {

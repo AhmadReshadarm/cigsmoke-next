@@ -118,15 +118,43 @@ export const columns: ColumnsType<any> = [
     title: 'Категория',
     render: (_, record) => {
       return (
-        <TableLink
-          id={record.category!.id as string}
-          name={
-            `${record.category?.parent?.name} > ${
-              record.category!.name
-            }` as string
-          }
-          handleRedirect={handleRedirectCategory}
-        />
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '5px',
+          }}
+        >
+          <TableLink
+            id={record.category?.parent?.id as string}
+            name={record.category?.parent?.name}
+            handleRedirect={handleRedirectCategory}
+          />
+          <span>
+            <svg
+              width="6"
+              height="10"
+              viewBox="0 0 6 10"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M1 1.5L4.84375 5.53125L1.03125 9.34375"
+                stroke="#AAB4BD"
+                stroke-width="1.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          <TableLink
+            id={record.category!.id as string}
+            name={record.category!.name}
+            handleRedirect={handleRedirectCategory}
+          />
+        </div>
       );
     },
     width: '12%',
