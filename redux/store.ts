@@ -22,15 +22,14 @@ import globalUISlicer from './slicers/store/globalUISlicer';
 import checkoutsReducer from './slicers/checkoutsSlicer';
 import cartSlicer from './slicers/store/cartSlicer';
 import catalogSlicer from './slicers/store/catalogSlicer';
-// import analyticsReducer from './slicers/analyticsSlicer';
 import productInfoSlicer from './slicers/store/productInfoSlicer';
 import homePageSlicer from './slicers/store/homePageSlicer';
 import bannersReducer from './slicers/bannersSlicer';
 import storeCheckoutSlicer from './slicers/store/checkoutSlicer';
 import wishlistSlicer from './slicers/store/wishlistSlicer';
 import profileSlicer from './slicers/store/profileSlicer';
-// import newsSlicer from './slicers/newsSlicer';
 import subscriberSlicer from './slicers/subscriberSlicer';
+import productsParameters from './slicers/productParameterSlicer';
 
 const combinedReducer = combineReducers({
   categories: categoriesReducer,
@@ -38,6 +37,7 @@ const combinedReducer = combineReducers({
   colors: colorsReducer,
   brands: brandsReducer,
   products: productsReducer,
+  parameters: productsParameters,
   images: imagesReducer,
   multipleImages: multipleImagesSlicer,
   tags: tagsReducer,
@@ -45,9 +45,7 @@ const combinedReducer = combineReducers({
   questions: questionReducer,
   reviews: reviewsReducer,
   checkouts: checkoutsReducer,
-  // analytics: analyticsReducer,
   banners: bannersReducer,
-  // newsPosts: newsSlicer,
   subscribers: subscriberSlicer,
 
   global: globalSlicer,

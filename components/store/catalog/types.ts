@@ -21,6 +21,7 @@ export type TFiltersConfig = {
   subCategories: Category[];
   colors: Color[];
   tags: Tag[];
+  parameters: [{ key: string; value: [{ id: string; value: string }] }];
   priceRange: PriceRange;
   filters: TFilters;
 };

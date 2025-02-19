@@ -11,7 +11,11 @@ import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { clearImageListForVariant } from 'redux/slicers/mutipleImagesSlicer';
 import { InputField } from 'common/enums/inputField.enum';
 import { capitalizeFirstLetter } from 'common/helpers/capitalizeFirstLetter.helper';
-import { TProductState } from 'redux/types';
+import { TProductParameterState, TProductState } from 'redux/types';
+import {
+  clearProductsParameters,
+  fetchProducusParameters,
+} from 'redux/slicers/productParameterSlicer';
 
 const { Option } = Select;
 
@@ -25,7 +29,10 @@ type Props = {
   setCharictristicProduct: any;
   editMode: boolean;
   setIsInitialSpecs: any;
+  form: any;
 };
+
+export const emptyLoading = ['', '', '', '', '', '', '', ''];
 const ProductVariant: React.FC<Props> = ({
   colors,
   index,
@@ -36,10 +43,12 @@ const ProductVariant: React.FC<Props> = ({
   setCharictristicProduct,
   editMode,
   setIsInitialSpecs,
+  form,
 }) => {
   const { chosenProduct } = useAppSelector<TProductState>(
     (state) => state.products,
   );
+
   const [isOpen, setOpen] = useState(false);
   const [specs, setSpecs] = useState<any[]>([]);
 
@@ -91,6 +100,150 @@ const ProductVariant: React.FC<Props> = ({
       );
     }
   }, []);
+
+  const KeyInputComp = ({ spec }) => {
+    const { parameters, loading } = useAppSelector<TProductParameterState>(
+      (state) => state.parameters,
+    );
+
+    const [isActiveInput, setIsActiveInput] = useState(false);
+
+    const handleKeyInput = (keyInput: string) => {
+      if (keyInput == '') {
+        setIsActiveInput(false);
+        return;
+      }
+      const delayDebounceFn = setTimeout(() => {
+        setIsActiveInput(true);
+        dispatch(fetchProducusParameters({ key: keyInput }));
+      }, 1500);
+
+      return () => {
+        clearTimeout(delayDebounceFn);
+        dispatch(clearProductsParameters());
+      };
+    };
+
+    const handleSelectedKeyValue = (formId, keyValue) => {
+      const newValue = {};
+      newValue[formId] = keyValue;
+      form.setFieldsValue(newValue);
+      setIsActiveInput(false);
+      dispatch(clearProductsParameters());
+    };
+
+    const handleRejectSuggestion = () => {
+      setIsActiveInput(false);
+      dispatch(clearProductsParameters());
+    };
+    // Create sets from params
+    const parameterGroups: { [key: string]: Set<string> } = {};
+    parameters.forEach((param) => {
+      if (!parameterGroups[param.key!]) {
+        parameterGroups[param.key!] = new Set();
+      }
+      parameterGroups[param.key!].add(param.value!);
+    });
+    // Convert Sets to Arrays
+    const formattedGroups: [{ key: string; value: string[] }] | any = [];
+
+    Object.entries(parameterGroups).forEach(([key, values]) => {
+      formattedGroups.push({ key, value: Array.from(values) });
+    });
+
+    return (
+      <div className={styles['product-specs-key-wrapper']}>
+        <Form.Item name={`paramId[${spec.id}]`} style={{ display: 'none' }}>
+          <Input name={`paramId[${spec.id}]`} />
+        </Form.Item>
+        <Form.Item
+          label="название характеристики"
+          name={`${ManageProductFields.KeyValue}[${spec.id}]`}
+          required
+        >
+          <Input
+            placeholder="Введите название характеристики"
+            style={{ width: '100%' }}
+            required={true}
+            onChange={(evt) => handleKeyInput(evt.target.value)}
+          />
+        </Form.Item>
+        {isActiveInput && parameters.length !== 0 ? (
+          <KeyResultsWrapper>
+            <div className="header-wrapper">
+              <h4>Выбрать из базы данных</h4>
+              <button
+                type={'button'}
+                className="reject-suggestion-btn"
+                onClick={() => handleRejectSuggestion()}
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 21 22"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <line
+                    x1="1"
+                    y1="-1"
+                    x2="26.3541"
+                    y2="-1"
+                    transform="matrix(0.683484 -0.729965 0.681649 0.731679 1.52267 21.0312)"
+                    stroke="black"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <line
+                    x1="1"
+                    y1="-1"
+                    x2="26.3044"
+                    y2="-1"
+                    transform="matrix(0.680786 0.732483 -0.684345 0.729158 0.21875 1.03125)"
+                    stroke="black"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+            <ul>
+              {loading
+                ? emptyLoading.map((empty, index) => {
+                    return <li className="LoaderMask" key={index}></li>;
+                  })
+                : formattedGroups.map((param, index) => {
+                    return (
+                      <li
+                        tabIndex={0}
+                        onClick={() =>
+                          handleSelectedKeyValue(
+                            `${ManageProductFields.KeyValue}[${spec.id}]`,
+                            param.key,
+                          )
+                        }
+                        onKeyDown={(evt) => {
+                          if (evt.key == 'Enter') {
+                            handleSelectedKeyValue(
+                              `${ManageProductFields.KeyValue}[${spec.id}]`,
+                              param.key,
+                            );
+                          }
+                        }}
+                        key={index}
+                      >
+                        {param.key}
+                      </li>
+                    );
+                  })}
+            </ul>
+          </KeyResultsWrapper>
+        ) : (
+          <></>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className={styles['product-variant']}>
@@ -282,26 +435,8 @@ const ProductVariant: React.FC<Props> = ({
               </h2>
             </div>
             <div className={styles['product-specs-wrapper']}>
-              <div style={{ width: '100%' }}>
-                <Form.Item
-                  name={`paramId[${spec.id}]`}
-                  style={{ display: 'none' }}
-                >
-                  <Input name={`paramId[${spec.id}]`} />
-                </Form.Item>
-                <Form.Item
-                  label="название характеристики"
-                  name={`${ManageProductFields.KeyValue}[${spec.id}]`}
-                  required
-                >
-                  <Input
-                    placeholder="Введите название характеристики"
-                    style={{ width: '100%' }}
-                    required={true}
-                  />
-                </Form.Item>
-              </div>
-
+              {/*  */}
+              <KeyInputComp spec={spec} />
               <div style={{ width: '100%' }}>
                 <Form.Item
                   label="данные для характерного поля"
@@ -334,6 +469,82 @@ const ButtonDevider = styled.div`
   align-items: center;
   gap: 40px;
   padding: 20px 0;
+`;
+
+const KeyResultsWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  background-color: #fff;
+  position: absolute;
+  top: 70px;
+  left: 0;
+  z-index: 9;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px var(--boxShadowBtn);
+  .header-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-tems: center;
+    .reject-suggestion-btn {
+      cursor: pointer;
+    }
+  }
+  ul {
+    display: inline-grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    li {
+      padding: 10px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #00000045;
+      border-radius: 10px;
+      &:hover {
+        box-shadow: 0 2px 6px var(--boxShadowBtn);
+        cursor: pointer;
+      }
+    }
+
+    @keyframes loading {
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    .LoaderMask {
+      width: 150px;
+      height: 50px;
+      background: #cccccca3;
+      position: relative;
+      overflow: hidden;
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        transform: translateX(-100px);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        animation: loading 0.8s infinite;
+      }
+    }
+  }
 `;
 
 export default ProductVariant;

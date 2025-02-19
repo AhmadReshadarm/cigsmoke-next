@@ -26,6 +26,7 @@ type Props = {
   subCategories: Category[];
   colors: Color[];
   tags: Tag[];
+  parameters: [{ key: string; value: [{ id: string; value: string }] }];
   priceRange: PriceRange;
   expanded: boolean;
   handleExpantionChange: any;
@@ -43,6 +44,7 @@ const TopFilterBar: React.FC<Props> = ({
   subCategories,
   colors,
   tags,
+  parameters,
   priceRange,
   expanded,
   handleExpantionChange,
@@ -60,6 +62,7 @@ const TopFilterBar: React.FC<Props> = ({
       priceRange,
       filters,
       tags,
+      parameters,
     }),
   );
 
@@ -96,6 +99,7 @@ const TopFilterBar: React.FC<Props> = ({
         priceRange,
         filters,
         tags,
+        parameters,
       }),
     );
   }, [categories, subCategories, colors, priceRange, tags]);

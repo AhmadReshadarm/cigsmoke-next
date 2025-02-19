@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getErrorMassage, handleError, handlePending } from 'common/helpers';
+import { handlePaginationDataFormatter } from 'redux/helpers';
 import { TCatalogState, TFilters } from 'redux/types';
 import {
   Brand,
@@ -15,6 +16,8 @@ import {
   TagService,
   Size,
   SizeService,
+  parametersRespons,
+  ParameterService,
 } from 'swagger/services';
 
 export const fetchParentCategories = createAsyncThunk<
@@ -45,25 +48,6 @@ export const fetchSubCategories = createAsyncThunk<
         parent: categoryUrl,
         limit: '1000',
       })) as unknown as { rows: Category[] };
-      return response.rows;
-    } catch (error: any) {
-      return rejectWithValue(getErrorMassage(error.response.status));
-    }
-  },
-);
-
-export const fetchBrands = createAsyncThunk<
-  Brand[],
-  { category?: string; parent?: string },
-  { rejectValue: string }
->(
-  'catalog/fetchBrands',
-  async function (payload, { rejectWithValue }): Promise<any> {
-    try {
-      const response = await BrandService.getBrands({
-        ...payload,
-        limit: '1000',
-      });
       return response.rows;
     } catch (error: any) {
       return rejectWithValue(getErrorMassage(error.response.status));
@@ -144,19 +128,25 @@ export const fetchTags = createAsyncThunk<
   },
 );
 
-export const fetchSizes = createAsyncThunk<
-  Size[],
-  { category?: string; parent?: string },
+export const fetchProducusParametersFilters = createAsyncThunk<
+  parametersRespons,
+  {
+    variantId?: string;
+    key?: string;
+    value?: string;
+    category?: string;
+    children?: string;
+    limit: string;
+  },
   { rejectValue: string }
 >(
-  'catalog/fetchSizes',
-  async function (payload, { rejectWithValue }): Promise<any> {
+  'catalog/fetchProducusParametersFilters',
+  async function (
+    payload,
+    { rejectWithValue },
+  ): Promise<parametersRespons | any> {
     try {
-      const response = (await SizeService.getSizes({
-        ...payload,
-        limit: '1000',
-      })) as unknown as { rows: Size[] };
-      return response.rows;
+      return await ParameterService.getParameters(payload);
     } catch (error: any) {
       return rejectWithValue(getErrorMassage(error.response.status));
     }
@@ -187,6 +177,7 @@ const initialState: TCatalogState = {
   brands: [],
   colors: [],
   tags: [],
+  parameters: [],
   sizes: [],
   priceRange: {
     minPrice: 0,
@@ -241,6 +232,9 @@ const cartSlicer = createSlice({
     handleCheckBoxEnabled(state, action) {
       state.isCheckBoxEnabled = action.payload;
     },
+    clearParameters(state) {
+      state.parameters = initialState.parameters;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -258,13 +252,6 @@ const cartSlicer = createSlice({
         state.loading = false;
       })
       .addCase(fetchSubCategories.rejected, handleError)
-      //fetchBrands
-      .addCase(fetchBrands.pending, handlePending)
-      .addCase(fetchBrands.fulfilled, (state, action) => {
-        state.brands = action.payload;
-        state.loading = false;
-      })
-      .addCase(fetchBrands.rejected, handleError)
       //fetchColors
       .addCase(fetchColors.pending, handlePending)
       .addCase(fetchColors.fulfilled, (state, action) => {
@@ -296,13 +283,13 @@ const cartSlicer = createSlice({
         state.loading = false;
       })
       .addCase(fetchTags.rejected, handleError)
-      //fetchSizes
-      .addCase(fetchSizes.pending, handlePending)
-      .addCase(fetchSizes.fulfilled, (state, action) => {
-        state.sizes = action.payload;
+      //fetchProducts
+      .addCase(fetchProducusParametersFilters.pending, handlePending)
+      .addCase(fetchProducusParametersFilters.fulfilled, (state, action) => {
+        state.parameters = handlePaginationDataFormatter(action);
         state.loading = false;
       })
-      .addCase(fetchSizes.rejected, handleError);
+      .addCase(fetchProducusParametersFilters.rejected, handleError);
     // fetchProductsInExcelFile
     // .addCase(
     //   fetchProductsInExcelFile.pending,
@@ -324,6 +311,7 @@ export const {
   clearBrands,
   clearColors,
   clearTags,
+  clearParameters,
   clearSizes,
   clearProducts,
   setPage,

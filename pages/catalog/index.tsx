@@ -11,11 +11,10 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { fetchParentCategories } from 'redux/slicers/store/catalogSlicer';
-import { TCatalogState } from 'redux/types';
+import { TCatalogState, TProductParameterState } from 'redux/types';
 import styled from 'styled-components';
 import { Category, Product } from 'swagger/services';
 import SEOstatic from 'components/store/SEO/SEOstatic';
-// import { Pagination } from 'antd';
 import Pagination from 'antd/es/pagination';
 import Head from 'next/head';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
@@ -92,7 +91,7 @@ const CatalogPage = ({
     Category | undefined
   >();
 
-  const { categories, subCategories, colors, tags, priceRange } =
+  const { categories, subCategories, colors, tags, parameters, priceRange } =
     useAppSelector<TCatalogState>((state) => state.catalog);
 
   const handleLocationChange = onLocationChange(dispatch);
@@ -150,6 +149,26 @@ const CatalogPage = ({
   const paginationLength = useAppSelector(
     (state) => state.catalog.productsLength,
   );
+
+  // --------------------------------------------------------------------
+
+  // Create sets from params
+  const parameterGroups: { [key: string]: Set<{ id: string; value: string }> } =
+    {};
+  parameters.forEach((param) => {
+    if (!parameterGroups[param.key!]) {
+      parameterGroups[param.key!] = new Set();
+    }
+    parameterGroups[param.key!].add({ id: param.id!, value: param.value! });
+  });
+  // Convert Sets to Arrays
+  const formattedGroupsOfparameters:
+    | [{ key: string; value: [{ id: string; value: string }] }]
+    | any = [];
+
+  Object.entries(parameterGroups).forEach(([key, values]) => {
+    formattedGroupsOfparameters.push({ key, value: Array.from(values) });
+  });
 
   // ------------------------- pagination handlers ---------------------------
   const [currentPage, setCurrentPage] = useState(1);
@@ -231,6 +250,7 @@ const CatalogPage = ({
                 setSelectedCategory={setSelectedCategory}
                 setCurrentPage={setCurrentPage}
                 setPageSize={setPageSize}
+                parameters={formattedGroupsOfparameters}
               />
 
               <Content>

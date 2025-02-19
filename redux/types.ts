@@ -31,6 +31,7 @@ import {
   CategoryResponse,
   SubscribersResponse,
   Question,
+  parameters,
 } from 'swagger/services';
 
 type TCategoryState = {
@@ -77,6 +78,11 @@ type TProductState = {
   chosenProduct: Product | null;
   loading: boolean;
   saveLoading: boolean;
+};
+
+type TProductParameterState = {
+  parameters: parameters[];
+  loading: boolean;
 };
 
 interface SlideImage {
@@ -237,6 +243,7 @@ type TCatalogState = {
   brands: Brand[];
   colors: Color[];
   tags: Tag[];
+  parameters: parameters[];
   sizes: Size[];
   priceRange: PriceRange;
   products: Product[];
@@ -400,4 +407,5 @@ export type {
   ImageDTO,
   TSubscribers,
   MailOptionsDTO,
+  TProductParameterState,
 };

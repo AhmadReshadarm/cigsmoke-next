@@ -1,12 +1,14 @@
 import { getQueryParams } from 'common/helpers/manageQueryParams.helper';
 import {
   clearColors,
+  clearParameters,
   clearProducts,
   clearSubCategories,
   clearTags,
   fetchColors,
   fetchPriceRange,
   fetchProducts,
+  fetchProducusParametersFilters,
   fetchSubCategories,
   fetchTags,
   setPage,
@@ -53,7 +55,29 @@ const getFiltersConfig = ({
   priceRange,
   filters,
   tags,
+  parameters,
 }: TFiltersConfig) => {
+  const dynamicOptions = parameters.reduce((accumulator, currentValue) => {
+    const keyName = `${currentValue.key}Options`;
+    return {
+      ...accumulator,
+      [keyName]: currentValue.value.map((val) => ({
+        id: val.id,
+        name: val.value,
+        url: val.value,
+        checked: !!filters.parameters?.find((param) => param === val.value),
+      })),
+    };
+  }, {});
+  console.log(dynamicOptions);
+  const compare = categories.map(({ id, name, url }) => ({
+    id,
+    name,
+    url,
+    checked: !!filters.categories?.find((categoryUrl) => categoryUrl === url),
+  }));
+  console.log(compare);
+
   return {
     sectionOptions: categories.map(({ id, name, url }) => ({
       id,
@@ -82,6 +106,7 @@ const getFiltersConfig = ({
       url,
       checked: !!filters.tags?.find((tagUrl) => tagUrl === url),
     })) as FilterOption[],
+
     minPrice: priceRange.minPrice!,
     maxPrice: priceRange.maxPrice!,
   };
@@ -156,9 +181,16 @@ const onLocationChange = (dispatch: AppDispatch) => async () => {
     if (subCategories) {
       await dispatch(fetchColors({ category: subCategories[0] }));
       await dispatch(fetchTags({ children: subCategory }));
+      await dispatch(
+        fetchProducusParametersFilters({
+          children: subCategory,
+          limit: '1000',
+        }),
+      );
     } else {
       dispatch(clearTags());
       dispatch(clearColors());
+      dispatch(clearParameters());
     }
   }
   return () => dispatch(clearProducts());

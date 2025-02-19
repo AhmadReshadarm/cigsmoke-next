@@ -94,7 +94,6 @@ const ManageProductForm = ({
         variants,
         charictristicProduct,
       );
-
       form.setFieldsValue(values); // Update form fields
     }
   }, [variants, charictristicProduct]);
@@ -253,6 +252,7 @@ const ManageProductForm = ({
                 setCharictristicProduct={setCharictristicProduct}
                 editMode={editMode}
                 setIsInitialSpecs={setIsInitialSpecs}
+                form={form}
               />
             ))}
             <Button

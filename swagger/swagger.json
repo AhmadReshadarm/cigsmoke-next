@@ -1685,7 +1685,29 @@
           {
             "name": "value",
             "in": "query",
+            "required": false,
             "description": "Filtering products parameters by value"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filtering products parameters by category parent"
+          },
+          {
+            "name": "children",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filtering products parameters by category children"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filtering products parameters by limit in data fetch amount"
           }
         ],
         "responses": {

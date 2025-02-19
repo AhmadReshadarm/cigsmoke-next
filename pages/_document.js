@@ -17,6 +17,13 @@ class MyDocument extends Document {
             name="msvalidate.01"
             content="C34B962949690979DF0ADC0147270090"
           /> */}
+          <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon.png" />
+          <link
+            rel="icon"
+            sizes="180x180"
+            href="/apple-icon.png"
+            type="image/png"
+          />
         </Head>
         <body>
           <Main />

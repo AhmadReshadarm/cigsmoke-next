@@ -84,7 +84,7 @@ export const getServerSideProps = (async () => {
     // };
     return {
       props: {
-        slides: [],
+        slides: [{ id: '1', image: '' }],
         caroselProducts: [],
         base64Image: null,
         base64Image_2: null,
