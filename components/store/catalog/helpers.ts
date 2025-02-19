@@ -22,7 +22,7 @@ const PAGE_ITEMS_LIMIT = 18;
 const convertQueryParams = (query: {
   [k: string]: string | string[] | undefined;
 }) => {
-  const { categories, subCategories, colors, tags } = query;
+  const { categories, subCategories, colors, tags, parameters } = query;
   const categoriesArray = categories
     ? Array.isArray(categories)
       ? categories
@@ -39,12 +39,18 @@ const convertQueryParams = (query: {
       : [colors]
     : undefined;
   const tagsArray = tags ? (Array.isArray(tags) ? tags : [tags]) : undefined;
+  const parametersArray = parameters
+    ? Array.isArray(parameters)
+      ? parameters
+      : [parameters]
+    : undefined;
 
   return {
     categories: categoriesArray,
     subCategories: subCategoriesArray,
     colors: colorsArray,
     tags: tagsArray,
+    parameters: parametersArray,
   };
 };
 
@@ -57,26 +63,19 @@ const getFiltersConfig = ({
   tags,
   parameters,
 }: TFiltersConfig) => {
-  const dynamicOptions = parameters.reduce((accumulator, currentValue) => {
-    const keyName = `${currentValue.key}Options`;
+  const dynamicOptions = parameters.map((param) => {
+    // const keyName = `${currentValue.key.replace(/\s/g, '')}Options`;
+    const title = param.key;
     return {
-      ...accumulator,
-      [keyName]: currentValue.value.map((val) => ({
+      title: param.key,
+      options: param.values.map((val) => ({
         id: val.id,
         name: val.value,
         url: val.value,
         checked: !!filters.parameters?.find((param) => param === val.value),
-      })),
-    };
-  }, {});
-  console.log(dynamicOptions);
-  const compare = categories.map(({ id, name, url }) => ({
-    id,
-    name,
-    url,
-    checked: !!filters.categories?.find((categoryUrl) => categoryUrl === url),
-  }));
-  console.log(compare);
+      })) as FilterOption[],
+    } as { title: string; options: FilterOption[] };
+  });
 
   return {
     sectionOptions: categories.map(({ id, name, url }) => ({
@@ -106,7 +105,7 @@ const getFiltersConfig = ({
       url,
       checked: !!filters.tags?.find((tagUrl) => tagUrl === url),
     })) as FilterOption[],
-
+    dynamicOptions,
     minPrice: priceRange.minPrice!,
     maxPrice: priceRange.maxPrice!,
   };
@@ -129,12 +128,13 @@ const onLocationChange = (dispatch: AppDispatch) => async () => {
   const queryParams = getQueryParams(window.location.search);
   const { minPrice, maxPrice, name, page, limit, sortBy, orderBy, available } =
     queryParams;
-  const { categories, subCategories, colors, tags } =
+  const { categories, subCategories, colors, tags, parameters } =
     convertQueryParams(queryParams);
 
   const payload = {
     colors,
     tags,
+    parameters,
     name: name ? name[0] : undefined,
     parent: categories ? categories[0] : undefined,
     categories: subCategories,

@@ -79,12 +79,9 @@ export const getServerSideProps = (async () => {
       },
     };
   } catch (error) {
-    // return {
-    //   notFound: true,
-    // };
     return {
       props: {
-        slides: [{ id: '1', image: '' }],
+        slides: [],
         caroselProducts: [],
         base64Image: null,
         base64Image_2: null,

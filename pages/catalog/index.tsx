@@ -20,6 +20,7 @@ import Head from 'next/head';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import dynamic from 'next/dynamic';
 import { LoaderMask } from 'ui-kit/generalLoaderMask';
+import { parameterFiltered } from 'components/store/catalog/types';
 const TopFilterBar = dynamic(
   () => import('components/store/catalog/TopFilterBar'),
   {
@@ -161,14 +162,28 @@ const CatalogPage = ({
     }
     parameterGroups[param.key!].add({ id: param.id!, value: param.value! });
   });
+
   // Convert Sets to Arrays
-  const formattedGroupsOfparameters:
-    | [{ key: string; value: [{ id: string; value: string }] }]
-    | any = [];
+  let formattedGroupsOfparameters: parameterFiltered[] =
+    new Array<parameterFiltered>();
 
   Object.entries(parameterGroups).forEach(([key, values]) => {
-    formattedGroupsOfparameters.push({ key, value: Array.from(values) });
+    formattedGroupsOfparameters.push({ key, values: Array.from(values) });
   });
+
+  const filteredParams: parameterFiltered[] = formattedGroupsOfparameters.map(
+    (param) => {
+      const uniquevalues = param.values.filter(
+        (obj, index, self) =>
+          index === self.findIndex((param) => param.value === obj.value),
+      );
+
+      return {
+        key: param.key,
+        values: uniquevalues,
+      };
+    },
+  );
 
   // ------------------------- pagination handlers ---------------------------
   const [currentPage, setCurrentPage] = useState(1);
@@ -250,7 +265,7 @@ const CatalogPage = ({
                 setSelectedCategory={setSelectedCategory}
                 setCurrentPage={setCurrentPage}
                 setPageSize={setPageSize}
-                parameters={formattedGroupsOfparameters}
+                parameters={filteredParams}
               />
 
               <Content>

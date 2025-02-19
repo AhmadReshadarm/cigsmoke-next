@@ -51,6 +51,7 @@ const ProductsPage = () => {
     subCategories,
     colors,
     tags,
+    parameters,
     priceRange,
     productsLoading,
     // page,
@@ -127,6 +128,26 @@ const ProductsPage = () => {
   const selectedProducts = useAppSelector(
     (state) => state.catalog.selectedProducts,
   );
+
+  // --------------------------------------------------------------------
+
+  // Create sets from params
+  const parameterGroups: { [key: string]: Set<{ id: string; value: string }> } =
+    {};
+  parameters.forEach((param) => {
+    if (!parameterGroups[param.key!]) {
+      parameterGroups[param.key!] = new Set();
+    }
+    parameterGroups[param.key!].add({ id: param.id!, value: param.value! });
+  });
+  // Convert Sets to Arrays
+  const formattedGroupsOfparameters:
+    | [{ key: string; value: [{ id: string; value: string }] }]
+    | any = [];
+
+  Object.entries(parameterGroups).forEach(([key, values]) => {
+    formattedGroupsOfparameters.push({ key, value: Array.from(values) });
+  });
 
   // ___________________________________________________________________
   let dataSource = products?.map(
@@ -297,6 +318,7 @@ const ProductsPage = () => {
             colors={colors}
             priceRange={priceRange}
             tags={tags}
+            parameters={formattedGroupsOfparameters}
             expanded={expanded}
             handleExpantionChange={handleExpantionChange}
             setSelectedCategory={setSelectedCategory}

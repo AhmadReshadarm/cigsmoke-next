@@ -231,6 +231,7 @@ type TFilters = {
   brands?: string[];
   tags?: string[];
   sizes?: string[];
+  parameters?: string[];
 };
 
 type TselectedProducts = {

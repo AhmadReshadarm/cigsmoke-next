@@ -20,13 +20,14 @@ import { motion } from 'framer-motion';
 import NameFilter from './topFilters/NameFilter';
 import { useAppSelector } from 'redux/hooks';
 import { TCatalogState } from 'redux/types';
+import { parameterFiltered } from './types';
 
 type Props = {
   categories: Category[];
   subCategories: Category[];
   colors: Color[];
   tags: Tag[];
-  parameters: [{ key: string; value: [{ id: string; value: string }] }];
+  parameters: parameterFiltered[];
   priceRange: PriceRange;
   expanded: boolean;
   handleExpantionChange: any;

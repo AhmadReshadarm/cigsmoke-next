@@ -1789,9 +1789,9 @@
             }
           },
           {
-            "name": "brands",
+            "name": "parameters",
             "in": "query",
-            "description": "Filtering products by brands names in array",
+            "description": "Filtering products by parameters",
             "required": false,
             "type": "array",
             "items": {
@@ -1808,16 +1808,7 @@
               "type": "string"
             }
           },
-          {
-            "name": "sizes",
-            "in": "query",
-            "description": "Filtering products by sizes URLs in array",
-            "required": false,
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
+
           {
             "name": "parent",
             "in": "query",

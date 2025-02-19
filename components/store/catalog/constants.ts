@@ -1,7 +1,11 @@
-import { pushQueryParams } from 'common/helpers/manageQueryParams.helper';
+import {
+  getQueryParams,
+  pushQueryParams,
+} from 'common/helpers/manageQueryParams.helper';
 import cloneDeep from 'lodash/cloneDeep';
 import { FilterOption } from 'ui-kit/FilterCheckbox/types';
 import { Filter } from './types';
+import { convertQueryParams } from './helpers';
 
 enum FilterType {
   MULTIPLE_SELECTION,
@@ -15,6 +19,7 @@ const getFilters = ({
   subSectionOptions,
   colorOptions,
   tagOptions,
+  dynamicOptions,
   minPrice,
   maxPrice,
 }: {
@@ -22,9 +27,24 @@ const getFilters = ({
   subSectionOptions: FilterOption[];
   colorOptions: FilterOption[];
   tagOptions: FilterOption[];
+  dynamicOptions: { title: string; options: FilterOption[] }[];
   minPrice: number;
   maxPrice: number;
 }): Filter[] => {
+  const dynamicOptionsArray = dynamicOptions.map((option) => {
+    return {
+      title: option.title,
+      options: cloneDeep(option.options),
+      type: FilterType.MULTIPLE_SELECTION,
+      onChange: (selectedOptions: FilterOption[] | undefined) => {
+        const parameters = selectedOptions?.map((option) => option.url);
+        pushQueryParams([
+          { name: 'parameters', value: parameters },
+          { name: 'page', value: 1 },
+        ]);
+      },
+    };
+  });
   return [
     {
       title: 'Выберите категории',
@@ -38,6 +58,7 @@ const getFilters = ({
           { name: 'subCategories', value: [] },
           { name: 'colors', value: [] },
           { name: 'tags', value: [] },
+          { name: 'parameters', value: [] },
           { name: 'minPrice', value: null },
           { name: 'maxPrice', value: null },
           { name: 'page', value: 1 },
@@ -58,6 +79,7 @@ const getFilters = ({
           },
           { name: 'colors', value: [] },
           { name: 'tags', value: [] },
+          { name: 'parameters', value: [] },
           { name: 'minPrice', value: null },
           { name: 'maxPrice', value: null },
           { name: 'page', value: 1 },
@@ -77,6 +99,7 @@ const getFilters = ({
         ]);
       },
     },
+    ...dynamicOptionsArray,
     {
       title: 'Выберите цвет',
       options: cloneDeep(colorOptions),
