@@ -11,7 +11,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { fetchParentCategories } from 'redux/slicers/store/catalogSlicer';
-import { TCatalogState, TProductParameterState } from 'redux/types';
+import { TCatalogState } from 'redux/types';
 import styled from 'styled-components';
 import { Category, Product } from 'swagger/services';
 import SEOstatic from 'components/store/SEO/SEOstatic';
@@ -20,7 +20,6 @@ import Head from 'next/head';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import dynamic from 'next/dynamic';
 import { LoaderMask } from 'ui-kit/generalLoaderMask';
-import { parameterFiltered } from 'components/store/catalog/types';
 const TopFilterBar = dynamic(
   () => import('components/store/catalog/TopFilterBar'),
   {
@@ -152,35 +151,37 @@ const CatalogPage = ({
   );
 
   // --------------------------------------------------------------------
-
-  // Create sets from params
-  const parameterGroups: { [key: string]: Set<{ id: string; value: string }> } =
-    {};
+  // Group parameters by key and collect unique values
+  const uniqueParametersMap = new Map<
+    string,
+    Set<{ id: string; value: string }>
+  >();
   parameters.forEach((param) => {
-    if (!parameterGroups[param.key!]) {
-      parameterGroups[param.key!] = new Set();
+    const currentKey = param.key;
+    const currentValue: { id: string; value: string } = {
+      id: param.id!,
+      value: param.value!,
+    };
+    if (!uniqueParametersMap.has(currentKey!)) {
+      uniqueParametersMap.set(currentKey!, new Set());
     }
-    parameterGroups[param.key!].add({ id: param.id!, value: param.value! });
+    uniqueParametersMap.get(currentKey!)?.add(currentValue);
   });
 
-  // Convert Sets to Arrays
-  let formattedGroupsOfparameters: parameterFiltered[] =
-    new Array<parameterFiltered>();
-
-  Object.entries(parameterGroups).forEach(([key, values]) => {
-    formattedGroupsOfparameters.push({ key, values: Array.from(values) });
-  });
-
-  const filteredParams: parameterFiltered[] = formattedGroupsOfparameters.map(
-    (param) => {
-      const uniquevalues = param.values.filter(
-        (obj, index, self) =>
-          index === self.findIndex((param) => param.value === obj.value),
-      );
-
+  const filteredParams = Array.from(uniqueParametersMap.entries()).map(
+    ([key, values]) => {
+      const unFilteredValues = Array.from(values);
+      const uniqueValuesWithId: { id: string; value: string }[] = [];
+      const seenValues = new Set();
+      unFilteredValues.forEach((item) => {
+        if (!seenValues.has(item.value)) {
+          seenValues.add(item.value);
+          uniqueValuesWithId.push(item);
+        }
+      });
       return {
-        key: param.key,
-        values: uniquevalues,
+        key,
+        values: uniqueValuesWithId, //Array.from(values),
       };
     },
   );

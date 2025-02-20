@@ -34,6 +34,7 @@ import {
 // import ExcelJs from 'exceljs';
 import Head from 'next/head';
 import IncreaseOrDecreasePrice from 'components/admin/products/increaseOrDecreasePrice';
+import { parameterFiltered } from 'components/store/catalog/types';
 
 // _____________________________________________
 const ProductsPage = () => {
@@ -131,23 +132,40 @@ const ProductsPage = () => {
 
   // --------------------------------------------------------------------
 
-  // Create sets from params
-  const parameterGroups: { [key: string]: Set<{ id: string; value: string }> } =
-    {};
+  // Group parameters by key and collect unique values
+  const uniqueParametersMap = new Map<
+    string,
+    Set<{ id: string; value: string }>
+  >();
   parameters.forEach((param) => {
-    if (!parameterGroups[param.key!]) {
-      parameterGroups[param.key!] = new Set();
+    const currentKey = param.key;
+    const currentValue: { id: string; value: string } = {
+      id: param.id!,
+      value: param.value!,
+    };
+    if (!uniqueParametersMap.has(currentKey!)) {
+      uniqueParametersMap.set(currentKey!, new Set());
     }
-    parameterGroups[param.key!].add({ id: param.id!, value: param.value! });
+    uniqueParametersMap.get(currentKey!)?.add(currentValue);
   });
-  // Convert Sets to Arrays
-  const formattedGroupsOfparameters:
-    | [{ key: string; value: [{ id: string; value: string }] }]
-    | any = [];
 
-  Object.entries(parameterGroups).forEach(([key, values]) => {
-    formattedGroupsOfparameters.push({ key, value: Array.from(values) });
-  });
+  const filteredParams = Array.from(uniqueParametersMap.entries()).map(
+    ([key, values]) => {
+      const unFilteredValues = Array.from(values);
+      const uniqueValuesWithId: { id: string; value: string }[] = [];
+      const seenValues = new Set();
+      unFilteredValues.forEach((item) => {
+        if (!seenValues.has(item.value)) {
+          seenValues.add(item.value);
+          uniqueValuesWithId.push(item);
+        }
+      });
+      return {
+        key,
+        values: uniqueValuesWithId, //Array.from(values),
+      };
+    },
+  );
 
   // ___________________________________________________________________
   let dataSource = products?.map(
@@ -318,7 +336,7 @@ const ProductsPage = () => {
             colors={colors}
             priceRange={priceRange}
             tags={tags}
-            parameters={formattedGroupsOfparameters}
+            parameters={filteredParams}
             expanded={expanded}
             handleExpantionChange={handleExpantionChange}
             setSelectedCategory={setSelectedCategory}

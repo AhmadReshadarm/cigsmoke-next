@@ -13,6 +13,8 @@ export type Filter = {
     selectedOptions: (FilterOption[] | undefined) &
       FilterOption &
       [number, number],
+    id?: string,
+    value?: boolean,
   ) => void;
 };
 

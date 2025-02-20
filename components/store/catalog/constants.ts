@@ -1,14 +1,14 @@
 import {
-  getQueryParams,
+  pushDynamicQueryParams,
   pushQueryParams,
 } from 'common/helpers/manageQueryParams.helper';
 import cloneDeep from 'lodash/cloneDeep';
 import { FilterOption } from 'ui-kit/FilterCheckbox/types';
 import { Filter } from './types';
-import { convertQueryParams } from './helpers';
 
 enum FilterType {
   MULTIPLE_SELECTION,
+  MULTIPLE_SELECTION_DYNAMIC,
   SINGLE_SELECTION,
   RANGE,
   COLOR,
@@ -35,12 +35,16 @@ const getFilters = ({
     return {
       title: option.title,
       options: cloneDeep(option.options),
-      type: FilterType.MULTIPLE_SELECTION,
-      onChange: (selectedOptions: FilterOption[] | undefined) => {
+      type: FilterType.MULTIPLE_SELECTION_DYNAMIC,
+      onChange: (
+        selectedOptions: FilterOption[] | undefined,
+        id?: string,
+        value?: boolean,
+      ) => {
         const parameters = selectedOptions?.map((option) => option.url);
-        pushQueryParams([
-          { name: 'parameters', value: parameters },
-          { name: 'page', value: 1 },
+        pushDynamicQueryParams([
+          { name: 'parameters', value: parameters, checked: value! },
+          { name: 'page', value: 1, checked: value! },
         ]);
       },
     };
@@ -92,7 +96,6 @@ const getFilters = ({
       type: FilterType.MULTIPLE_SELECTION,
       onChange: (selectedOptions: FilterOption[] | undefined) => {
         const tags = selectedOptions?.map((option) => option.url);
-
         pushQueryParams([
           { name: 'tags', value: tags },
           { name: 'page', value: 1 },
@@ -106,7 +109,6 @@ const getFilters = ({
       type: FilterType.COLOR,
       onChange: (selectedOptions: FilterOption[] | undefined) => {
         const colors = selectedOptions?.map((option) => option.url);
-
         pushQueryParams([
           { name: 'colors', value: colors },
           { name: 'page', value: 1 },

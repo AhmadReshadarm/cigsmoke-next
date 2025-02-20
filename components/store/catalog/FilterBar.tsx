@@ -17,13 +17,14 @@ import { convertQueryParams, getFiltersConfig } from './helpers';
 import { devices } from '../lib/Devices';
 import color from '../lib/ui.colors';
 import Checkbox from 'react-custom-checkbox';
+import { parameterFiltered } from './types';
 
 type Props = {
   categories: Category[];
   subCategories: Category[];
   colors: Color[];
   tags: Tag[];
-  parameters: [{ key: string; values: { id: string; value: string }[] }];
+  parameters: parameterFiltered[];
   priceRange: PriceRange;
   expanded: any;
   handleExpantionChange: any;
