@@ -104,7 +104,7 @@ const TopFilterBar: React.FC<Props> = ({
         parameters,
       }),
     );
-  }, [categories, subCategories, colors, priceRange, tags]);
+  }, [categories, subCategories, colors, priceRange, tags, parameters]);
 
   useEffect(() => {
     setLocalFilters(getFilters(filtersConfig));
@@ -169,6 +169,10 @@ const TopFilterBar: React.FC<Props> = ({
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
   }, [expanded]);
+
+  // const filtersType = parameters.map(
+  //   (param) => `MULTIPLE_SELECTION_DYNAMIC_${param.values[0].id}`,
+  // );
 
   return (
     <FilterBarContent expanded={expanded}>
@@ -278,7 +282,7 @@ const TopFilterBar: React.FC<Props> = ({
           </span>
         </div>
         {localFilters.map(
-          (filter, key) =>
+          (filter: any, key) =>
             (filter.type === FilterType.SINGLE_SELECTION &&
               !!filter.options?.length &&
               isMoreFilters && (

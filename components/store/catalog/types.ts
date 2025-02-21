@@ -5,7 +5,7 @@ import { FilterType } from './constants';
 
 export type Filter = {
   title: string;
-  type: FilterType;
+  type?: FilterType | string;
   options?: FilterOption[];
   min?: number;
   max?: number;
@@ -13,8 +13,7 @@ export type Filter = {
     selectedOptions: (FilterOption[] | undefined) &
       FilterOption &
       [number, number],
-    id?: string,
-    value?: boolean,
+    suffix?: string,
   ) => void;
 };
 

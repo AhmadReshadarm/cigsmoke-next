@@ -22,7 +22,26 @@ const PAGE_ITEMS_LIMIT = 18;
 const convertQueryParams = (query: {
   [k: string]: string | string[] | undefined;
 }) => {
-  const { categories, subCategories, colors, tags, parameters } = query;
+  const { categories, subCategories, colors, tags } = query;
+  let parametersArray: string[] = [];
+  const uniqueParameters = new Set<string>();
+  for (const key in query) {
+    let newParam: any;
+
+    if (query.hasOwnProperty(key) && key.startsWith('parameters')) {
+      newParam = query[key]
+        ? Array.isArray(query[key])
+          ? query[key]
+          : [query[key]]
+        : undefined;
+
+      if (newParam) {
+        newParam.forEach((param: string) => uniqueParameters.add(param)); // Add each param to the Set
+      }
+    }
+  }
+  parametersArray = Array.from(uniqueParameters);
+
   const categoriesArray = categories
     ? Array.isArray(categories)
       ? categories
@@ -39,18 +58,13 @@ const convertQueryParams = (query: {
       : [colors]
     : undefined;
   const tagsArray = tags ? (Array.isArray(tags) ? tags : [tags]) : undefined;
-  const parametersArray = parameters
-    ? Array.isArray(parameters)
-      ? parameters
-      : [parameters]
-    : undefined;
 
   return {
     categories: categoriesArray,
     subCategories: subCategoriesArray,
     colors: colorsArray,
     tags: tagsArray,
-    parameters: parametersArray,
+    parameters: parametersArray.length !== 0 ? parametersArray : undefined,
   };
 };
 
@@ -64,8 +78,6 @@ const getFiltersConfig = ({
   parameters,
 }: TFiltersConfig) => {
   const dynamicOptions = parameters.map((param) => {
-    // const keyName = `${currentValue.key.replace(/\s/g, '')}Options`;
-    const title = param.key;
     return {
       title: param.key,
       options: param.values.map((val) => ({

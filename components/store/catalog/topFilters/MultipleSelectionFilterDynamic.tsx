@@ -2,13 +2,17 @@ import FilterCheckbox from '../../../../ui-kit/FilterCheckbox';
 import { FilterOption } from '../../../../ui-kit/FilterCheckbox/types';
 import { TopFilter, TopFilterBody, TopFilterTitle } from '../common';
 import variants from '../../lib/variants';
+import {
+  isRussian,
+  transliterateRussianToEnglish,
+} from 'common/helpers/translateRussianToEnglish.helper';
 
 type Props = {
   title: string;
   options?: FilterOption[];
   onChange: (
     selectedOptions: FilterOption[] | undefined,
-    id?: string,
+    suffix?: string,
     value?: boolean,
   ) => void;
 };
@@ -21,9 +25,13 @@ const MultipleSelectionFilterDynamic: React.FC<Props> = ({
   const handleChange = (id: string) => (value: boolean) => {
     const curOption = options?.find((option) => option.id === id);
     curOption!.checked = value;
-    const selectedOptions = options?.filter((option) => option.checked);
 
-    onChange(selectedOptions, id, value);
+    const selectedOptions = options?.filter((option) => option.checked);
+    const suffix = isRussian(title)
+      ? transliterateRussianToEnglish(title).replace(/\s/g, '')
+      : title.replace(/\s/g, '');
+
+    onChange(selectedOptions, suffix, value);
   };
 
   return (

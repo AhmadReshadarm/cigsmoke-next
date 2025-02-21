@@ -1,5 +1,5 @@
 import {
-  pushDynamicQueryParams,
+  clearQueryParams,
   pushQueryParams,
 } from 'common/helpers/manageQueryParams.helper';
 import cloneDeep from 'lodash/cloneDeep';
@@ -38,13 +38,13 @@ const getFilters = ({
       type: FilterType.MULTIPLE_SELECTION_DYNAMIC,
       onChange: (
         selectedOptions: FilterOption[] | undefined,
-        id?: string,
-        value?: boolean,
+        suffix?: string,
       ) => {
         const parameters = selectedOptions?.map((option) => option.url);
-        pushDynamicQueryParams([
-          { name: 'parameters', value: parameters, checked: value! },
-          { name: 'page', value: 1, checked: value! },
+
+        pushQueryParams([
+          { name: `parameters_${suffix}`, value: parameters },
+          { name: 'page', value: 1 },
         ]);
       },
     };
@@ -56,7 +56,6 @@ const getFilters = ({
       type: FilterType.SINGLE_SELECTION,
       onChange: (selectedOption: FilterOption | undefined) => {
         const categories = selectedOption?.url!;
-
         pushQueryParams([
           { name: 'categories', value: categories == '' ? '' : categories },
           { name: 'subCategories', value: [] },
@@ -75,7 +74,6 @@ const getFilters = ({
       type: FilterType.SINGLE_SELECTION,
       onChange: (selectedOption: FilterOption | undefined) => {
         const subCategories = selectedOption?.url!;
-
         pushQueryParams([
           {
             name: 'subCategories',
