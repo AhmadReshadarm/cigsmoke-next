@@ -5,6 +5,10 @@ import {
 import cloneDeep from 'lodash/cloneDeep';
 import { FilterOption } from 'ui-kit/FilterCheckbox/types';
 import { Filter } from './types';
+import {
+  isRussian,
+  transliterateRussianToEnglish,
+} from 'common/helpers/translateRussianToEnglish.helper';
 
 enum FilterType {
   MULTIPLE_SELECTION,
@@ -27,12 +31,13 @@ const getFilters = ({
   subSectionOptions: FilterOption[];
   colorOptions: FilterOption[];
   tagOptions: FilterOption[];
-  dynamicOptions: { title: string; options: FilterOption[] }[];
+  dynamicOptions: { groupId: string; title: string; options: FilterOption[] }[];
   minPrice: number;
   maxPrice: number;
 }): Filter[] => {
   const dynamicOptionsArray = dynamicOptions.map((option) => {
     return {
+      groupId: option.groupId,
       title: option.title,
       options: cloneDeep(option.options),
       type: FilterType.MULTIPLE_SELECTION_DYNAMIC,
@@ -49,6 +54,16 @@ const getFilters = ({
       },
     };
   });
+
+  const clearDynamicFilters = dynamicOptions.map((option) => {
+    const suffix = isRussian(option.title)
+      ? transliterateRussianToEnglish(option.title).replace(/\s/g, '')
+      : option.title.replace(/\s/g, '');
+    return {
+      name: `parameters_${suffix}`,
+      value: [],
+    };
+  });
   return [
     {
       title: 'Выберите категории',
@@ -61,7 +76,8 @@ const getFilters = ({
           { name: 'subCategories', value: [] },
           { name: 'colors', value: [] },
           { name: 'tags', value: [] },
-          { name: 'parameters', value: [] },
+          // { name: 'parameters', value: [] },
+          ...clearDynamicFilters,
           { name: 'minPrice', value: null },
           { name: 'maxPrice', value: null },
           { name: 'page', value: 1 },
@@ -81,7 +97,8 @@ const getFilters = ({
           },
           { name: 'colors', value: [] },
           { name: 'tags', value: [] },
-          { name: 'parameters', value: [] },
+          // { name: 'parameters', value: [] },
+          ...clearDynamicFilters,
           { name: 'minPrice', value: null },
           { name: 'maxPrice', value: null },
           { name: 'page', value: 1 },

@@ -152,10 +152,47 @@ const CatalogPage = ({
 
   // --------------------------------------------------------------------
   // Group parameters by key and collect unique values
+  // const uniqueParametersMap = new Map<
+  //   string,
+  //   Set<{ id: string; value: string }>
+  // >();
+
+  // parameters.forEach((param) => {
+  //   const currentKey = param.key;
+  //   const currentValue: { id: string; value: string } = {
+  //     id: param.id!,
+  //     value: param.value!,
+  //   };
+  //   if (!uniqueParametersMap.has(currentKey!)) {
+  //     uniqueParametersMap.set(currentKey!, new Set());
+  //   }
+  //   uniqueParametersMap.get(currentKey!)?.add(currentValue);
+  // });
+
+  // const filteredParams = Array.from(uniqueParametersMap.entries()).map(
+  //   ([key, values]) => {
+  //     const unFilteredValues = Array.from(values);
+  //     const uniqueValuesWithId: { id: string; value: string }[] = [];
+  //     const seenValues = new Set();
+  //     unFilteredValues.forEach((item) => {
+  //       if (!seenValues.has(item.value)) {
+  //         seenValues.add(item.value);
+  //         uniqueValuesWithId.push(item);
+  //       }
+  //     });
+
+  //     return {
+  //       key,
+  //       values: uniqueValuesWithId, //Array.from(values),
+  //     };
+  //   },
+  // );
+
   const uniqueParametersMap = new Map<
     string,
-    Set<{ id: string; value: string }>
+    { groupId: string; values: Set<{ id: string; value: string }> }
   >();
+
   parameters.forEach((param) => {
     const currentKey = param.key;
     const currentValue: { id: string; value: string } = {
@@ -163,14 +200,17 @@ const CatalogPage = ({
       value: param.value!,
     };
     if (!uniqueParametersMap.has(currentKey!)) {
-      uniqueParametersMap.set(currentKey!, new Set());
+      uniqueParametersMap.set(currentKey!, {
+        groupId: param.id!.toString(),
+        values: new Set(),
+      });
     }
-    uniqueParametersMap.get(currentKey!)?.add(currentValue);
+    uniqueParametersMap.get(currentKey!)?.values.add(currentValue);
   });
 
   const filteredParams = Array.from(uniqueParametersMap.entries()).map(
-    ([key, values]) => {
-      const unFilteredValues = Array.from(values);
+    ([key, groupData]) => {
+      const unFilteredValues = Array.from(groupData.values);
       const uniqueValuesWithId: { id: string; value: string }[] = [];
       const seenValues = new Set();
       unFilteredValues.forEach((item) => {
@@ -179,7 +219,9 @@ const CatalogPage = ({
           uniqueValuesWithId.push(item);
         }
       });
+
       return {
+        groupId: groupData.groupId,
         key,
         values: uniqueValuesWithId, //Array.from(values),
       };

@@ -13,7 +13,11 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Category, Color, PriceRange, Tag } from 'swagger/services';
 import { FilterOption } from 'ui-kit/FilterCheckbox/types';
-import { convertQueryParams, getFiltersConfig } from './helpers';
+import {
+  convertDynamicQueryParams,
+  convertQueryParams,
+  getFiltersConfig,
+} from './helpers';
 import { devices } from '../lib/Devices';
 import color from '../lib/ui.colors';
 import Checkbox from 'react-custom-checkbox';
@@ -49,6 +53,8 @@ const FilterBar: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const filters = convertQueryParams(router.query);
+
+  const dynamicFilters = convertDynamicQueryParams(router.query);
   const [filtersConfig, setFiltersConfig] = useState(
     getFiltersConfig({
       categories,
@@ -58,6 +64,7 @@ const FilterBar: React.FC<Props> = ({
       filters,
       tags,
       parameters,
+      dynamicFilters,
     }),
   );
 
@@ -87,6 +94,9 @@ const FilterBar: React.FC<Props> = ({
 
   useEffect(() => {
     const filters = convertQueryParams(getQueryParams(window.location.search));
+    const dynamicFilters = convertDynamicQueryParams(
+      getQueryParams(window.location.search),
+    );
     setFiltersConfig(
       getFiltersConfig({
         categories,
@@ -96,6 +106,7 @@ const FilterBar: React.FC<Props> = ({
         filters,
         tags,
         parameters,
+        dynamicFilters,
       }),
     );
   }, [categories, subCategories, colors, priceRange, tags]);

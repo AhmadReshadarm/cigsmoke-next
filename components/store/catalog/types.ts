@@ -9,6 +9,7 @@ export type Filter = {
   options?: FilterOption[];
   min?: number;
   max?: number;
+  groupId?: string;
   onChange: (
     selectedOptions: (FilterOption[] | undefined) &
       FilterOption &
@@ -25,9 +26,11 @@ export type TFiltersConfig = {
   parameters: parameterFiltered[];
   priceRange: PriceRange;
   filters: TFilters;
+  dynamicFilters: { parameters: { [key: string]: string[] } };
 };
 
 export type parameterFiltered = {
+  groupId: string;
   key: string;
   values: { id: string; value: string }[];
 };

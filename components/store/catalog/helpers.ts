@@ -16,6 +16,10 @@ import {
 import { AppDispatch } from 'redux/store';
 import { FilterOption } from 'ui-kit/FilterCheckbox/types';
 import { TFiltersConfig } from './types';
+import {
+  isRussian,
+  transliterateRussianToEnglish,
+} from 'common/helpers/translateRussianToEnglish.helper';
 
 const PAGE_ITEMS_LIMIT = 18;
 
@@ -40,6 +44,7 @@ const convertQueryParams = (query: {
       }
     }
   }
+
   parametersArray = Array.from(uniqueParameters);
 
   const categoriesArray = categories
@@ -68,6 +73,25 @@ const convertQueryParams = (query: {
   };
 };
 
+const convertDynamicQueryParams = (query: {
+  [k: string]: string | string[] | undefined;
+}) => {
+  const parameters: { [key: string]: string[] } = {};
+
+  for (const key in query) {
+    if (key.startsWith('parameters_')) {
+      const groupKey = key.replace('parameters_', '');
+      const value = query[key];
+      if (value) {
+        parameters[groupKey] = Array.isArray(value) ? value : [value];
+      }
+    }
+  }
+  return {
+    parameters,
+  };
+};
+
 const getFiltersConfig = ({
   categories,
   subCategories,
@@ -76,17 +100,26 @@ const getFiltersConfig = ({
   filters,
   tags,
   parameters,
+  dynamicFilters,
 }: TFiltersConfig) => {
   const dynamicOptions = parameters.map((param) => {
+    const groupKey = isRussian(param.key)
+      ? transliterateRussianToEnglish(param.key).replace(/\s/g, '')
+      : param.key.replace(/\s/g, '');
+    const selectedValues = dynamicFilters.parameters?.[groupKey] || [];
+
     return {
+      groupId: param.groupId,
       title: param.key,
       options: param.values.map((val) => ({
+        groupId: param.groupId,
         id: val.id,
         name: val.value,
         url: val.value,
-        checked: !!filters.parameters?.find((param) => param === val.value),
+        // checked: !!filters.parameters?.find((param) => param === val.value),
+        checked: selectedValues.includes(val.value),
       })) as FilterOption[],
-    } as { title: string; options: FilterOption[] };
+    } as { groupId: string; title: string; options: FilterOption[] };
   });
 
   return {
@@ -213,4 +246,5 @@ export {
   getFiltersConfig,
   setPriceRange,
   onLocationChange,
+  convertDynamicQueryParams,
 };

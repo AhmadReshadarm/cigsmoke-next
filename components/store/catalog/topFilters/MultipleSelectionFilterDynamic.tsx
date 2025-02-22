@@ -8,16 +8,17 @@ import {
 } from 'common/helpers/translateRussianToEnglish.helper';
 
 type Props = {
+  groupId: string;
   title: string;
   options?: FilterOption[];
   onChange: (
     selectedOptions: FilterOption[] | undefined,
     suffix?: string,
-    value?: boolean,
   ) => void;
 };
 
 const MultipleSelectionFilterDynamic: React.FC<Props> = ({
+  groupId,
   title,
   options,
   onChange,
@@ -25,13 +26,12 @@ const MultipleSelectionFilterDynamic: React.FC<Props> = ({
   const handleChange = (id: string) => (value: boolean) => {
     const curOption = options?.find((option) => option.id === id);
     curOption!.checked = value;
-
     const selectedOptions = options?.filter((option) => option.checked);
     const suffix = isRussian(title)
       ? transliterateRussianToEnglish(title).replace(/\s/g, '')
       : title.replace(/\s/g, '');
 
-    onChange(selectedOptions, suffix, value);
+    onChange(selectedOptions, suffix);
   };
 
   return (

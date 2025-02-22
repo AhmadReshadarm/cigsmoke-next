@@ -13,7 +13,11 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Category, Color, PriceRange, Tag } from 'swagger/services';
 import { FilterOption } from 'ui-kit/FilterCheckbox/types';
-import { convertQueryParams, getFiltersConfig } from './helpers';
+import {
+  convertDynamicQueryParams,
+  convertQueryParams,
+  getFiltersConfig,
+} from './helpers';
 import { devices } from '../lib/Devices';
 import color from '../lib/ui.colors';
 import { motion } from 'framer-motion';
@@ -22,6 +26,10 @@ import { useAppSelector } from 'redux/hooks';
 import { TCatalogState } from 'redux/types';
 import { parameterFiltered } from './types';
 import MultipleSelectionFilterDynamic from './topFilters/MultipleSelectionFilterDynamic';
+import {
+  isRussian,
+  transliterateRussianToEnglish,
+} from 'common/helpers/translateRussianToEnglish.helper';
 
 type Props = {
   categories: Category[];
@@ -56,6 +64,7 @@ const TopFilterBar: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const filters = convertQueryParams(router.query);
+  const dynamicFilters = convertDynamicQueryParams(router.query);
   const [filtersConfig, setFiltersConfig] = useState(
     getFiltersConfig({
       categories,
@@ -65,6 +74,7 @@ const TopFilterBar: React.FC<Props> = ({
       filters,
       tags,
       parameters,
+      dynamicFilters,
     }),
   );
 
@@ -92,7 +102,9 @@ const TopFilterBar: React.FC<Props> = ({
 
   useEffect(() => {
     const filters = convertQueryParams(getQueryParams(window.location.search));
-
+    const dynamicFilters = convertDynamicQueryParams(
+      getQueryParams(window.location.search),
+    );
     setFiltersConfig(
       getFiltersConfig({
         categories,
@@ -102,6 +114,7 @@ const TopFilterBar: React.FC<Props> = ({
         filters,
         tags,
         parameters,
+        dynamicFilters,
       }),
     );
   }, [categories, subCategories, colors, priceRange, tags, parameters]);
@@ -169,10 +182,6 @@ const TopFilterBar: React.FC<Props> = ({
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
   }, [expanded]);
-
-  // const filtersType = parameters.map(
-  //   (param) => `MULTIPLE_SELECTION_DYNAMIC_${param.values[0].id}`,
-  // );
 
   return (
     <FilterBarContent expanded={expanded}>
@@ -329,6 +338,7 @@ const TopFilterBar: React.FC<Props> = ({
               isMoreFilters && (
                 <MultipleSelectionFilterDynamic
                   key={`filter-${key}`}
+                  groupId={filter.groupId}
                   title={filter.title}
                   options={filter.options}
                   onChange={
@@ -823,7 +833,94 @@ const TopFilterBar: React.FC<Props> = ({
                 </>
               );
             default:
-              break;
+              if (
+                selectedFilter.type === FilterType.MULTIPLE_SELECTION_DYNAMIC
+              ) {
+                return (
+                  <>
+                    {selectedFilter.options?.map((option) => {
+                      if (!option.checked) return null;
+
+                      // Generate group suffix from title
+                      const groupSuffix = isRussian(selectedFilter.title)
+                        ? transliterateRussianToEnglish(
+                            selectedFilter.title,
+                          ).replace(/\s/g, '')
+                        : selectedFilter.title.replace(/\s/g, '');
+                      // ${selectedFilter.groupId}
+                      return (
+                        <SelectedFiltersButtons
+                          key={`${selectedFilter.groupId}-${option.id}`}
+                          className="selected-filter-child"
+                        >
+                          <span>{`${selectedFilter.title}: ${option.name}`}</span>
+                          <span
+                            onClick={() => {
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                              // Update the options
+                              const updatedOptions =
+                                selectedFilter.options?.map((opt) =>
+                                  opt.id === option.id
+                                    ? { ...opt, checked: false }
+                                    : opt,
+                                );
+
+                              // Get currently selected values for this group
+                              const selectedValues =
+                                updatedOptions
+                                  ?.filter((opt) => opt.checked)
+                                  ?.map((opt) => opt.url) || [];
+
+                              // Update query params for this specific group
+                              pushQueryParams([
+                                {
+                                  name: `parameters_${groupSuffix}`,
+                                  value:
+                                    selectedValues.length > 0
+                                      ? selectedValues
+                                      : null,
+                                },
+                                { name: 'page', value: 1 },
+                              ]);
+                            }}
+                          >
+                            <svg
+                              width="15"
+                              height="15"
+                              viewBox="0 0 21 22"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <line
+                                x1="1"
+                                y1="-1"
+                                x2="26.3541"
+                                y2="-1"
+                                transform="matrix(0.683484 -0.729965 0.681649 0.731679 1.52267 21.0312)"
+                                stroke="black"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                              />
+                              <line
+                                x1="1"
+                                y1="-1"
+                                x2="26.3044"
+                                y2="-1"
+                                transform="matrix(0.680786 0.732483 -0.684345 0.729158 0.21875 1.03125)"
+                                stroke="black"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          </span>
+                        </SelectedFiltersButtons>
+                      );
+                    })}
+                  </>
+                );
+              }
+              return null;
           }
         })}
 
