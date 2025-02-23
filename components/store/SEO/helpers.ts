@@ -6,13 +6,13 @@ const settings = {
   },
   meta: {
     rootUrl: baseUrl,
-    title: 'NBHOZ.ru',
+    title: 'wuluxe.ru',
     description:
-      'NBHOZ, Дешевые хозтовары оптом в интернет магазине nbhoz в Москва и все Россия, купить Кухонная утварь, Товары для сервировки стола, Товары для ванной комнаты',
+      'WULUXE - Всё для дома: шторы, карнизы, товары для ванной, уборки, кухни и дачи Доставка по Москва и России',
     social: {
       graphic:
         'https://cheatcode-assets.s3.amazonaws.com/default-social-graphic.png',
-      twitter: '@nbhoz',
+      twitter: '@wuluxe',
     },
   },
   routes: {

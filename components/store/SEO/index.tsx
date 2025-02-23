@@ -62,7 +62,7 @@ const SEO = ({ product, images }) => {
 
   return (
     <Head>
-      <title>{`${product?.name} | NBHOZ`}</title>
+      <title>{`${product?.name} | WULUXE`}</title>
       <meta name="robots" content="index, follow" />
       <meta name="title" content={product?.name} />
       <meta name="description" content={product?.shortDesc} />

@@ -22,6 +22,7 @@ import { devices } from '../lib/Devices';
 import color from '../lib/ui.colors';
 import Checkbox from 'react-custom-checkbox';
 import { parameterFiltered } from './types';
+import MultipleSelectionFilterDynamic from './topFilters/MultipleSelectionFilterDynamic';
 
 type Props = {
   categories: Category[];
@@ -304,6 +305,22 @@ const FilterBar: React.FC<Props> = ({
                   onChange={
                     filter.onChange as (
                       selectedOptions: FilterOption[] | undefined,
+                    ) => void
+                  }
+                />
+              )) ||
+            (filter.type === FilterType.MULTIPLE_SELECTION_DYNAMIC &&
+              !!filter.options?.length && (
+                <MultipleSelectionFilterDynamic
+                  key={`filter-${key}`}
+                  groupId={filter.groupId!}
+                  title={filter.title}
+                  options={filter.options}
+                  onChange={
+                    filter.onChange as (
+                      selectedOptions: FilterOption[] | undefined,
+                      id?: string,
+                      value?: boolean,
                     ) => void
                   }
                 />
