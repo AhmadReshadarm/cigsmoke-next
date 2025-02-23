@@ -6,6 +6,10 @@ import InfoDropdownReturn from './DropDownsParrentReturn';
 import styles from '../../styles/dropDowns.module.css';
 import { parameters } from 'swagger/services';
 import { MutableRefObject } from 'react';
+import {
+  isRussian,
+  transliterateRussianToEnglish,
+} from 'common/helpers/translateRussianToEnglish.helper';
 type Props = {
   parameterProducts?: parameters[];
   specsRef: MutableRefObject<any>;
@@ -44,6 +48,9 @@ const DropDowns: React.FC<Props> = ({ parameterProducts, specsRef }) => {
         <div className={styles.SpecsContainer}>
           <ul className={styles.SpecsKeyValueWrapper}>
             {parameterProducts?.map((param) => {
+              const suffix = isRussian(param.key)
+                ? transliterateRussianToEnglish(param.key).replace(/\s/g, '')
+                : param.key!.replace(/\s/g, '');
               return (
                 <li
                   className={styles.wrapper_key_vlaue}
@@ -52,7 +59,15 @@ const DropDowns: React.FC<Props> = ({ parameterProducts, specsRef }) => {
                   <span title={param.key} className={styles.key_wrapper}>
                     {param.key}:{' '}
                   </span>
-                  <span title={param.value}>{param.value}</span>
+                  <Link
+                    href={`/catalog?categories=${
+                      product?.category?.parent!.url
+                    }&subCategories=${
+                      product?.category?.url
+                    }&parameters_${suffix}=${param.value}`}
+                  >
+                    <span title={param.value}>{param.value}</span>
+                  </Link>
                 </li>
               );
             })}

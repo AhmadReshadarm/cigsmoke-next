@@ -6,6 +6,11 @@ import { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useAppSelector } from 'redux/hooks';
 import { TCartState } from 'redux/types';
 import styles from '../../styles/detail.module.css';
+import Link from 'next/link';
+import {
+  isRussian,
+  transliterateRussianToEnglish,
+} from 'common/helpers/translateRussianToEnglish.helper';
 type Props = {
   product?: Product;
   reviewRef: MutableRefObject<any>;
@@ -130,6 +135,9 @@ const Details: React.FC<Props> = ({
       <div className={styles.SpecsContainer}>
         <ul className={styles.SpecsKeyValueWrapper}>
           {params!.slice(0, 2).map((param) => {
+            const suffix = isRussian(param.key)
+              ? transliterateRussianToEnglish(param.key).replace(/\s/g, '')
+              : param.key!.replace(/\s/g, '');
             return (
               <li
                 className={styles.wrapper_key_vlaue}
@@ -138,7 +146,15 @@ const Details: React.FC<Props> = ({
                 <span title={param.key} className={styles.key_wrapper}>
                   {param.key}:{' '}
                 </span>
-                <span title={param.value}>{param.value}</span>
+                <Link
+                  href={`/catalog?categories=${
+                    product?.category?.parent!.url
+                  }&subCategories=${
+                    product?.category?.url
+                  }&parameters_${suffix}=${param.value}`}
+                >
+                  <span title={param.value}>{param.value}</span>
+                </Link>
               </li>
             );
           })}

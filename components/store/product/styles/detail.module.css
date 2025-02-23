@@ -375,8 +375,17 @@
 .key_wrapper {
   white-space: nowrap;
 }
+
 .wrapper_key_vlaue > span {
   font-size: 0.9rem;
+}
+.wrapper_key_vlaue > a > span {
+  font-size: 0.9rem;
+  color: #000;
+}
+
+.wrapper_key_vlaue > a > span:hover {
+  color: #000000c7;
 }
 
 .see_more_specs_btn {
