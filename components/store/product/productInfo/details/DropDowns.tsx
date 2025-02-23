@@ -65,6 +65,7 @@ const DropDowns: React.FC<Props> = ({ parameterProducts, specsRef }) => {
                     }&subCategories=${
                       product?.category?.url
                     }&parameters_${suffix}=${param.value}`}
+                    prefetch={false}
                   >
                     <span title={param.value}>{param.value}</span>
                   </Link>
