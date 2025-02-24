@@ -15,7 +15,7 @@ const CreateColor = () => {
     <>
       <Head>
         <title>
-          Администрирование {`>`} Цвета {`>`} Создание цвета | NBHOZ
+          Администрирование {`>`} Цвета {`>`} Создание цвета | WULUXE
         </title>
       </Head>
       <ManageColorForm

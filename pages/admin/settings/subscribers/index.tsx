@@ -41,7 +41,7 @@ const Subscribers = () => {
     <>
       <Head>
         <title>
-          Администрирование {`>`} Настройки {`>`} Подписчики | NBHOZ
+          Администрирование {`>`} Настройки {`>`} Подписчики | WULUXE
         </title>
       </Head>
       <DownloadBtnsWrapper>

@@ -27,7 +27,7 @@ const CreateCategory = () => {
     <>
       <Head>
         <title>
-          Администрирование {`>`} Категории {`>`} Создание категории | NBHOZ
+          Администрирование {`>`} Категории {`>`} Создание категории | WULUXE
         </title>
       </Head>
       <ManageCategoryForm

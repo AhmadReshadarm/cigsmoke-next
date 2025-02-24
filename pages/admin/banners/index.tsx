@@ -21,7 +21,7 @@ const BannersPage = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Баннеры | NBHOZ</title>
+        <title>Администрирование {`>`} Баннеры | WULUXE</title>
       </Head>
       <div className={styles.bannersHeader}>
         <h1 className={styles.bannersHeader__title}>Баннеры</h1>

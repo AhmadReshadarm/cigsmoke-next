@@ -48,7 +48,7 @@ const Colors = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Цвета | NBHOZ</title>
+        <title>Администрирование {`>`} Цвета | WULUXE</title>
       </Head>
       <div className={styles.colorsHeader}>
         <h1 className={styles.colorsHeader__title}>Цвета</h1>

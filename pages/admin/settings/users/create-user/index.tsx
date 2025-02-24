@@ -13,7 +13,7 @@ const CreateNewsPost = () => {
       <Head>
         <title>
           Администрирование {`>`} Настройки {`>`} Пользователи {`>`} Создание
-          пользователь | NBHOZ
+          пользователь | WULUXE
         </title>
       </Head>
       <ManageUsersForm title={title} isLoading={loading} />

@@ -59,7 +59,7 @@ const CategoriesPage = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Категории | NBHOZ</title>
+        <title>Администрирование {`>`} Категории | WULUXE</title>
       </Head>
       <div className={styles.categoriesHeader}>
         <h1 className={styles.categoriesHeader__title}>Категории</h1>
@@ -70,6 +70,7 @@ const CategoriesPage = () => {
         >
           Создать новую категорию
         </Button>
+        {/* <div>progress {progress}%</div> */}
       </div>
       {isLoading ? (
         <Spin className={styles.spinner} size="large" />

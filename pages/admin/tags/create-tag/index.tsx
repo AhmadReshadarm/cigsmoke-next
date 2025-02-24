@@ -13,7 +13,7 @@ const CreateTag = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Создание Коллекция | NBHOZ</title>
+        <title>Администрирование {`>`} Создание Коллекция | WULUXE</title>
       </Head>
       <ManageTagForm
         title={title}

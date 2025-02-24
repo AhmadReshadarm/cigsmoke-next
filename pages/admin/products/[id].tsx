@@ -62,7 +62,7 @@ const ManageProduct = () => {
     <>
       <Head>
         <title>
-          Администрирование {`>`} Товары {`>`} Редактирование Товары | NBHOZ
+          Администрирование {`>`} Товары {`>`} Редактирование Товары | WULUXE
         </title>
       </Head>
       <ManageProductForm

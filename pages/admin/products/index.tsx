@@ -289,7 +289,7 @@ const ProductsPage = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Товары | NBHOZ</title>
+        <title>Администрирование {`>`} Товары | WULUXE</title>
       </Head>
       <div className={styles.productsHeader}>
         <h1 className={styles.productsHeader__title}>Товары</h1>

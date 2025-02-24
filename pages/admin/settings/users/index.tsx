@@ -52,7 +52,7 @@ const AnalyticsUsers = () => {
     <>
       <Head>
         <title>
-          Администрирование {`>`} Настройки {`>`} Пользователи | NBHOZ
+          Администрирование {`>`} Настройки {`>`} Пользователи | WULUXE
         </title>
       </Head>
       <div className={styles.newsPostsHeader}>

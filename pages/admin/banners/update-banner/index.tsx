@@ -10,10 +10,16 @@ const BannersFormLayout = dynamic(
 );
 
 import styles from '../index.module.scss';
+import Head from 'next/head';
 
 const UpdateBanner = () => {
   return (
     <>
+      <Head>
+        <title>
+          Администрирование {`>`} Баннеры {'>'} Обновление баннеров | WULUXE
+        </title>
+      </Head>
       <div>
         <h1 className={styles.bannersHeader__title}>Обновление баннеров</h1>
       </div>

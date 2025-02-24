@@ -66,7 +66,7 @@ const CheckoutsPage = () => {
     <>
       <Head>
         <title>
-          Администрирование {`>`} Заказы {`>`} Редактирование Заказа | NBHOZ
+          Администрирование {`>`} Заказы {`>`} Редактирование Заказа | WULUXE
         </title>
       </Head>
       {loading || saveLoading ? (

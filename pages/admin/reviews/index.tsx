@@ -50,7 +50,7 @@ const ReviewsPage = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Отзывы | NBHOZ</title>
+        <title>Администрирование {`>`} Отзывы | WULUXE</title>
       </Head>
       <div className={styles.reviewsHeader}>
         <h1 className={styles.reviewsHeader__title}>Отзывы</h1>

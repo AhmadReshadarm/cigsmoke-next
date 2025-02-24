@@ -30,7 +30,7 @@ const EditTag = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Редактирование Коллекция | NBHOZ</title>
+        <title>Администрирование {`>`} Редактирование Коллекция | WULUXE</title>
       </Head>
       <ManageTagForm
         title={title}

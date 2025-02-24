@@ -50,7 +50,7 @@ const QuestionsPage = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Вопросы | NBHOZ</title>
+        <title>Администрирование {`>`} Вопросы | WULUXE</title>
       </Head>
       {loading ? (
         <Spin className={styles.spinner} size="large" />

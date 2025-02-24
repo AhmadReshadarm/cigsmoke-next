@@ -7,7 +7,7 @@ const IndexPage = (): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Администрирование | NBHOZ</title>
+        <title>Администрирование | WULUXE</title>
       </Head>
       <List
         size="large"

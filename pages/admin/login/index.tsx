@@ -10,7 +10,7 @@ const Login: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Авторизация | NBHOZ</title>
+        <title>Авторизация | WULUXE</title>
       </Head>
       <h1 className={styles['title']}>Авторизация</h1>
       <LoginForm isLoading={isLoading} />

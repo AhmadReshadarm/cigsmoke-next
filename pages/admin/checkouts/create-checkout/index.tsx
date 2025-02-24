@@ -9,7 +9,7 @@ const createCheckout = () => {
     <>
       <Head>
         <title>
-          Администрирование {`>`} Заказы {`>`} Создание Заказа | NBHOZ
+          Администрирование {`>`} Заказы {`>`} Создание Заказа | WULUXE
         </title>
       </Head>
       <ManageCheckoutFrom title={title} />

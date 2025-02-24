@@ -26,7 +26,7 @@ const ProductReviewsPage = () => {
     <>
       <Head>
         <title>
-          Администрирование {`>`} Отзывы {`>`} редактирование обзора | NBHOZ
+          Администрирование {`>`} Отзывы {`>`} редактирование обзора | WULUXE
         </title>
       </Head>
       <ContentContainer>

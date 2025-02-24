@@ -47,7 +47,7 @@ const TagsPage = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Коллекция | NBHOZ</title>
+        <title>Администрирование {`>`} Коллекция | WULUXE</title>
       </Head>
       <div className={styles.tagsHeader}>
         <h1 className={styles.tagsHeader__title}>Коллекция</h1>

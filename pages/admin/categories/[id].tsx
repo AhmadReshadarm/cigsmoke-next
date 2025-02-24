@@ -47,7 +47,7 @@ const EditCategory = () => {
       <Head>
         <title>
           Администрирование {`>`} Категории {`>`} Редактирование категории |
-          NBHOZ
+          WULUXE
         </title>
       </Head>
       <ManageCategoryForm

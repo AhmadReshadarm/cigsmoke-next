@@ -144,7 +144,8 @@ const ManageCategoryForm = ({
             name={ManageCategoryFields.Parent}
             label="Выберите родительскую категорию"
           >
-            <Select defaultValue="Не выбрано" disabled={editMode}>
+            {/* disabled={editMode} */}
+            <Select defaultValue="Не выбрано">
               <Option value="">Не выбрано</Option>
               {categories?.map((category) => (
                 <Option

@@ -8,7 +8,7 @@ const Users = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Настройки | NBHOZ</title>
+        <title>Администрирование {`>`} Настройки | WULUXE</title>
       </Head>
       <Wrapper>
         <Link href="/admin/settings/users" className="content">

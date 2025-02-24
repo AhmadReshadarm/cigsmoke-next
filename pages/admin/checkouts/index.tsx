@@ -63,7 +63,7 @@ const CheckoutsPage = () => {
   return (
     <>
       <Head>
-        <title>Администрирование {`>`} Заказы | NBHOZ</title>
+        <title>Администрирование {`>`} Заказы | WULUXE</title>
       </Head>
       <div className={styles.checkoutsHeader}>
         <h1 className={styles.checkoutsHeader__title}>Заказы</h1>
