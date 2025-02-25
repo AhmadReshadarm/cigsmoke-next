@@ -70,7 +70,6 @@ const CategoriesPage = () => {
         >
           Создать новую категорию
         </Button>
-        {/* <div>progress {progress}%</div> */}
       </div>
       {isLoading ? (
         <Spin className={styles.spinner} size="large" />
