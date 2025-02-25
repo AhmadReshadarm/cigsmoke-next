@@ -1,5 +1,8 @@
-import { BgColorsOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Spin } from 'antd';
+import BgColorsOutlined from '@ant-design/icons/BgColorsOutlined';
+import Button from 'antd/lib/button';
+import Spin from 'antd/lib/spin';
+import Form from 'antd/lib/form';
+import Input from 'antd/lib/input';
 import { navigateTo } from 'common/helpers/navigateTo.helper';
 import { useRouter } from 'next/router';
 import { useAppDispatch } from 'redux/hooks';

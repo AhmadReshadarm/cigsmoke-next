@@ -106,6 +106,7 @@ const initialState: TColorState = {
   chosenColor: null,
   loading: false,
   saveLoading: false,
+  paginationLength: 0,
 };
 
 const colorsSlicer = createSlice({
@@ -124,6 +125,7 @@ const colorsSlicer = createSlice({
       //fetchColors
       .addCase(fetchColors.pending, handlePending)
       .addCase(fetchColors.fulfilled, (state, action) => {
+        state.paginationLength = action.payload.length;
         state.colors = handlePaginationDataFormatter(action);
         state.loading = false;
       })

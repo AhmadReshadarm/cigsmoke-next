@@ -1,16 +1,50 @@
 import CartItem from 'components/store/cart/cartItem';
 import styled from 'styled-components';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
-import { TCartState } from 'redux/types';
+import { TCartState, TGlobalState } from 'redux/types';
 import { handleRemoveClick } from './helpers';
 import color from '../lib/ui.colors';
 import { devices } from '../lib/Devices';
 import { LoaderMask } from 'ui-kit/generalLoaderMask';
+import { useEffect, useState } from 'react';
+import { fetchHistoryProducts } from 'redux/slicers/store/globalSlicer';
+import styles from '../storeLayout/styles/headerWishList.module.css';
+import HeaderProductItmesHistory from 'ui-kit/HeaderProductItemsHistory';
+// import { handleMenuStateRedux } from '../storeLayout/helpers';
 
 type Props = {};
 const BasketItems: React.FC<Props> = ({}) => {
   const { cart, loading } = useAppSelector<TCartState>((state) => state.cart);
+  const { historyProducts, loadingHistory } = useAppSelector<TGlobalState>(
+    (state) => state.global,
+  );
+  const [cartProductIds, setCartProductIds] = useState(
+    new Set(cart?.orderProducts!.map((item) => item.product!.id)),
+  );
+  const [hasAllProducts, setHasAllProducts] = useState(
+    historyProducts.every((product) => cartProductIds.has(product.id)),
+  );
+
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const userHistoy = localStorage.getItem('history');
+    if (userHistoy) {
+      dispatch(fetchHistoryProducts({ userHistory: JSON.parse(userHistoy) }));
+    }
+  }, []);
+
+  useEffect(() => {
+    setCartProductIds(
+      new Set(cart?.orderProducts!.map((item) => item.product!.id)),
+    );
+  }, [cart]);
+
+  useEffect(() => {
+    setHasAllProducts(
+      historyProducts.every((product) => cartProductIds.has(product.id)),
+    );
+  }, [cartProductIds]);
 
   return (
     <>
@@ -31,6 +65,28 @@ const BasketItems: React.FC<Props> = ({}) => {
                   />
                 );
               })}
+              {!historyProducts.length || hasAllProducts ? (
+                <></>
+              ) : (
+                <>
+                  <li style={{ width: '100%' }}>
+                    <div
+                      style={{ justifyContent: 'center' }}
+                      className={styles.PopupBtnsDivider}
+                    >
+                      <h1 style={{ fontWeight: '600' }}>Вы смотрели</h1>
+                    </div>
+                  </li>
+                  {historyProducts.map((historyProduct, index) => {
+                    return (
+                      <HeaderProductItmesHistory
+                        key={`history-item-${index}`}
+                        product={historyProduct}
+                      />
+                    );
+                  })}
+                </>
+              )}
             </CartBody>
           </ItemsWrapper>
         </>

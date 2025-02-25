@@ -41,6 +41,7 @@ import {
   fetchWishlistProducts,
 } from 'redux/slicers/store/wishlistSlicer';
 import styles from './styles/header.module.css';
+import { fetchHistoryProducts } from 'redux/slicers/store/globalSlicer';
 
 const HeaderCatalog = dynamic(() => import('./utils/HeaderCatalog/index'), {
   ssr: false,
@@ -140,15 +141,7 @@ const Header = () => {
     if (isClient) {
       const basketId = localStorage.getItem('basketId');
       const wishlistId = localStorage.getItem('wishlistId')!;
-
-      // const createWishlistId = async () => {
-      //   try {
-      //     const wishlist = await axiosInstance.post('/wishlists');
-      //     localStorage.setItem('wishlistId', wishlist.data.id);
-      //   } catch (error) {
-      //     console.log(error);
-      //   }
-      // };
+      const userHistoy = localStorage.getItem('history');
 
       const fetchDataCartProducts = async () => {
         if (!basketId) {
@@ -190,6 +183,10 @@ const Header = () => {
         }
       };
       fetchDataWishlistProducts();
+
+      if (userHistoy) {
+        dispatch(fetchHistoryProducts({ userHistory: JSON.parse(userHistoy) }));
+      }
     }
   }, [isClient]);
 

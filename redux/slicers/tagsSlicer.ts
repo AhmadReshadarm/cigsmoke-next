@@ -100,6 +100,7 @@ const initialState: TTagState = {
   tag: null,
   loading: false,
   saveLoading: false,
+  paginationLength: 0,
 };
 
 const tagsSlicer = createSlice({
@@ -118,6 +119,7 @@ const tagsSlicer = createSlice({
       //fetchTags
       .addCase(fetchTags.pending, handlePending)
       .addCase(fetchTags.fulfilled, (state, action) => {
+        state.paginationLength = action.payload.length;
         state.tags = handlePaginationDataFormatter(action);
         state.loading = false;
       })

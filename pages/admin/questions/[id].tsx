@@ -42,7 +42,7 @@ const ProductQuestionsPage = () => {
     <>
       <Head>
         <title>
-          Администрирование {`>`} Вопросы {`>`} Редактирование Вопрос | NBHOZ
+          Администрирование {`>`} Вопросы {`>`} Редактирование Вопрос | WULUXE
         </title>
       </Head>
       <ContentContainer>

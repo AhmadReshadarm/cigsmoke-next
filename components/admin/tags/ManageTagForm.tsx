@@ -1,5 +1,7 @@
-// import { InfoCircleOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, Spin } from 'antd';
+import Button from 'antd/lib/button';
+import Spin from 'antd/lib/spin';
+import Form from 'antd/lib/form';
+import Input from 'antd/lib/input';
 import { navigateTo } from 'common/helpers/navigateTo.helper';
 import { useRouter } from 'next/router';
 import { useAppDispatch } from 'redux/hooks';
@@ -11,8 +13,6 @@ import { ManageTagFields } from './ManageTagFields.enum';
 import FormItem from '../generalComponents/FormItem';
 import { useEffect, useState } from 'react';
 import { handleFalsyValuesCheck } from '../../../common/helpers/handleFalsyValuesCheck.helper';
-
-const { Option } = Select;
 
 type Props = {
   tag?: Tag;

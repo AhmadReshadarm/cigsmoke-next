@@ -1,13 +1,14 @@
-import { Button, Spin, Table } from 'antd';
+import Button from 'antd/lib/button';
+import Spin from 'antd/lib/spin';
+import Table from 'antd/lib/table';
 import { ColumnGroupType, ColumnType } from 'antd/lib/table/interface';
-import { AppContext } from 'common/context/AppContext';
 import { navigateTo } from 'common/helpers';
 import { handleDateFormatter } from 'common/helpers/handleDateFormatter';
 import { DataType } from 'common/interfaces/data-type.interface';
 import AdminLayout from 'components/admin/adminLayout/layout';
 import { columns } from 'components/admin/categories/constants';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { Page } from 'routes/constants';
 
@@ -20,11 +21,14 @@ import Head from 'next/head';
 
 const CategoriesPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const { offset, setOffset } = useContext(AppContext);
+  const [pageSize, setPageSize]: [number, any] = useState(20);
 
   const dispatch = useAppDispatch();
   const categories = useAppSelector((state) => state.categories.categories);
   const isLoading = useAppSelector((state) => state.categories.loading);
+  const paginationLength = useAppSelector(
+    (state) => state.categories.paginationLength,
+  );
   const router = useRouter();
 
   const dataSource = categories?.map(
@@ -45,14 +49,13 @@ const CategoriesPage = () => {
   useEffect(() => {
     dispatch(
       fetchCategories({
-        offset: String(offset),
-        limit: '20',
+        offset: String(currentPage - 1),
+        limit: String(pageSize),
       }),
     );
 
     return () => {
       dispatch(clearCategories());
-      setOffset(0);
     };
   }, []);
 
@@ -76,12 +79,13 @@ const CategoriesPage = () => {
       ) : (
         <Table
           scroll={{
-            // x: 1366,
             y: 768,
           }}
           pagination={{
-            pageSize: 20,
+            pageSize: pageSize,
             current: currentPage,
+            total: paginationLength,
+            pageSizeOptions: [20, 30, 40, 50, 100],
             locale: { items_per_page: '/ странице' },
           }}
           columns={
@@ -89,14 +93,15 @@ const CategoriesPage = () => {
           }
           dataSource={dataSource}
           onChange={(event) => {
-            const newOffset = ((event.current as number) - 1) * 20;
-            setOffset(newOffset);
+            const newOffset = ((event.current as number) - 1) * pageSize;
+
             dispatch(
               fetchCategories({
                 offset: String(newOffset),
-                limit: '20',
+                limit: String(event.pageSize),
               }),
             );
+            setPageSize(event.pageSize);
             setCurrentPage(event.current as number);
           }}
         />

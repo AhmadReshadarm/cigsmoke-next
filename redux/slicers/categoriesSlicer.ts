@@ -110,6 +110,7 @@ const initialState: TCategoryState = {
   category: null,
   loading: false,
   saveLoading: false,
+  paginationLength: 0,
 };
 
 const categoriesSlicer = createSlice({
@@ -128,6 +129,7 @@ const categoriesSlicer = createSlice({
       //fetchCategories
       .addCase(fetchCategories.pending, handlePending)
       .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.paginationLength = action.payload.length;
         state.categories = handlePaginationDataFormatter(action);
         state.loading = false;
       })

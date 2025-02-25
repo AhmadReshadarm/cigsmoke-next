@@ -10,6 +10,7 @@ import {
   TagService,
   NewsService,
   NewsPosts,
+  ProductResponse,
 } from 'swagger/services';
 import {
   getErrorMassage,
@@ -17,6 +18,7 @@ import {
   handlePending,
   openErrorNotification,
 } from '../../../common/helpers';
+import { handlePaginationDataFormatter } from 'redux/helpers';
 
 export const fetchCategories = createAsyncThunk<
   CategoryInTree[],
@@ -57,6 +59,24 @@ export const fetchBestProducts = createAsyncThunk<
   { rejectValue: string }
 >(
   'catalog/fetchBestProducts',
+  async function (payload, { rejectWithValue }): Promise<any> {
+    try {
+      const response = (await ProductService.getProducts(
+        payload,
+      )) as unknown as { rows: Product[]; length: number };
+      return response.rows;
+    } catch (error: any) {
+      return rejectWithValue(getErrorMassage(error.response.status));
+    }
+  },
+);
+
+export const fetchHistoryProducts = createAsyncThunk<
+  Product[],
+  TFilters,
+  { rejectValue: string }
+>(
+  'catalog/fetchHistoryProducts',
   async function (payload, { rejectWithValue }): Promise<any> {
     try {
       const response = (await ProductService.getProducts(
@@ -146,6 +166,8 @@ const initialState: TGlobalState = {
   loadingCarosel: false,
   productsLoading: false,
   bestProductLoading: false,
+  historyProducts: [],
+  loadingHistory: false,
 };
 
 const globalSlicer = createSlice({
@@ -172,23 +194,42 @@ const globalSlicer = createSlice({
       })
       .addCase(fetchCategories.rejected, handleError)
       //fetchMainPageProducts
-      .addCase(fetchMainPageProducts.pending, (state, action) => {
+      .addCase(fetchMainPageProducts.pending, (state) => {
         state.loadingCarosel = true;
       })
       .addCase(fetchMainPageProducts.fulfilled, (state, action) => {
         state.caroselProducts = action.payload;
         state.loadingCarosel = false;
       })
-      .addCase(fetchMainPageProducts.rejected, handleError)
+      .addCase(fetchMainPageProducts.rejected, (state, action) => {
+        state.loadingCarosel = false;
+        openErrorNotification(action.payload!);
+      })
+      // fetchHistoryProducts
+      .addCase(fetchHistoryProducts.pending, (state) => {
+        state.loadingHistory = true;
+      })
+      .addCase(fetchHistoryProducts.fulfilled, (state, action) => {
+        // state.caroselProducts = handlePaginationDataFormatter(action); // action.payload;
+        state.historyProducts = action.payload;
+        state.loadingHistory = false;
+      })
+      .addCase(fetchHistoryProducts.rejected, (state, action) => {
+        state.loadingHistory = false;
+        openErrorNotification(action.payload!);
+      })
       //fetchBestProducts
-      .addCase(fetchBestProducts.pending, (state, action) => {
+      .addCase(fetchBestProducts.pending, (state) => {
         state.bestProductLoading = true;
       })
       .addCase(fetchBestProducts.fulfilled, (state, action) => {
         state.bestProduct = action.payload;
         state.bestProductLoading = false;
       })
-      .addCase(fetchBestProducts.rejected, handleError)
+      .addCase(fetchBestProducts.rejected, (state, action) => {
+        state.bestProductLoading = false;
+        openErrorNotification(action.payload!);
+      })
       //fetchTags
       .addCase(fetchTags.pending, handlePending)
       .addCase(fetchTags.fulfilled, (state, action) => {

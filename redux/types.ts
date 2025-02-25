@@ -39,6 +39,7 @@ type TCategoryState = {
   category: Category | null;
   loading: boolean;
   saveLoading: boolean;
+  paginationLength: number;
 };
 
 type TAuthState = {
@@ -64,6 +65,7 @@ type TColorState = {
   chosenColor: Color | null;
   loading: boolean;
   saveLoading: boolean;
+  paginationLength: number;
 };
 
 type TBrandState = {
@@ -116,6 +118,7 @@ interface TTagState {
   tag: Tag | null;
   loading: boolean;
   saveLoading: boolean;
+  paginationLength: number;
 }
 
 interface TSizeState {
@@ -186,6 +189,8 @@ type TGlobalState = {
   loadingCarosel: boolean;
   productsLoading: boolean;
   bestProductLoading: boolean;
+  historyProducts: Product[];
+  loadingHistory: boolean;
 };
 
 type TGlobalUIState = {
@@ -220,6 +225,7 @@ type TCartState = {
 
 type TFilters = {
   name?: string;
+  userHistory?: string[];
   minPrice?: number;
   maxPrice?: number;
   desc?: string;

@@ -1,5 +1,9 @@
-import { Button, Form, Input, Select, Spin } from 'antd';
-import { InsertRowLeftOutlined } from '@ant-design/icons';
+import Button from 'antd/lib/button';
+import Spin from 'antd/lib/spin';
+import Form from 'antd/lib/form';
+import Input from 'antd/lib/input';
+import Select from 'antd/lib/select';
+import InsertRowLeftOutlined from '@ant-design/icons/InsertRowLeftOutlined';
 import TextArea from 'antd/lib/input/TextArea';
 import { navigateTo } from 'common/helpers/navigateTo.helper';
 import { useRouter } from 'next/router';
@@ -144,8 +148,7 @@ const ManageCategoryForm = ({
             name={ManageCategoryFields.Parent}
             label="Выберите родительскую категорию"
           >
-            {/* disabled={editMode} */}
-            <Select defaultValue="Не выбрано">
+            <Select defaultValue="Не выбрано" disabled={editMode}>
               <Option value="">Не выбрано</Option>
               {categories?.map((category) => (
                 <Option

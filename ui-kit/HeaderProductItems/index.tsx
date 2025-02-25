@@ -39,8 +39,6 @@ const HeaderProductItmes: React.FC<Props> = ({
     return array.indexOf(value) === index;
   });
 
-  orderProduct?.productVariant?.color;
-
   return (
     <ProductItemWrapper>
       {dataType == 'cart' ? (
@@ -71,16 +69,6 @@ const HeaderProductItmes: React.FC<Props> = ({
                     : orderProduct!?.product!?.name}
                 </h1>
               </Link>
-              {/* <span>
-                {orderProduct!?.product?.desc?.includes('|')
-                  ? orderProduct!?.product?.desc?.split('|')[0]?.length! > 60
-                    ? orderProduct!?.product?.desc?.split('|')[0].slice(0, 60) +
-                      '...'
-                    : orderProduct!?.product?.desc?.split('|')[0]
-                  : orderProduct!?.product?.desc?.length! > 60
-                  ? orderProduct!?.product?.desc?.slice(0, 60) + '...'
-                  : orderProduct!?.product?.desc?.slice(0, 60) + '...'}
-              </span> */}
               {/* ------------ rating --------------- */}
               <div
                 title={`${
@@ -318,7 +306,7 @@ const HeaderProductItmes: React.FC<Props> = ({
   );
 };
 
-const ProductItemWrapper = styled.div`
+const ProductItemWrapper = styled.li`
   width: 100%;
   height: 200px;
   max-hight: 200px;
