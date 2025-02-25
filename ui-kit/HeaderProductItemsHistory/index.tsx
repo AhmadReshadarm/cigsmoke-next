@@ -9,6 +9,7 @@ import { AddToCart, AddToWishlist } from 'ui-kit/ProductActionBtns';
 import { findCartQTY } from 'ui-kit/HeaderProductItems/helpers';
 import styles from 'ui-kit/HeaderProductItems/headerProductItems.module.css';
 import { checkIfItemInCart } from 'ui-kit/ProductActionBtns/helpers';
+import { devices } from 'components/store/lib/Devices';
 
 type Props = {
   product: Product;
@@ -169,7 +170,6 @@ const ProductItemWrapper = styled.li`
   border: 1px solid #e5e2d9;
   border-radius: 30px;
   img {
-    min-width: 180px;
     width: 180px;
     height: 180px;
     object-fit: cover;
@@ -235,6 +235,81 @@ const ProductItemWrapper = styled.li`
     align-items: flex-end;
     padding: 0 10px 10px 0;
     gap: 20px;
+  }
+
+  @media ${devices.laptopS} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+    }
+  }
+  @media ${devices.tabletL} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+    }
+  }
+  @media ${devices.tabletS} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+  @media ${devices.mobileL} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+  @media ${devices.mobileM} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+  @media ${devices.mobileS} {
+    flex-direction: column;
+    height: unset;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    .action-buttons-wrapper {
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+    }
   }
 `;
 

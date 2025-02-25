@@ -5,6 +5,7 @@ import { OrderProduct, Product } from 'swagger/services';
 import { devices } from '../lib/Devices';
 import color from '../lib/ui.colors';
 import { AddToCart, AddToWishlist } from 'ui-kit/ProductActionBtns';
+import styles from './cartStyles.module.css';
 type Props = {
   orderProduct: OrderProduct;
   product?: Product;
@@ -32,19 +33,79 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
             <h1>{orderProduct!?.product!?.name}</h1>
           </Link>
 
-          <span
-            title={
-              orderProduct!?.product?.desc?.includes('|')
-                ? orderProduct!?.product?.desc?.split('|')[1]
-                : orderProduct!?.product?.desc?.slice(0, 60)
-            }
+          {/* ------------ rating --------------- */}
+          <div
+            title={`${
+              Math.floor(orderProduct!?.product!?.reviews?.length!) == 1
+                ? Math.floor(orderProduct!?.product!?.reviews?.length!) +
+                  ' Оценка'
+                : Math.floor(orderProduct!?.product!?.reviews?.length!) / 2 == 0
+                ? Math.floor(orderProduct!?.product!?.reviews?.length!) +
+                  ' Оценки'
+                : Math.floor(orderProduct!?.product!?.reviews?.length!) +
+                  ' Оценок'
+            } `}
+            className={styles.rating_wrapper}
+            style={{
+              display:
+                orderProduct!?.product!?.reviews?.length! == 0
+                  ? 'none'
+                  : 'flex',
+            }}
           >
-            {orderProduct!?.product?.desc?.includes('|')
-              ? orderProduct!?.product?.desc?.split('|')[1].slice(0, 200) +
-                '...'
-              : orderProduct!?.product?.desc?.slice(0, 60).slice(0, 200) +
-                '...'}
-          </span>
+            <span className={styles.review_star}>
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 11 11"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 9.64421L9.708 12L8.724 7.56L12 4.57263L7.686 4.18737L6 0L4.314 4.18737L0 4.57263L3.276 7.56L2.292 12L6 9.64421Z"
+                  fill="#FAAF00"
+                />
+              </svg>
+            </span>
+            <span className={styles.review_text}>
+              {Math.floor(orderProduct!?.product!?.reviews?.length!) == 1
+                ? Math.floor(orderProduct!?.product!?.reviews?.length!) +
+                  ' Оценка'
+                : Math.floor(orderProduct!?.product!?.reviews?.length!) / 2 == 0
+                ? Math.floor(orderProduct!?.product!?.reviews?.length!) +
+                  ' Оценки'
+                : Math.floor(orderProduct!?.product!?.reviews?.length!) +
+                  ' Оценок'}
+            </span>
+          </div>
+          {/* ------------- end of rating ---------------- */}
+          {/* ----------- color ------------------- */}
+          <div
+            style={{
+              alignItems: 'center',
+              display:
+                orderProduct?.productVariant?.color?.url == '-' ||
+                orderProduct?.productVariant?.color?.url == '_' ||
+                orderProduct?.productVariant?.color?.url == ''
+                  ? 'none'
+                  : 'flex',
+            }}
+            className={styles.artical_wrapper}
+          >
+            <span>Цвет : </span>
+            {
+              <span
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  backgroundColor: orderProduct?.productVariant?.color?.code,
+                  border: '1px solid rgb(129 129 129)',
+                }}
+              />
+            }
+          </div>
+          {/* ---------- end of color ----------- */}
         </div>
 
         <div className="price-sperator-wrapper">
@@ -81,10 +142,9 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
   );
 };
 
-const ProductItemWrapper = styled.div`
+const ProductItemWrapper = styled.li`
   width: 100%;
   height: 200px;
-  max-hight: 200px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -93,12 +153,13 @@ const ProductItemWrapper = styled.div`
   padding: 10px;
   background-color: ${color.backgroundPrimary};
   border: 1px solid #e5e2d9;
-
+  border-radius: 30px;
   img {
     min-width: 180px;
     width: 180px;
     height: 180px;
     object-fit: cover;
+    border-radius: 30px;
   }
 
   .product-details-wrapper {
@@ -137,32 +198,14 @@ const ProductItemWrapper = styled.div`
         justify-content: flex-start;
         align-items: center;
         gap: 10px;
-        // span {
-        //   color: ${color.textBase};
-        // }
+
         .old-price {
           text-decoration: line-through;
           font-size: 0.8rem;
           color: ${color.textBase};
         }
       }
-      // .old-new-price-wishlist-wrapper {
-      //   width: 100%;
-      //   display: flex;
-      //   flex-direction: row;
-      //   justify-content: flex-end;
-      //   align-items: center;
-      //   gap: 20px;
-      //   span {
-      //     color: ${color.textSecondary};
-      //     font-size: 1.5rem;
-      //   }
-      //   .old-price {
-      //     text-decoration: line-through;
-      //     font-size: 0.8rem;
-      //     color: ${color.textBase};
-      //   }
-      // }
+
       .total-price-wrapper {
         font-size: 1.5rem;
       }

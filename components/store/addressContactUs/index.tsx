@@ -5,6 +5,12 @@ import Link from 'next/link';
 import { useCopyToClipboard } from './helpers';
 import { useEffect } from 'react';
 import { openSuccessNotification } from 'common/helpers/openSuccessNotidication.helper';
+import {
+  LocationPointerSVG,
+  MailSVG,
+  PhoneSVG,
+  WatchSVG,
+} from '../storeLayout/utils/headerIcons/SVGIconsFooter';
 
 const MapContainer = () => {
   const [copiedText, setCopiedText, copy] = useCopyToClipboard();
@@ -24,12 +30,12 @@ const MapContainer = () => {
       <MapAndAddressWrapper>
         <div className="address-container">
           <ContactsHeaderWrapper>
-            <h2>NBHOZ - Опт Товаров для Дома и Бизнеса</h2>
+            <h2>WULUXE - Всё для дома</h2>
           </ContactsHeaderWrapper>
           <ContactContentWrapper>
             <div className="first-column">
               <div className="first-column-content-wrapper">
-                <img src="/icons/location.png" alt="location" />
+                <LocationPointerSVG />
                 <span
                   className="address-copied"
                   onClick={() => {
@@ -50,40 +56,27 @@ const MapContainer = () => {
                 </span>
               </div>
               <div className="first-column-content-wrapper">
-                <img src="/icons/available_time.png" alt="working hours" />
+                <WatchSVG />
                 <span>Пн-Все 10.00-21.00</span>
               </div>
               <div className="first-column-content-wrapper">
-                <img src="/icons/email.png" alt="mail to" />
+                <MailSVG />
                 <span>
                   <Link
                     target="_blank"
-                    href="mailto:info@nbhoz.ru"
-                    title="отправьте письмо по адресу info@nbhoz.ru"
+                    href="mailto:info@wuluxe.ru"
+                    title="отправьте письмо по адресу info@wuluxe.ru"
                   >
-                    info@nbhoz.ru
+                    info@wuluxe.ru
                   </Link>
                 </span>
               </div>
-            </div>
-            <div className="second-column">
-              <div className="second-column-content-wrapper">
-                <img src="/icons/phone_call.png" alt="call NBHOZ via phone" />
-
+              <div className="first-column-content-wrapper">
+                <PhoneSVG />
                 <div className="phone-number-wrapper">
-                  <Link href="tel:+79254865444">
-                    <span title="позвонить 8-925-486-54-44">
-                      8-925-486-54-44
-                    </span>
-                  </Link>
-                  <Link href="tel:89268999954">
-                    <span title="позвонить 8-926-899-99-54">
-                      8-926-899-99-54
-                    </span>
-                  </Link>
-                  <Link href="tel:89266999952">
-                    <span title="позвонить 8-926-699-99-52">
-                      8-926-699-99-52
+                  <Link href="tel:88007001741">
+                    <span title="позвонить 8-800-700-17-41">
+                      8-800-700-17-41
                     </span>
                   </Link>
                 </div>
@@ -103,7 +96,7 @@ const MapAndAddressWrapper = styled.div`
   align-items: flex-end;
   justify-content: flex-start;
   .address-container {
-    width: 80%;
+    width: 500px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -112,37 +105,42 @@ const MapAndAddressWrapper = styled.div`
     z-index: 99;
     background-color: ${color.textPrimary};
     box-shadow: 0px 5px 10px 0px ${color.boxShadowBtn};
-    border-radius: 15px;
+    border-radius: 40px;
     padding: 30px;
     margin-top: -60px;
   }
   @media ${devices.tabletL} {
     align-items: center;
     .address-container {
+      width: 100%;
       margin-top: 0;
     }
   }
   @media ${devices.tabletS} {
     align-items: center;
     .address-container {
+      width: 100%;
       margin-top: 0;
     }
   }
   @media ${devices.mobileL} {
     align-items: center;
     .address-container {
+      width: 100%;
       margin-top: 0;
     }
   }
   @media ${devices.mobileM} {
     align-items: center;
     .address-container {
+      width: 100%;
       margin-top: 0;
     }
   }
   @media ${devices.mobileS} {
     align-items: center;
     .address-container {
+      width: 100%;
       margin-top: 0;
     }
   }
@@ -156,7 +154,7 @@ const ContactsHeaderWrapper = styled.div`
   align-items: center;
   padding: 20px 0;
   h2 {
-    width: 55%;
+    width: 100%;
     line-height: 2rem;
   }
 
@@ -204,7 +202,6 @@ const ContactContentWrapper = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  padding: 0 0 0 20%;
   gap: 90px;
   .first-column {
     display: flex;
@@ -212,7 +209,7 @@ const ContactContentWrapper = styled.div`
     justify-content: center;
     align-items: flex-start;
     gap: 20px;
-    width: 50%;
+    width: 100%;
     .first-column-content-wrapper {
       display: flex;
       flex-direction: row;

@@ -25,7 +25,7 @@ const Help = () => {
   return (
     <>
       <Head>
-        <title>Помощь | NBHOZ</title>
+        <title>Помощь | WULUXE</title>
         <meta
           property="og:image"
           name="og:image"

@@ -41,7 +41,7 @@ const Orders = () => {
   return (
     <>
       <Head>
-        <title>Мои заказы | NBHOZ</title>
+        <title>Мои заказы | WULUXE</title>
         <meta
           property="og:image"
           name="og:image"

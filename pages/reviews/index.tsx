@@ -13,7 +13,7 @@ const Reviews = () => {
   return (
     <>
       <Head>
-        <title>Отзывов | NBHOZ</title>
+        <title>Отзывов | WULUXE</title>
       </Head>
       <Container
         variants={variants.fadInOut}

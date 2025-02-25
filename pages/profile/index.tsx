@@ -22,7 +22,7 @@ const Profile = () => {
   return (
     <>
       <Head>
-        <title>Личные кабинет | NBHOZ</title>
+        <title>Личные кабинет | WULUXE</title>
         <meta
           property="og:image"
           name="og:image"

@@ -73,19 +73,19 @@ const HeaderCart: React.FC<Props> = ({ cartButtonRef }) => {
     if (userHistoy) {
       dispatch(fetchHistoryProducts({ userHistory: JSON.parse(userHistoy) }));
     }
-  }, []);
+  }, [isBasketOpen]);
 
   useEffect(() => {
     setCartProductIds(
       new Set(cart?.orderProducts!.map((item) => item.product!.id)),
     );
-  }, [cart]);
+  }, [cart, isBasketOpen, historyProducts]);
 
   useEffect(() => {
     setHasAllProducts(
       historyProducts.every((product) => cartProductIds.has(product.id)),
     );
-  }, [cartProductIds]);
+  }, [cartProductIds, historyProducts]);
 
   // ---------------------- end of UI hooks ---------------------
   return (

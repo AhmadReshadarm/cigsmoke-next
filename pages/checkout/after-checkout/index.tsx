@@ -25,7 +25,7 @@ const AfterCheckout = () => {
   return (
     <>
       <Head>
-        <title>Заказ выполнен успешно | NBHOZ</title>
+        <title>Заказ выполнен успешно | WULUXE</title>
         <meta
           property="og:image"
           name="og:image"

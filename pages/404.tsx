@@ -7,7 +7,7 @@ const NotFound = (): JSX.Element => {
   return (
     <>
       <Head>
-        <title>Страница не найдена | NBHOZ 404</title>
+        <title>Страница не найдена | WULUXE 404</title>
         <meta
           property="og:image"
           name="og:image"

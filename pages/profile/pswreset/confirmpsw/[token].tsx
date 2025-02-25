@@ -22,7 +22,7 @@ const ConfirmPswReset = () => {
   return (
     <>
       <Head>
-        <title>Сброс пароля | NBHOZ</title>
+        <title>Сброс пароля | WULUXE</title>
         <meta
           property="og:image"
           name="og:image"

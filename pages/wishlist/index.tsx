@@ -14,7 +14,7 @@ const WishlistPage = () => {
   return (
     <>
       <Head>
-        <title>Избранное | NBHOZ</title>
+        <title>Избранное | WULUXE</title>
         <meta
           property="og:image"
           name="og:image"

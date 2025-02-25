@@ -18,12 +18,12 @@ const Copyrights = () => {
       <SEOstatic
         page={{
           realName:
-            'NBHOZ - интернет магазин хозтовары оптом. по выгодным ценам',
-          name: 'NBHOZ - интернет магазин хозтовары оптом. по выгодным ценам',
+            'WULUXE - интернет магазин хозтовары оптом. по выгодным ценам',
+          name: 'WULUXE - интернет магазин хозтовары оптом. по выгодным ценам',
           url: '/',
-          desc: `NBHOZ, Дешевые хозтовары оптом в интернет магазине nbhoz в Москве и все Россия`,
+          desc: `WULUXE, Дешевые хозтовары оптом в интернет магазине wuluxe в Москве и все Россия`,
           keywords:
-            'nbhoz, nbhoz.ru, Товары для сервировки стола,купить Кухонная утварь, Товары для ванной комнаты, Дешевые хозтовары',
+            'wuluxe, wuluxe.ru, Товары для сервировки стола,купить Кухонная утварь, Товары для ванной комнаты, Дешевые хозтовары',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         }}
@@ -51,8 +51,8 @@ const Copyrights = () => {
             <Headers>Правила использования контента сайта</Headers>
             <Contents>
               Содержимое сайта{' '}
-              <Link href="https://nbhoz.ru">
-                <Links>nbhoz.ru</Links>
+              <Link href="https://wuluxe.ru">
+                <Links>wuluxe.ru</Links>
               </Link>{' '}
               (далее — Сайт), в том числе любая текстовая информация и
               графические изображения (далее — Контент), являются собственностью
@@ -68,8 +68,8 @@ const Copyrights = () => {
             <Contents>
               Чтобы запросить разрешение у Интернет Решения необходимо направить
               электронное письмо на{' '}
-              <Link href="mailto:help@nbhoz.ru">
-                <Links>help@nbhoz.ru</Links>
+              <Link href="mailto:help@wuluxe.ru">
+                <Links>help@wuluxe.ru</Links>
               </Link>{' '}
               с обязательным указанием следующей информации:
             </Contents>
@@ -91,8 +91,8 @@ const Copyrights = () => {
               <li>
                 использование Контента должно сопровождаться указанием на
                 источник их публикации —{' '}
-                <Link href="https://nbhoz.ru">
-                  <Links>nbhoz.ru</Links>
+                <Link href="https://wuluxe.ru">
+                  <Links>wuluxe.ru</Links>
                 </Link>
                 , иных источников информации, упомянутых в Контенте (при
                 наличии);
@@ -129,8 +129,8 @@ const Copyrights = () => {
             <Contents>
               Если вы считаете, что размещённый на Сайте Контент нарушает ваши
               права, сообщите об этом, направив электронное письмо на адрес{' '}
-              <Link href="mailto:help@nbhoz.ru">
-                <Links>help@nbhoz.ru</Links>
+              <Link href="mailto:help@wuluxe.ru">
+                <Links>help@wuluxe.ru</Links>
               </Link>{' '}
               с обязательным указанием следующей информации:
             </Contents>

@@ -12,12 +12,12 @@ const UserAgreement = () => {
     <>
       <Headers>Уведомление о конфиденциальности</Headers>
       <Contents>
-        <b>Последнее обновление 18/10/2023</b>
+        <b>Последнее обновление 26/02/2025</b>
       </Contents>
       <Contents>
         Это уведомление о конфиденциальности для{' '}
-        <Link href="https://nbhoz.ru">
-          <Links>nbhoz.ru</Links>
+        <Link href="https://wuluxe.ru">
+          <Links>wuluxe.ru</Links>
         </Link>{' '}
         («Компания», «мы», «нас» или «наш») описывает, как и почему мы можем
         собирать, хранить, использовать и/или делиться («обрабатывать») вашу
@@ -28,8 +28,8 @@ const UserAgreement = () => {
         практикой, пожалуйста, не пользуйтесь нашими Услугами. Если у вас все
         еще есть какие-либо вопросы или проблемы, пожалуйста, свяжитесь с нами
         по адресу{' '}
-        <Link href="mailto:info@nbhoz.ru">
-          <Links>info@nbhoz.ru</Links>
+        <Link href="mailto:info@wuluxe.ru">
+          <Links>info@wuluxe.ru</Links>
         </Link>
         .
       </Contents>
@@ -51,8 +51,8 @@ const UserAgreement = () => {
         <b>Какую личную информацию мы обрабатываем?</b> Когда вы посещаете,
         используете или перемещаетесь по нашим Сервисам, мы можем обрабатывать
         личную информацию в зависимости от того, как вы взаимодействуете с{' '}
-        <Link href="https://nbhoz.ru">
-          <Links>nbhoz.ru</Links>
+        <Link href="https://wuluxe.ru">
+          <Links>wuluxe.ru</Links>
         </Link>{' '}
         и Сервисами, какой выбор вы делаете, а также какие продукты и функции
         используете. нажать{' '}
@@ -112,8 +112,8 @@ const UserAgreement = () => {
         данных, доступную здесь, или связаться с нами. Мы рассмотрим любой
         запрос и примем меры в соответствии с применимыми законами о защите
         данных. Хотите узнать больше о том, что{' '}
-        <Link href="https://nbhoz.ru">
-          <Links>nbhoz.ru</Links>
+        <Link href="https://wuluxe.ru">
+          <Links>wuluxe.ru</Links>
         </Link>{' '}
         делает с любой информацией, которую мы собираем? нажать{' '}
         <Link href="#toc">
@@ -396,8 +396,8 @@ const UserAgreement = () => {
         разумные меры для незамедлительного удаления таких данных из наших
         записей. Если вам станут известны какие-либо данные, которые мы могли
         получить от детей младше 18 лет, свяжитесь с нами по адресу{' '}
-        <Link href="mailto:info@nbhoz.ru">
-          <Links>info@nbhoz.ru</Links>
+        <Link href="mailto:info@wuluxe.ru">
+          <Links>info@wuluxe.ru</Links>
         </Link>
         .
       </Contents>
@@ -492,8 +492,8 @@ const UserAgreement = () => {
       <Contents>
         Если у вас есть вопросы или комментарии по этому уведомлению, вы можете
         написать нам по адресу:{' '}
-        <Link href="mailto:info@nbhoz.ru">
-          <Links>info@nbhoz.ru</Links>
+        <Link href="mailto:info@wuluxe.ru">
+          <Links>info@wuluxe.ru</Links>
         </Link>
       </Contents>
       <Headers id="request">
@@ -506,7 +506,7 @@ const UserAgreement = () => {
         вас, изменить эту информацию или удалить ее. Чтобы запросить просмотр,
         обновление или удаление вашей личной информации, отправьте форму
         запроса, нажав{' '}
-        <Link href="mailto:info@nbhoz.ru">
+        <Link href="mailto:info@wuluxe.ru">
           <Links>здесь</Links>
         </Link>
         .

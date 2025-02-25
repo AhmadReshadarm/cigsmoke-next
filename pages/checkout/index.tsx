@@ -57,7 +57,7 @@ const Checkout = () => {
         }}
       >
         <Head>
-          <title>Оформить заказ | Nbhoz</title>
+          <title>Оформить заказ | WULUXE</title>
           <meta
             property="og:image"
             name="og:image"

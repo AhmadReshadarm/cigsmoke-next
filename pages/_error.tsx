@@ -5,7 +5,7 @@ const Error = ({ statusCode }) => {
   return (
     <>
       <Head>
-        <title>Ошибка Сервиса | NBHOZ 500</title>
+        <title>Ошибка Сервиса | WULUXE 500</title>
       </Head>
       <div className={styles.Container}>
         <div className={styles.Wrapper}>
@@ -15,7 +15,7 @@ const Error = ({ statusCode }) => {
               <h2>Упс..Кажется, что-то сломалось или же это Ошибка Сервиса</h2>
               <h4>
                 Мы знаем о проблеме и уже работаем над ней. Попробуйте зайти
-                позже. Спасибо за Ваш выбор. С Уважением, Ваш NBHOZ
+                позже. Спасибо за Ваш выбор. С Уважением, Ваш WULUXE
               </h4>
             </div>
             <span>
