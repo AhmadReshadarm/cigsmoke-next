@@ -17,7 +17,7 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
   );
 
   return (
-    <ProductItemWrapper>
+    <li className={styles.ProductItemWrapper}>
       <a href={`/product/${orderProduct!.product?.url}`}>
         <img
           src={`/api/images/${images[0]}`}
@@ -25,10 +25,11 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
             currentTarget.onerror = null;
             currentTarget.src = '/img_not_found.png';
           }}
+          className={styles.product_img}
         />
       </a>
-      <div className="product-details-wrapper">
-        <div className="product-title-description-wrapper">
+      <div className={styles.product_details_wrapper}>
+        <div className={styles.product_title_description_wrapper}>
           <Link href={`/product/${orderProduct!.product?.url}`}>
             <h1>{orderProduct!?.product!?.name}</h1>
           </Link>
@@ -108,15 +109,15 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
           {/* ---------- end of color ----------- */}
         </div>
 
-        <div className="price-sperator-wrapper">
-          <div className="old-new-price-wrapper">
+        <div className={styles.price_sperator_wrapper}>
+          <div className={styles.old_new_price_wrapper}>
             <span
               style={{
                 display: !orderProduct!.productVariant?.oldPrice
                   ? 'none'
                   : 'flex',
               }}
-              className="old-price"
+              className={styles.old_price}
             >
               {orderProduct!?.productVariant?.oldPrice} ₽
             </span>
@@ -124,13 +125,13 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
               {orderProduct!?.qty!}шт x {orderProduct!?.productVariant?.price} ₽
             </span>
           </div>
-          <span className="total-price-wrapper">
+          <span className={styles.total_price_wrapper}>
             Итого:{orderProduct!?.qty! * orderProduct!?.productVariant?.price!}{' '}
             ₽
           </span>
         </div>
       </div>
-      <div className="action-buttons-wrapper">
+      <div className={styles.action_buttons_wrapper}>
         <AddToWishlist product={orderProduct!?.product!} />
         <AddToCart
           product={orderProduct!?.product!}
@@ -138,7 +139,7 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
           variant={product?.productVariants![0]}
         />
       </div>
-    </ProductItemWrapper>
+    </li>
   );
 };
 

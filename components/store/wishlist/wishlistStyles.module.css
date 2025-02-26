@@ -1,3 +1,80 @@
+.Container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.ItemsWrapper {
+  width: 100%;
+  max-width: 1500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+}
+
+.ItemWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-btn-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 20px;
+}
+
+.CartBody {
+  width: 100%;
+  height: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  gap: 20px;
+  padding: 20px;
+}
+
+.CartBody::-webkit-scrollbar {
+  width: 5px;
+}
+
+.NoCartItem {
+  width: 90%;
+  height: 70vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.NoCartItem > h2 {
+  font-size: 3rem;
+  text-align: center;
+  font-weight: 600;
+}
+
 .ProductItemWrapper {
   width: 100%;
   height: 200px;
@@ -138,6 +215,17 @@
     min-width: unset;
     min-height: unset;
   }
+
+  .ItemsWrapper {
+    padding: 0;
+    max-width: unset;
+    width: 95%;
+  }
+  .CartBody {
+    height: unset;
+    overflow: hidden;
+    padding: 0;
+  }
   .PopupBtnsDivider {
     padding: 0;
   }
@@ -147,6 +235,9 @@
 @media (min-width: 440px) and (max-width: 1024px) {
   .action_buttons_wrapper {
     justify-content: flex-start;
+  }
+  .NoCartItem > h2 {
+    font-size: 2rem;
   }
 }
 
@@ -164,5 +255,21 @@
     align-items: flex-start;
     gap: 10px;
     flex-direction: column;
+  }
+  .NoCartItem > h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* laptopL */
+@media (min-width: 1240px) and (max-width: 1550px) {
+  .ItemsWrapper {
+    max-width: 1230px;
+  }
+}
+/* laptopM */
+@media (min-width: 1024px) and (max-width: 1240px) {
+  .ItemsWrapper {
+    max-width: unset;
   }
 }

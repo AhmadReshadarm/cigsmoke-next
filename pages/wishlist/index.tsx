@@ -1,16 +1,21 @@
 import StoreLayout from 'components/store/storeLayout/layouts';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import variants from 'components/store/lib/variants';
 import Head from 'next/head';
 import { baseUrl } from 'common/constant';
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 import { LoaderMask } from 'ui-kit/generalLoaderMask';
-const Wishlist = dynamic(() => import('components/store/wishlist'), {
-  ssr: false,
-  loading: () => <LoaderMask />,
-});
+// const Wishlist = dynamic(() => import('components/store/wishlist'), {
+//   ssr: false,
+//   loading: () => <LoaderMask />,
+// });
+import Wishlist from 'components/store/wishlist';
+import styles from 'components/store/wishlist/wishlistStyles.module.css';
+import { useEffect, useState } from 'react';
 const WishlistPage = () => {
+  const [isClient, setClient] = useState(false);
+
+  useEffect(() => {
+    setClient(true);
+  }, []);
   return (
     <>
       <Head>
@@ -21,26 +26,12 @@ const WishlistPage = () => {
           content={`${baseUrl}/static/logo_800x800.png`}
         />
       </Head>
-      <Container
-        variants={variants.fadInOut}
-        key="container-home-banners"
-        initial="start"
-        animate="middle"
-        exit="end"
-      >
-        <Wishlist />
-      </Container>
+      <div className={styles.Container}>
+        {isClient ? <Wishlist /> : <LoaderMask />}
+      </div>
     </>
   );
 };
-
-const Container = styled(motion.div)`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 
 WishlistPage.PageLayout = StoreLayout;
 export default WishlistPage;

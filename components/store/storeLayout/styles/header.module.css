@@ -112,12 +112,6 @@
   user-select: none;
 }
 
-@media (min-width: 200px) and (max-width: 640px) {
-}
-
-@media (min-width: 200px) and (max-width: 560px) {
-}
-
 /* laptopL */
 @media (min-width: 1240px) and (max-width: 1550px) {
   .Wrapper {
@@ -129,24 +123,6 @@
   .Wrapper {
     max-width: unset;
   }
-}
-/* laptopS */
-@media (min-width: 768px) and (max-width: 1024px) {
-}
-/* tabletL */
-@media (min-width: 440px) and (max-width: 768px) {
-}
-/* tabletS */
-@media (min-width: 350px) and (max-width: 440px) {
-}
-/* mobileL */
-@media (min-width: 285px) and (max-width: 350px) {
-}
-/* mobileM */
-@media (min-width: 200px) and (max-width: 285px) {
-}
-/* mobileS */
-@media (min-width: 100px) and (max-width: 200px) {
 }
 
 /* Global */

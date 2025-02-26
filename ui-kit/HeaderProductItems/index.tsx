@@ -1,9 +1,7 @@
 import { getProductVariantsImages } from 'common/helpers/getProductVariantsImages.helper';
-import color from 'components/store/lib/ui.colors';
 import Link from 'next/link';
 import { useAppSelector } from 'redux/hooks';
 import { TCartState } from 'redux/types';
-import styled from 'styled-components';
 import { OrderProduct, Product } from 'swagger/services';
 import { AddToCart, AddToWishlist } from 'ui-kit/ProductActionBtns';
 import { findCartQTY } from './helpers';
@@ -40,7 +38,7 @@ const HeaderProductItmes: React.FC<Props> = ({
   });
 
   return (
-    <ProductItemWrapper>
+    <li className={styles.ProductItemWrapper}>
       {dataType == 'cart' ? (
         <>
           <Link
@@ -54,10 +52,11 @@ const HeaderProductItmes: React.FC<Props> = ({
                 currentTarget.onerror = null;
                 currentTarget.src = '/img_not_found.png';
               }}
+              className={styles.product_img}
             />
           </Link>
-          <div className="product-details-wrapper">
-            <div className="product-title-description-wrapper">
+          <div className={styles.product_details_wrapper}>
+            <div className={styles.product_title_description_wrapper}>
               <Link
                 onClick={() => handleMenuState()}
                 href={`/product/${orderProduct!.product?.url}`}
@@ -149,15 +148,15 @@ const HeaderProductItmes: React.FC<Props> = ({
               {/* ---------- end of color ----------- */}
             </div>
 
-            <div className="price-sperator-wrapper">
-              <div className="old-new-price-wrapper">
+            <div className={styles.price_sperator_wrapper}>
+              <div className={styles.old_new_price_wrapper}>
                 <span
                   style={{
                     display: !orderProduct!.productVariant?.oldPrice
                       ? 'none'
                       : 'flex',
                   }}
-                  className="old-price"
+                  className={styles.old_price}
                 >
                   {orderProduct!?.productVariant?.oldPrice} ₽
                 </span>
@@ -166,13 +165,13 @@ const HeaderProductItmes: React.FC<Props> = ({
                   {orderProduct!?.productVariant?.price} ₽
                 </span>
               </div>
-              <span className="total-price-wrapper">
+              <span className={styles.total_price_wrapper}>
                 Итого:
                 {orderProduct!?.qty! * orderProduct!?.productVariant?.price!} ₽
               </span>
             </div>
           </div>
-          <div className="action-buttons-wrapper">
+          <div className={styles.action_buttons_wrapper}>
             <AddToWishlist product={orderProduct!?.product!} />
             <AddToCart
               product={orderProduct!?.product!}
@@ -194,10 +193,11 @@ const HeaderProductItmes: React.FC<Props> = ({
                 currentTarget.onerror = null;
                 currentTarget.src = '/img_not_found.png';
               }}
+              className={styles.product_img}
             />
           </Link>
-          <div className="product-details-wrapper">
-            <div className="product-title-description-wrapper">
+          <div className={styles.product_details_wrapper}>
+            <div className={styles.product_title_description_wrapper}>
               <Link
                 onClick={() => handleMenuState()}
                 href={`/product/${product?.url}`}
@@ -209,13 +209,7 @@ const HeaderProductItmes: React.FC<Props> = ({
                     : product!?.name}
                 </h1>
               </Link>
-              {/* <span>
-                {`${
-                  product?.shortDesc?.length! > 80
-                    ? product?.shortDesc?.slice(0, 80) + ' ...'
-                    : product?.shortDesc
-                }`}
-              </span> */}
+
               {/* ------------ rating --------------- */}
               <div
                 title={`${
@@ -279,10 +273,10 @@ const HeaderProductItmes: React.FC<Props> = ({
               </div>
               {/* ---------- end of color ----------- */}
             </div>
-            <div className="price-sperator-wrapper">
-              <div className="old-new-price-wishlist-wrapper">
+            <div className={styles.price_sperator_wrapper}>
+              <div className={styles.old_new_price_wrapper}>
                 {product?.productVariants![0]?.oldPrice ? (
-                  <span className="old-price">
+                  <span className={styles.old_price}>
                     {product?.productVariants![0]?.oldPrice} ₽
                   </span>
                 ) : (
@@ -292,7 +286,7 @@ const HeaderProductItmes: React.FC<Props> = ({
               </div>
             </div>
           </div>
-          <div className="action-buttons-wrapper">
+          <div className={styles.action_buttons_wrapper}>
             <AddToWishlist product={product!} />
             <AddToCart
               product={product!}
@@ -302,91 +296,8 @@ const HeaderProductItmes: React.FC<Props> = ({
           </div>
         </>
       )}
-    </ProductItemWrapper>
+    </li>
   );
 };
-
-const ProductItemWrapper = styled.li`
-  width: 100%;
-  height: 200px;
-  max-hight: 200px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 20px;
-  padding: 10px;
-  background-color: ${color.backgroundPrimary};
-  border: 1px solid #e5e2d9;
-  border-radius: 30px;
-  img {
-    min-width: 180px;
-    width: 180px;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 30px;
-  }
-  .product-details-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 10px 0;
-    .product-title-description-wrapper {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: flex-start;
-      gap: 15px;
-
-      a {
-        padding: 0;
-        h1 {
-          font-size: 1.4rem;
-          font-weight: 600;
-        }
-      }
-    }
-
-    .price-sperator-wrapper {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 40px;
-      .old-new-price-wrapper {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 10px;
-
-        .old-price {
-          text-decoration: line-through;
-          font-size: 0.8rem;
-          color: ${color.textBase};
-        }
-      }
-
-      .total-price-wrapper {
-        font-size: 1.5rem;
-      }
-    }
-  }
-
-  .action-buttons-wrapper {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: flex-end;
-    padding: 0 10px 10px 0;
-    gap: 20px;
-  }
-`;
 
 export default HeaderProductItmes;

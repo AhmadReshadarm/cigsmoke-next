@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { TopFilter, TopFilterBody, TopFilterTitle } from '../common';
 import { pushQueryParams } from 'common/helpers/manageQueryParams.helper';
+import { openErrorNotification } from 'common/helpers';
 type Props = {
   title: string;
   searchTerm: string;
@@ -23,6 +24,12 @@ const NameFilter: React.FC<Props> = ({
           <SearchInput
             value={searchTerm}
             onChange={(evt) => {
+              if (evt.target.value.length > 50) {
+                openErrorNotification(
+                  'Вы достигли максимального количества ключевых слов',
+                );
+                return;
+              }
               setSearchTerm(evt.target.value);
               setSliderChanged(false);
             }}

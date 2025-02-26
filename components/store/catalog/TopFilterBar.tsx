@@ -431,7 +431,7 @@ const TopFilterBar: React.FC<Props> = ({
         {/* ----------------------------------------- seleceted Filters start ------------------------------------------- */}
         {searchTerm !== '' ? (
           <SelectedFiltersButtons className="selected-filter-child">
-            <span>{searchTerm}</span>
+            <span>Наименование товара: {searchTerm}</span>
             <span
               onClick={() => {
                 setClearSearchTerm(true);
@@ -472,7 +472,8 @@ const TopFilterBar: React.FC<Props> = ({
         ) : (
           ''
         )}
-        {localFilters.map((selectedFilter, indexSelectedFilter) => {
+        {/* ------------------------------ SELECTED FILTERS ------------------------------- */}
+        {localFilters.map((selectedFilter) => {
           switch (selectedFilter.title) {
             case 'Выберите цвет':
               return (
@@ -486,13 +487,14 @@ const TopFilterBar: React.FC<Props> = ({
                             className="selected-filter-child"
                           >
                             <div className="selected-color-warpper">
-                              <span>Цвет</span>
+                              <span>Цвет:</span>
                               <div
                                 style={{
                                   backgroundColor: `${selectedColor.color}`,
                                 }}
                                 className="selected-color-indecator"
-                              ></div>
+                                title={`Цвет: ${selectedColor.name}`}
+                              />
                             </div>
 
                             <span
@@ -564,7 +566,7 @@ const TopFilterBar: React.FC<Props> = ({
                             key={`${selectedType.id}-${index}`}
                             className="selected-filter-child"
                           >
-                            <span>{selectedType.name}</span>
+                            <span>Тип: {selectedType.name}</span>
                             <span
                               onClick={() => {
                                 window.scrollTo({
@@ -634,7 +636,7 @@ const TopFilterBar: React.FC<Props> = ({
                             key={`${selectedCategory.id}-${index}`}
                             className="selected-filter-child"
                           >
-                            <span>{selectedCategory.name}</span>
+                            <span>Категории: {selectedCategory.name}</span>
                             <span
                               onClick={() => {
                                 window.scrollTo({
@@ -704,7 +706,9 @@ const TopFilterBar: React.FC<Props> = ({
                             key={`${selectedSubCategory.id}-${index}`}
                             className="selected-filter-child"
                           >
-                            <span>{selectedSubCategory.name}</span>
+                            <span>
+                              Подкатегория: {selectedSubCategory.name}
+                            </span>
                             <span
                               onClick={() => {
                                 window.scrollTo({
@@ -781,8 +785,7 @@ const TopFilterBar: React.FC<Props> = ({
                       className="selected-filter-child"
                     >
                       <span>
-                        От ${uiPriceRang.minPrice} ₽ до ${uiPriceRang.maxPrice}{' '}
-                        ₽
+                        {`От: ${uiPriceRang.minPrice}₽ | до: ${uiPriceRang.maxPrice}₽`}
                       </span>
                       <span
                         onClick={() => {

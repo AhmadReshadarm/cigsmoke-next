@@ -1,14 +1,21 @@
-import CartItem from './cartItem';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { TCartState, TGlobalState } from 'redux/types';
 import { handleRemoveClick } from './helpers';
 import { useEffect, useState } from 'react';
 import { fetchHistoryProducts } from 'redux/slicers/store/globalSlicer';
 import styles from './cartStyles.module.css';
-import HeaderProductItmesHistory from 'ui-kit/HeaderProductItemsHistory';
 import CartItemLoader from './cartItemLoaders';
 import { emptyLoading } from 'common/constants';
-
+import dynamic from 'next/dynamic';
+const CartItem = dynamic(() => import('./cartItem'), {
+  ssr: false,
+});
+const HeaderProductItmesHistory = dynamic(
+  () => import('ui-kit/HeaderProductItemsHistory'),
+  {
+    ssr: false,
+  },
+);
 type Props = {};
 const BasketItems: React.FC<Props> = ({}) => {
   const { cart, loading } = useAppSelector<TCartState>((state) => state.cart);
@@ -42,13 +49,32 @@ const BasketItems: React.FC<Props> = ({}) => {
       historyProducts.every((product) => cartProductIds.has(product.id)),
     );
   }, [cartProductIds, historyProducts]);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    const handleWindowResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleWindowResize);
+
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  });
 
   return (
     <div className={styles.ItemsWrapper}>
       {cart?.orderProducts?.length && !loading ? (
-        <div className={styles.action_btn_wrapper}>
-          <button onClick={() => handleRemoveClick(dispatch)}>
-            <span>ОЧИСТИТЬ КОРЗИНУ</span>
+        <div className={styles.action_buttons_wrapper}>
+          <button
+            className={styles.action_btn_clear}
+            onClick={() => handleRemoveClick(dispatch)}
+          >
+            <span className={styles.action_btn_clear_text}>
+              ОЧИСТИТЬ КОРЗИНУ
+            </span>
           </button>
         </div>
       ) : loading ? (
@@ -73,7 +99,7 @@ const BasketItems: React.FC<Props> = ({}) => {
         ) : loading ? (
           <>
             {emptyLoading.map((item, index) => {
-              return <CartItemLoader key={index} />;
+              return <CartItemLoader key={index} windowWidth={windowWidth} />;
             })}
           </>
         ) : (
@@ -81,13 +107,15 @@ const BasketItems: React.FC<Props> = ({}) => {
             style={{ justifyContent: 'center' }}
             className={styles.PopupBtnsDivider}
           >
-            <h1 style={{ fontWeight: '600' }}>Ваша корзина пуста</h1>
+            <h1 style={{ fontWeight: '600', textAlign: 'center' }}>
+              Ваша корзина пуста
+            </h1>
           </div>
         )}
         {!historyProducts.length && loadingHistory ? (
           <>
             {emptyLoading.map((item, index) => {
-              return <CartItemLoader key={index} />;
+              return <CartItemLoader key={index} windowWidth={windowWidth} />;
             })}
           </>
         ) : (
@@ -99,7 +127,9 @@ const BasketItems: React.FC<Props> = ({}) => {
                     style={{ justifyContent: 'center' }}
                     className={styles.PopupBtnsDivider}
                   >
-                    <h1 style={{ fontWeight: '600' }}>Вы смотрели</h1>
+                    <h1 style={{ fontWeight: '600', textAlign: 'center' }}>
+                      Вы смотрели
+                    </h1>
                   </div>
                 </li>
                 {historyProducts.map((historyProduct, index) => {

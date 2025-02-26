@@ -3,13 +3,19 @@ import { devices } from '../lib/Devices';
 import color from '../lib/ui.colors';
 import styles from './cartStyles.module.css';
 
-const CartItemLoader = () => {
+const CartItemLoader = ({ windowWidth }) => {
   return (
-    <ProductItemWrapper>
-      <span className={`${styles.LoaderMask} loader`} />
+    <li className={styles.ProductItemWrapper}>
+      <span
+        style={{
+          width: windowWidth <= 1024 ? `${windowWidth - 60}px` : '180px',
+          height: windowWidth <= 1024 ? `${windowWidth - 60}px` : '180px',
+        }}
+        className={`${styles.loader_img} ${styles.LoaderMask}`}
+      />
 
-      <div className="product-details-wrapper">
-        <div className="product-title-description-wrapper">
+      <div className={styles.product_details_wrapper}>
+        <div className={styles.product_title_description_wrapper}>
           <span
             style={{ width: '200px', height: '25px' }}
             className={styles.LoaderMask}
@@ -51,8 +57,8 @@ const CartItemLoader = () => {
           {/* ---------- end of color ----------- */}
         </div>
 
-        <div className="price-sperator-wrapper">
-          <div className="old-new-price-wrapper">
+        <div className={styles.price_sperator_wrapper}>
+          <div className={styles.old_new_price_wrapper}>
             <span
               style={{ width: '50px', height: '15px' }}
               className={styles.LoaderMask}
@@ -69,7 +75,7 @@ const CartItemLoader = () => {
           />
         </div>
       </div>
-      <div className="action-buttons-wrapper">
+      <div className={styles.action_buttons_wrapper}>
         <div
           className={styles.LoaderMask}
           style={{
@@ -87,7 +93,7 @@ const CartItemLoader = () => {
           }}
         />
       </div>
-    </ProductItemWrapper>
+    </li>
   );
 };
 

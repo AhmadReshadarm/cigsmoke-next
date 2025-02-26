@@ -56,9 +56,7 @@ const DropDowns: React.FC<Props> = ({ parameterProducts, specsRef }) => {
                   className={styles.wrapper_key_vlaue}
                   key={`parameter-product-label-${param.id}`}
                 >
-                  <span title={param.key} className={styles.key_wrapper}>
-                    {param.key}:{' '}
-                  </span>
+                  <span className={styles.key_wrapper}>{param.key}: </span>
                   <Link
                     href={`/catalog?categories=${
                       product?.category?.parent!.url
@@ -67,7 +65,9 @@ const DropDowns: React.FC<Props> = ({ parameterProducts, specsRef }) => {
                     }&parameters_${suffix}=${param.value}`}
                     prefetch={false}
                   >
-                    <span title={param.value}>{param.value}</span>
+                    <span title={`Смотреть все с ${param.key}: ${param.value}`}>
+                      {param.value}
+                    </span>
                   </Link>
                 </li>
               );

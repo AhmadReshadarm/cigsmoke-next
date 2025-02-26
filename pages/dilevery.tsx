@@ -72,8 +72,8 @@ const ReturnPolicy = () => {
             </Contents>
             <Contents>
               По дополнительным вопросам обращаться по номеру телефона:{' '}
-              <Link style={{ color: color.ok }} href="tel:89254865444">
-                <span>8-925-486-54-44</span>
+              <Link style={{ color: color.ok }} href="tel:88007001741">
+                <span>8-800-700-17-41</span>
               </Link>
               .
             </Contents>
