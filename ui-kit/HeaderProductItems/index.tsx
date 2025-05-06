@@ -37,6 +37,15 @@ const HeaderProductItmes: React.FC<Props> = ({
     return array.indexOf(value) === index;
   });
 
+  const articals =
+    dataType !== 'cart'
+      ? product!.productVariants?.map((variant) => variant.artical)
+      : [];
+  // remove the repated product artical from array to only show in UI once
+  const filteredArticals = articals!.filter(function (value, index, array) {
+    return array.indexOf(value) === index;
+  });
+
   return (
     <li className={styles.ProductItemWrapper}>
       {dataType == 'cart' ? (
@@ -62,7 +71,7 @@ const HeaderProductItmes: React.FC<Props> = ({
                 href={`/product/${orderProduct!.product?.url}`}
                 prefetch={false}
               >
-                <h1>
+                <h1 title={orderProduct!?.product!?.name}>
                   {orderProduct!?.product!?.name?.length! > 18
                     ? orderProduct!?.product!?.name?.slice(0, 18) + ' ...'
                     : orderProduct!?.product!?.name}
@@ -146,6 +155,19 @@ const HeaderProductItmes: React.FC<Props> = ({
                 }
               </div>
               {/* ---------- end of color ----------- */}
+              {/* ----------- artical ------------------- */}
+              <div className={styles.artical_wrapper}>
+                <span>Артикул: </span>
+
+                <span>
+                  {orderProduct?.productVariant?.artical!.includes('|')
+                    ? orderProduct?.productVariant
+                        ?.artical!.split('|')[0]
+                        .toUpperCase()
+                    : orderProduct?.productVariant?.artical!.toUpperCase()}
+                </span>
+              </div>
+              {/* ---------- end of artical ----------- */}
             </div>
 
             <div className={styles.price_sperator_wrapper}>
@@ -203,7 +225,7 @@ const HeaderProductItmes: React.FC<Props> = ({
                 href={`/product/${product?.url}`}
                 prefetch={false}
               >
-                <h1>
+                <h1 title={product?.name}>
                   {product!?.name?.length! > 18
                     ? product!?.name?.slice(0, 18) + ' ...'
                     : product!?.name}
@@ -272,6 +294,19 @@ const HeaderProductItmes: React.FC<Props> = ({
                 })}
               </div>
               {/* ---------- end of color ----------- */}
+              <div className={styles.artical_wrapper}>
+                <span>Артикул(ы):</span>
+                {filteredArticals.map((artical, index) => {
+                  return (
+                    <span key={index}>
+                      {artical!.includes('|')
+                        ? artical!.split('|')[0].toUpperCase()
+                        : artical!.toUpperCase()}
+                      {filteredArticals.length - 1 !== index ? ', ' : ''}
+                    </span>
+                  );
+                })}
+              </div>
             </div>
             <div className={styles.price_sperator_wrapper}>
               <div className={styles.old_new_price_wrapper}>

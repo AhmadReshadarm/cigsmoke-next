@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import color from 'components/store/lib/ui.colors';
 import { motion } from 'framer-motion';
 import { Product } from 'swagger/services';
@@ -6,7 +6,11 @@ import { useAppSelector } from 'redux/hooks';
 import { handleItemCountChange } from 'common/helpers/cart.helper';
 import { useAppDispatch } from 'redux/hooks';
 import { TCartState } from 'redux/types';
-import { handleCartBtnClick } from 'ui-kit/products/helpers';
+import {
+  handleCartBtnClick,
+  handleProductCartQty,
+  handleRemoveFromCartBtnClick,
+} from 'ui-kit/products/helpers';
 import { openErrorNotification } from 'common/helpers';
 import styles from './ItemCounter.module.css';
 type Props = {
@@ -17,12 +21,43 @@ type Props = {
 const ItemCounter: React.FC<Props> = ({ qty, product }) => {
   const dispatch = useAppDispatch();
   const { cart, loading } = useAppSelector<TCartState>((state) => state.cart);
-
+  const timeoutId = useRef<NodeJS.Timeout | null>(null);
   // ------------------ UI hooks -------------------
   const [decrementPressed, setDecrementPressed] = useState(false);
   const [incrementPressed, setIncrementPressed] = useState(false);
-  const [inputValue, setInputValue] = useState(qty);
+  const [inputValue, setInputValue] = useState(String(qty));
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentVariant, setCurrentVariant]: [any, any] = useState(
+    cart?.orderProducts?.find((productInBasket) =>
+      product.productVariants?.find(
+        (variant) => variant.id === productInBasket.productVariant?.id,
+      ),
+    )?.productVariant,
+  );
 
+  useEffect(() => {
+    setCurrentVariant(
+      cart?.orderProducts?.find((productInBasket) =>
+        product.productVariants?.find(
+          (variant) => variant.id === productInBasket.productVariant?.id,
+        ),
+      )?.productVariant,
+    );
+  }, []);
+
+  // Sync local state with prop when not editing
+  useEffect(() => {
+    if (!isEditing) {
+      setInputValue(String(qty));
+    }
+  }, [qty, isEditing]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutId.current) clearTimeout(timeoutId.current);
+    };
+  }, []);
   // -----------------------------------------------
   return (
     <motion.div
@@ -39,17 +74,13 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
           onMouseDown={() => setDecrementPressed(true)}
           onMouseUp={() => setDecrementPressed(false)}
           onClick={() => {
-            if (inputValue <= 0 || String(inputValue) == '') {
+            const newQty = qty - 1;
+            if (newQty < 1) {
               openErrorNotification('Должно быть число от 1 до 10000');
               return;
             }
-            setInputValue(inputValue > 1 ? inputValue - 1 : inputValue);
-            handleItemCountChange(
-              inputValue > 1 ? inputValue - 1 : inputValue,
-              product,
-              dispatch,
-              cart!,
-            );
+            setInputValue(String(newQty)); // Optimistic update
+            handleProductCartQty(newQty, product, dispatch, cart!);
           }}
           disabled={loading ? true : false}
           initial={{ opacity: 0, x: 45 }}
@@ -104,20 +135,35 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
         </motion.button>
         <motion.input
           type="number"
-          value={String(inputValue).replace(/^0+/, '')}
+          value={inputValue}
           onChange={(evt) => {
             const newValue = evt.target.value.replace(/^0+/, '');
-            if (Number(newValue) < 0 || Number(newValue) > 10000) {
+            setInputValue(newValue);
+
+            if (timeoutId.current) clearTimeout(timeoutId.current);
+
+            if (newValue === '') return;
+
+            const numValue = Number(newValue);
+            if (numValue < 1 || numValue > 10000) {
               openErrorNotification('Должно быть число от 1 до 10000');
               return;
             }
-            setInputValue(Number(newValue));
-            handleItemCountChange(
-              Number(newValue == '' ? 1 : newValue),
-              product,
-              dispatch,
-              cart!,
-            );
+
+            timeoutId.current = setTimeout(() => {
+              handleProductCartQty(numValue, product, dispatch, cart!);
+            }, 500);
+          }}
+          onFocus={() => setIsEditing(true)}
+          onBlur={() => {
+            setIsEditing(false);
+            const numValue = inputValue === '' ? 1 : Number(inputValue);
+            if (numValue < 1 || numValue > 10000) {
+              openErrorNotification('Должно быть число от 1 до 10000');
+              setInputValue(String(qty));
+              return;
+            }
+            handleProductCartQty(numValue, product, dispatch, cart!);
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -128,17 +174,13 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
           onMouseDown={() => setIncrementPressed(true)}
           onMouseUp={() => setIncrementPressed(false)}
           onClick={() => {
-            if (inputValue >= 10000 || String(inputValue) == '') {
+            const newQty = qty + 1;
+            if (newQty > 10000) {
               openErrorNotification('Должно быть число от 1 до 10000');
               return;
             }
-            setInputValue(inputValue >= 10000 ? 10000 : inputValue + 1);
-            handleItemCountChange(
-              inputValue >= 10000 ? 10000 : inputValue + 1,
-              product,
-              dispatch,
-              cart!,
-            );
+            setInputValue(String(newQty)); // Optimistic update
+            handleProductCartQty(newQty, product, dispatch, cart!);
           }}
           disabled={loading ? true : false}
           initial={{ opacity: 0, x: -45 }}
@@ -197,10 +239,10 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
       </motion.div>
       <motion.button
         className={styles.remove_from_cart_action_button}
-        onClick={handleCartBtnClick(
+        onClick={handleRemoveFromCartBtnClick(
           product,
           dispatch,
-          product?.productVariants![0],
+          currentVariant,
           cart!,
         )}
         initial={{ opacity: 0 }}

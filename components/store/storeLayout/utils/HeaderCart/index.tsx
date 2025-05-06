@@ -46,7 +46,8 @@ const HeaderCart: React.FC<Props> = ({ cartButtonRef }) => {
   const [cartWrapperRef, setCartWrapperRef] = useState(null);
   const [listening, setListening] = useState(false);
   const [cartProductIds, setCartProductIds] = useState(
-    new Set(cart?.orderProducts!.map((item) => item.product!.id)),
+    new Set(),
+    // new Set(cart?.orderProducts!.map((item) => item.product!.id)),
   );
   const [hasAllProducts, setHasAllProducts] = useState(
     historyProducts.every((product) => cartProductIds.has(product.id)),

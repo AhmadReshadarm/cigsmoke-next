@@ -1,9 +1,6 @@
 import { getProductVariantsImages } from 'common/helpers/getProductVariantsImages.helper';
 import Link from 'next/link';
-import styled from 'styled-components';
 import { OrderProduct, Product } from 'swagger/services';
-import { devices } from '../lib/Devices';
-import color from '../lib/ui.colors';
 import { AddToCart, AddToWishlist } from 'ui-kit/ProductActionBtns';
 import styles from './cartStyles.module.css';
 type Props = {
@@ -31,7 +28,11 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
       <div className={styles.product_details_wrapper}>
         <div className={styles.product_title_description_wrapper}>
           <Link href={`/product/${orderProduct!.product?.url}`}>
-            <h1>{orderProduct!?.product!?.name}</h1>
+            <h1 title={orderProduct!?.product!?.name}>
+              {orderProduct!?.product!?.name?.length! > 18
+                ? orderProduct!?.product!?.name?.slice(0, 18) + ' ...'
+                : orderProduct!?.product!?.name}
+            </h1>
           </Link>
 
           {/* ------------ rating --------------- */}
@@ -107,6 +108,19 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
             }
           </div>
           {/* ---------- end of color ----------- */}
+          {/* ----------- artical ------------------- */}
+          <div className={styles.artical_wrapper}>
+            <span>Артикул: </span>
+
+            <span>
+              {orderProduct?.productVariant?.artical!.includes('|')
+                ? orderProduct?.productVariant
+                    ?.artical!.split('|')[0]
+                    .toUpperCase()
+                : orderProduct?.productVariant?.artical!.toUpperCase()}
+            </span>
+          </div>
+          {/* ---------- end of artical ----------- */}
         </div>
 
         <div className={styles.price_sperator_wrapper}>
@@ -142,174 +156,5 @@ const CartItem: React.FC<Props> = ({ orderProduct, product }) => {
     </li>
   );
 };
-
-const ProductItemWrapper = styled.li`
-  width: 100%;
-  height: 200px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 20px;
-  padding: 10px;
-  background-color: ${color.backgroundPrimary};
-  border: 1px solid #e5e2d9;
-  border-radius: 30px;
-  img {
-    min-width: 180px;
-    width: 180px;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 30px;
-  }
-
-  .product-details-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 10px 0;
-    .product-title-description-wrapper {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: flex-start;
-      gap: 15px;
-
-      a {
-        padding: 0;
-        h1 {
-          font-size: 1.1rem;
-        }
-      }
-    }
-
-    .price-sperator-wrapper {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 40px;
-      .old-new-price-wrapper {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 10px;
-
-        .old-price {
-          text-decoration: line-through;
-          font-size: 0.8rem;
-          color: ${color.textBase};
-        }
-      }
-
-      .total-price-wrapper {
-        font-size: 1.5rem;
-      }
-    }
-  }
-
-  .action-buttons-wrapper {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: flex-end;
-    padding: 0 10px 10px 0;
-    gap: 20px;
-  }
-
-  @media ${devices.laptopS} {
-    flex-direction: column;
-    height: unset;
-    img {
-      width: 100%;
-      height: 100%;
-      min-width: unset;
-      min-height: unset;
-    }
-    .action-buttons-wrapper {
-      justify-content: flex-start;
-    }
-  }
-  @media ${devices.tabletL} {
-    flex-direction: column;
-    height: unset;
-    img {
-      width: 100%;
-      height: 100%;
-      min-width: unset;
-      min-height: unset;
-    }
-    .action-buttons-wrapper {
-      justify-content: flex-start;
-    }
-  }
-  @media ${devices.tabletS} {
-    flex-direction: column;
-    height: unset;
-    img {
-      width: 100%;
-      height: 100%;
-      min-width: unset;
-      min-height: unset;
-    }
-    .action-buttons-wrapper {
-      justify-content: flex-start;
-      align-items: flex-start;
-      flex-direction: column;
-    }
-  }
-  @media ${devices.mobileL} {
-    flex-direction: column;
-    height: unset;
-    img {
-      width: 100%;
-      height: 100%;
-      min-width: unset;
-      min-height: unset;
-    }
-    .action-buttons-wrapper {
-      justify-content: flex-start;
-      align-items: flex-start;
-      flex-direction: column;
-    }
-  }
-  @media ${devices.mobileM} {
-    flex-direction: column;
-    height: unset;
-    img {
-      width: 100%;
-      height: 100%;
-      min-width: unset;
-      min-height: unset;
-    }
-    .action-buttons-wrapper {
-      justify-content: flex-start;
-      align-items: flex-start;
-      flex-direction: column;
-    }
-  }
-  @media ${devices.mobileS} {
-    flex-direction: column;
-    height: unset;
-    img {
-      width: 100%;
-      height: 100%;
-      min-width: unset;
-      min-height: unset;
-    }
-    .action-buttons-wrapper {
-      justify-content: flex-start;
-      align-items: flex-start;
-      flex-direction: column;
-    }
-  }
-`;
 
 export default CartItem;

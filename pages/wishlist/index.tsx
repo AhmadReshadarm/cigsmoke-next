@@ -1,12 +1,7 @@
 import StoreLayout from 'components/store/storeLayout/layouts';
 import Head from 'next/head';
 import { baseUrl } from 'common/constant';
-// import dynamic from 'next/dynamic';
 import { LoaderMask } from 'ui-kit/generalLoaderMask';
-// const Wishlist = dynamic(() => import('components/store/wishlist'), {
-//   ssr: false,
-//   loading: () => <LoaderMask />,
-// });
 import Wishlist from 'components/store/wishlist';
 import styles from 'components/store/wishlist/wishlistStyles.module.css';
 import { useEffect, useState } from 'react';

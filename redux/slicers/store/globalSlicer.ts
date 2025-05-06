@@ -210,7 +210,6 @@ const globalSlicer = createSlice({
         state.loadingHistory = true;
       })
       .addCase(fetchHistoryProducts.fulfilled, (state, action) => {
-        // state.caroselProducts = handlePaginationDataFormatter(action); // action.payload;
         state.historyProducts = action.payload;
         state.loadingHistory = false;
       })

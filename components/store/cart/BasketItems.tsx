@@ -18,7 +18,9 @@ const HeaderProductItmesHistory = dynamic(
 );
 type Props = {};
 const BasketItems: React.FC<Props> = ({}) => {
-  const { cart, loading } = useAppSelector<TCartState>((state) => state.cart);
+  const { cart, countLoading } = useAppSelector<TCartState>(
+    (state) => state.cart,
+  );
   const { historyProducts, loadingHistory } = useAppSelector<TGlobalState>(
     (state) => state.global,
   );
@@ -66,26 +68,16 @@ const BasketItems: React.FC<Props> = ({}) => {
 
   return (
     <div className={styles.ItemsWrapper}>
-      {cart?.orderProducts?.length && !loading ? (
-        <div className={styles.action_buttons_wrapper}>
-          <button
-            className={styles.action_btn_clear}
-            onClick={() => handleRemoveClick(dispatch)}
-          >
-            <span className={styles.action_btn_clear_text}>
-              ОЧИСТИТЬ КОРЗИНУ
-            </span>
-          </button>
-        </div>
-      ) : loading ? (
-        <div className={styles.action_btn_wrapper}>
-          <button className={styles.LoaderMask}></button>
-        </div>
-      ) : (
-        <></>
-      )}
+      <div className={styles.action_buttons_wrapper}>
+        <button
+          className={styles.action_btn_clear}
+          onClick={() => handleRemoveClick(dispatch)}
+        >
+          <span className={styles.action_btn_clear_text}>ОЧИСТИТЬ КОРЗИНУ</span>
+        </button>
+      </div>
       <ul className={styles.CartBody}>
-        {cart?.orderProducts?.length && !loading ? (
+        {cart?.orderProducts?.length && !countLoading ? (
           <>
             {cart?.orderProducts?.map((orderProduct, index) => {
               return (
@@ -96,7 +88,7 @@ const BasketItems: React.FC<Props> = ({}) => {
               );
             })}
           </>
-        ) : loading ? (
+        ) : countLoading ? (
           <>
             {emptyLoading.map((item, index) => {
               return <CartItemLoader key={index} windowWidth={windowWidth} />;

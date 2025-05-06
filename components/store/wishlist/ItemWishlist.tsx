@@ -17,6 +17,23 @@ const ItemWishlist: React.FC<Props> = ({ product, index }) => {
 
   const images = getProductVariantsImages(productVariants);
 
+  const colors: string[] = [];
+  product!?.productVariants!.map((variant) => {
+    if (variant.color?.url !== '-') {
+      colors.push(variant.color?.code!);
+    }
+  });
+  // remove the repated product colors from array to only show in UI once
+  const filteredColors = colors.filter(function (value, index, array) {
+    return array.indexOf(value) === index;
+  });
+
+  const articals = product!.productVariants?.map((variant) => variant.artical);
+  // remove the repated product artical from array to only show in UI once
+  const filteredArticals = articals!.filter(function (value, index, array) {
+    return array.indexOf(value) === index;
+  });
+
   return (
     <li className={styles.ProductItemWrapper} key={index}>
       <>
@@ -33,7 +50,7 @@ const ItemWishlist: React.FC<Props> = ({ product, index }) => {
         <div className={styles.product_details_wrapper}>
           <div className={styles.product_title_description_wrapper}>
             <Link href={`/product/${product?.url}`} prefetch={false}>
-              <h1>
+              <h1 title={product!?.name}>
                 {product!?.name?.length! > 18
                   ? product!?.name?.slice(0, 18) + ' ...'
                   : product!?.name}
@@ -80,34 +97,40 @@ const ItemWishlist: React.FC<Props> = ({ product, index }) => {
             <div
               style={{
                 alignItems: 'center',
+                display: filteredColors.length !== 0 ? 'flex' : 'none',
               }}
               className={styles.artical_wrapper}
             >
-              <span>Цвет{`(а)`} : </span>
-              {product?.productVariants!.map((variant, index) => {
-                if (
-                  variant.color?.url == '' ||
-                  variant.color?.url == '-' ||
-                  variant.color?.url == '_'
-                ) {
-                  return;
-                }
+              <span>Цвет(а) : </span>
+              {filteredColors.map((color, index) => {
                 return (
                   <span
-                    key={`${variant.color?.name}-${index}`}
                     style={{
                       width: '10px',
                       height: '10px',
                       borderRadius: '50%',
-                      backgroundColor: variant.color?.code,
+                      backgroundColor: color,
                       border: '1px solid rgb(129 129 129)',
                     }}
-                    title={variant.color?.name}
+                    key={index}
                   />
                 );
               })}
             </div>
             {/* ---------- end of color ----------- */}
+            <div className={styles.artical_wrapper}>
+              <span>Артикул(ы):</span>
+              {filteredArticals.map((artical, index) => {
+                return (
+                  <span key={index}>
+                    {artical!.includes('|')
+                      ? artical!.split('|')[0].toUpperCase()
+                      : artical!.toUpperCase()}
+                    {filteredArticals.length - 1 !== index ? ', ' : ''}
+                  </span>
+                );
+              })}
+            </div>
           </div>
 
           <div className={styles.price_sperator_wrapper}>
