@@ -61,6 +61,104 @@ const Slider: React.FC<Props> = ({
     }, 300);
   }, [zoom]);
 
+  const [touchStart, setTouchStart] = useState({ x: 0, y: 0, time: 0 });
+  const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0, time: 0 });
+  const [initialPinchDistance, setInitialPinchDistance] = useState<
+    number | null
+  >(null);
+  const [isClickOrTouch, setIsClickOrTouch] = useState(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsClickOrTouch(true);
+
+    // Single finger touch
+    if (e.touches.length === 1) {
+      setTouchStart({
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        time: Date.now(),
+      });
+    }
+
+    // Pinch detection
+    if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY,
+      );
+      setInitialPinchDistance(distance);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length === 0) {
+      // All fingers lifted
+      setTouchEnd({
+        x: e.changedTouches[0].clientX,
+        y: e.changedTouches[0].clientY,
+        time: Date.now(),
+      });
+    }
+    setIsClickOrTouch(false);
+  };
+
+  const handlePinchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY,
+      );
+      setInitialPinchDistance(distance);
+    }
+  };
+
+  const handlePinchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && initialPinchDistance) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const currentDistance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY,
+      );
+
+      // Trigger zoom when pinch expands beyond 10% of initial distance
+      if (currentDistance / initialPinchDistance > 1.1) {
+        setZoom(true);
+        setZoomImgSrc(images[selectedIndex]);
+        setTimeout(() => {
+          const btnImg: any = document.querySelector('.hidden-image-zoom');
+          btnImg.click();
+        }, 300);
+        setInitialPinchDistance(null); // Reset after triggering
+        e.preventDefault();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (touchEnd.time === 0 || !initialPinchDistance === null) return;
+
+    const dx = touchEnd.x - touchStart.x;
+    const dy = touchEnd.y - touchStart.y;
+    const dt = touchEnd.time - touchStart.time;
+
+    // Tap detection (only if not pinching)
+    if (Math.abs(dx) < 5 && Math.abs(dy) < 5 && dt < 200 && isClickOrTouch) {
+      setZoom(true);
+      setZoomImgSrc(images[selectedIndex]);
+      setTimeout(() => {
+        const btnImg = document.querySelector(
+          '.hidden-image-zoom',
+        ) as HTMLElement;
+        btnImg?.click();
+      }, 300);
+    }
+  }, [touchEnd]);
+
   return (
     <div className={styles.SliderWrapper} id="image-zoom-controller">
       <AnimatePresence mode="wait" initial={false} custom={direction}>
@@ -68,7 +166,7 @@ const Slider: React.FC<Props> = ({
           key={page}
           custom={direction}
           variants={variants.slider}
-          initial="enter"
+          // initial="enter"
           animate="center"
           exit="exit"
           transition={{
@@ -87,6 +185,26 @@ const Slider: React.FC<Props> = ({
           )}
           draggable={true}
           className={styles.SliderSlide}
+          onTouchStart={(e) => {
+            handleTouchStart(e);
+            handlePinchStart(e);
+          }}
+          onTouchMove={(e) => {
+            handlePinchMove(e);
+            e.preventDefault();
+          }}
+          onTouchEnd={(e) => {
+            handleTouchEnd(e);
+            setInitialPinchDistance(null);
+          }}
+          onClick={() => {
+            setZoom(true);
+            setZoomImgSrc(images[selectedIndex]);
+            setTimeout(() => {
+              const btnImg: any = document.querySelector('.hidden-image-zoom');
+              btnImg.click();
+            }, 300);
+          }}
         >
           <Image
             src={images[selectedIndex]}
@@ -94,7 +212,7 @@ const Slider: React.FC<Props> = ({
             itemProp="contentUrl"
             width={1080}
             height={1080}
-            priority={true}
+            priority
             placeholder="blur"
             blurDataURL={base64Image}
             className={styles.SliderImage}

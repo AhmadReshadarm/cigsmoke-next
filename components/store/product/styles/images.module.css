@@ -5,6 +5,7 @@
   justify-content: flex-start;
   align-items: flex-end;
   position: relative;
+  gap: 10px;
 }
 
 .SliderWrapper {
@@ -32,7 +33,7 @@
 }
 
 .thumbnails_wrapper::-webkit-scrollbar {
-  height: 5px;
+  height: 10px;
 }
 
 .thumbnails_circle {
@@ -89,7 +90,6 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  /* border: 2px solid white; */
   object-fit: cover;
 }
 
@@ -128,12 +128,20 @@
   top: auto;
 }
 
-.SliderImage {
+/* .SliderImage {
   width: 100%;
   height: auto;
   display: block;
   object-fit: cover;
   border-radius: 30px;
+} */
+
+.SliderImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: -webkit-zoom-in;
+  cursor: zoom-in;
 }
 
 .ImageZoomButtonWrapper {

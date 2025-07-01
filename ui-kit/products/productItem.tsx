@@ -1,7 +1,7 @@
 import { getProductVariantsImages } from 'common/helpers/getProductVariantsImages.helper';
 import { sizesNum } from 'components/store/lib/Devices';
 import Link from 'next/link';
-import { Product } from 'swagger/services';
+import { Product, ProductVariant } from 'swagger/services';
 import Slider from './slider';
 import { useAppSelector, useAppDispatch } from 'redux/hooks';
 import { Basket } from 'swagger/services';
@@ -11,8 +11,11 @@ import {
   clearSearchProducts,
   clearSearchQuery,
 } from 'redux/slicers/store/globalSlicer';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './styles/productItem.module.css';
+import Image from 'next/image';
+import { ImageTooltip } from 'components/store/product/productInfo/details/helpers';
+import color from 'components/store/lib/ui.colors';
 type Props = {
   // key: string;
   product: Product;
@@ -23,8 +26,9 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
   const images = getProductVariantsImages(product.productVariants);
   const cart: Basket = useAppSelector((state) => state.cart.cart);
   const dispatch = useAppDispatch();
-
+  const [variant, setVariant] = useState(product.productVariants![0]);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [loadingComplet, setLoadingComplet] = useState(false);
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -86,7 +90,47 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
       minMaxWidth: calculateImageSizeContainer(windowWidth).minMaxWidth,
     });
   }, [windowWidth]);
-  //
+  //-------------------------------------------------
+
+  const articals = product.productVariants?.map((variant) => variant.artical);
+
+  // remove the repated product artical from array to only show in UI once
+  const filteredArticals = articals!.filter(function (value, index, array) {
+    return array.indexOf(value) === index;
+  });
+
+  // Helper function to get unique variants by article
+  const getUniqueVariants = (product: any) => {
+    if (!product?.productVariants) return [];
+
+    const seen = new Set();
+    return product.productVariants.filter((variant: any) => {
+      if (seen.has(variant.artical)) return false;
+      seen.add(variant.artical);
+      return true;
+    });
+  };
+
+  const uniqueVariants = getUniqueVariants(product);
+
+  const colors: string[] = [];
+  product.productVariants!.map((variant) => {
+    if (variant.color?.url !== '-') {
+      colors.push(variant.color?.code!);
+    }
+  });
+  // remove the repated product colors from array to only show in UI once
+  const filteredColors = colors.filter(function (value, index, array) {
+    return array.indexOf(value) === index;
+  });
+
+  const currentVariant = (artical) =>
+    product.productVariants?.find((variant) => variant.artical == artical);
+  // this is neccesery for setting the varian for when the product search result changes it should also set the new
+  // variant, if this is not present the UI will show the previus product variant data
+  useEffect(() => {
+    setVariant(product.productVariants![0]);
+  }, [product]);
 
   return (
     <li
@@ -99,19 +143,13 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
       <div className={styles.ItemWrapper}>
         <Slider
           product={product}
-          images={images}
+          images={variant.images ? variant.images.split(', ') : []}
           url={product.url}
           windowWidth={windowWidth}
+          variant={variant}
         />
         <div className={styles.product_title_add_to_card_wrapper}>
           <div className={styles.product_price_wrapper}>
-            {product.productVariants![0]?.oldPrice ? (
-              <span className={styles.old_price}>
-                {product.productVariants![0]?.oldPrice} ₽
-              </span>
-            ) : (
-              ''
-            )}
             <span>{product.productVariants![0]?.price} ₽</span>
           </div>
           <Link
@@ -130,6 +168,193 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
                 : product.name}
             </span>
           </Link>
+          {/* ----------- aritcale ---------- */}
+          <div
+            style={{
+              alignItems: uniqueVariants.length > 2 ? 'flex-start' : 'center',
+            }}
+            className={styles.artical_wrapper}
+          >
+            <div className={styles.artical_content_wrapper}>
+              {uniqueVariants.length > 1 ? (
+                uniqueVariants.map(
+                  (variantDB: ProductVariant, index: number) => {
+                    return (
+                      <ImageTooltip
+                        enterTouchDelay={0}
+                        leaveTouchDelay={5000}
+                        key={`image-item-${index}`}
+                        title={
+                          <React.Fragment>
+                            <Image
+                              style={{
+                                width: '100px',
+                                height: '100px',
+                                objectFit: 'cover',
+                                borderRadius: '15px',
+                              }}
+                              src={`/api/images/${
+                                variantDB.images?.split(', ')[0]
+                              }`}
+                              alt={`${product.name}`}
+                              width={0}
+                              height={0}
+                              sizes="100vw"
+                              loading="lazy"
+                              priority={false}
+                            />
+                            <hr
+                              style={{
+                                backgroundColor: color.textTertiary,
+                                width: '100%',
+                              }}
+                            />
+                            {variantDB.color?.url === '_' ||
+                            variantDB.color?.url === '-' ||
+                            variantDB.color?.url == ' ' ? (
+                              <></>
+                            ) : (
+                              <span
+                                style={{
+                                  display: 'flex',
+                                  gap: '10px',
+                                  alignItems: 'center',
+                                }}
+                                className={styles.ColorPickerSpan}
+                              >
+                                <span>Цвет:</span>
+                                <div
+                                  style={{
+                                    backgroundColor: variantDB.color?.code,
+                                  }}
+                                  className={styles.ColorItem}
+                                />
+                              </span>
+                            )}
+                            <div className={styles.ArticalWrapper}>
+                              <span>Артикул:</span>
+                              <span>
+                                {variantDB.artical?.includes('|')
+                                  ? variantDB.artical
+                                      ?.split('|')[0]
+                                      .toLocaleUpperCase()
+                                  : variantDB.artical?.toLocaleUpperCase()}
+                              </span>
+                            </div>
+
+                            {variantDB.artical?.includes('|') ? (
+                              <div className={styles.ArticalWrapper}>
+                                <span>
+                                  {variantDB.artical
+                                    .split('|')[1]
+                                    .toLocaleUpperCase()}
+                                </span>
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                            {!variantDB.available ? (
+                              <span className={styles.ColorPickerSpan}>
+                                Нет в наличии
+                              </span>
+                            ) : (
+                              <div className={styles.ColorPickerPriceWrapper}>
+                                <span className={styles.ColorPickerSpan}>
+                                  {variantDB.price} ₽
+                                </span>
+                              </div>
+                            )}
+                          </React.Fragment>
+                        }
+                      >
+                        <li
+                          style={{
+                            border:
+                              variantDB.artical == variant.artical
+                                ? '1px solid #00000075'
+                                : 'none',
+                          }}
+                          className={styles.ColorPickerThumbnailWrapper}
+                          onClick={() => {
+                            const currentOrderVariant =
+                              product.productVariants?.find(
+                                (variant) =>
+                                  variant.artical == variantDB.artical,
+                              );
+
+                            if (currentOrderVariant) {
+                              setVariant(currentOrderVariant);
+                            }
+                          }}
+                        >
+                          <div
+                            className={styles.ColorPickerItems}
+                            style={{
+                              backgroundColor: variantDB.color?.code,
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: loadingComplet ? 'none' : 'flex',
+                              }}
+                              className={styles.LoaderMask}
+                            />
+                            <Image
+                              style={{
+                                width: '30px',
+                                height: '30px',
+                                opacity: loadingComplet ? 1 : 0,
+                                position: loadingComplet
+                                  ? 'inherit'
+                                  : 'absolute',
+                                zIndex: loadingComplet ? 1 : -1,
+                              }}
+                              src={`/api/images/compress/${
+                                variantDB.images?.split(', ')[0]
+                              }?qlty=10&width=50&height=50&lossless=true`}
+                              alt={`${
+                                product?.name?.includes('(')
+                                  ? product.name.split('(')[0]
+                                  : product?.name
+                              } ${variantDB.artical!}`}
+                              width={50}
+                              height={50}
+                              loading="lazy"
+                              priority={false}
+                              onLoadingComplete={() => setLoadingComplet(true)}
+                            />
+                            {!variantDB.available ? (
+                              <div className={styles.not_available_mask}>
+                                <div
+                                  className={styles.inner_not_available_mask}
+                                ></div>
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+                          <span className={styles.preview_artical}>
+                            {variantDB.artical?.includes('|')
+                              ? variantDB.artical
+                                  .split('|')[0]
+                                  .toLocaleUpperCase()
+                              : variantDB.artical?.includes(' ')
+                              ? variantDB.artical
+                                  .split(' ')[0]
+                                  .toLocaleUpperCase()
+                              : variantDB.artical?.toLocaleUpperCase()}
+                          </span>
+                        </li>
+                      </ImageTooltip>
+                    );
+                  },
+                )
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+          {/* ----------- end of articale ------------ */}
           {/* ------------ rating --------------- */}
           <div
             title={`${
@@ -184,8 +409,8 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
             {/* <AddToWishlist product={product} /> */}
             <AddToCart
               product={product}
-              qty={findCartQTY(product, cart)}
-              variant={product?.productVariants![0]}
+              qty={findCartQTY(product, cart, variant)}
+              variant={variant}
             />
           </div>
         </div>

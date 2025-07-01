@@ -1,7 +1,7 @@
 import color from 'components/store/lib/ui.colors';
-import { getFlatVariantImages, ImageTooltip } from './helpers';
+import { ImageTooltip } from './helpers';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Color, ProductVariant } from 'swagger/services';
+import { Color, Product, ProductVariant } from 'swagger/services';
 import { useAppDispatch, useAppSelector } from 'redux/hooks';
 import { setVariant } from 'redux/slicers/store/cartSlicer';
 import Image from 'next/image';
@@ -12,17 +12,20 @@ type Props = {
   variantColor: Color | undefined;
   productVariants: ProductVariant[] | undefined;
   setSelectedIndex: Dispatch<SetStateAction<number>>;
+  product: Product;
 };
 
 const ColorPicker: React.FC<Props> = ({
   variantColor,
   productVariants,
   setSelectedIndex,
+  product,
 }) => {
   const dispatch = useAppDispatch();
   const SelectedVariant = useAppSelector<TCartState>(
     (state) => state.cart.variant,
   );
+  const [loadingComplet, setLoadingComplet] = useState(false);
   const handleImageChange =
     (variant: ProductVariant, setSelectedIndex: (index: number) => void) =>
     () => {
@@ -54,9 +57,10 @@ const ColorPicker: React.FC<Props> = ({
                       width: '100px',
                       height: '100px',
                       objectFit: 'cover',
+                      borderRadius: '15px',
                     }}
                     src={`/api/images/${images[0]}`}
-                    alt={`${images[0]}`}
+                    alt={`${product.name} ${variant.artical}`}
                     width={0}
                     height={0}
                     sizes="100vw"
@@ -72,7 +76,7 @@ const ColorPicker: React.FC<Props> = ({
                   {variantColor?.url === '_' ||
                   variantColor?.url === '-' ||
                   variantColor?.url == ' ' ? (
-                    ''
+                    <></>
                   ) : (
                     <span
                       style={{
@@ -146,6 +150,30 @@ const ColorPicker: React.FC<Props> = ({
                     backgroundColor: variant.color?.code,
                   }}
                 >
+                  <div
+                    style={{ display: loadingComplet ? 'none' : 'flex' }}
+                    className={styles.LoaderMask}
+                  />
+                  <Image
+                    style={{
+                      width: '30px',
+                      height: '30px',
+                      opacity: loadingComplet ? 1 : 0,
+                      position: loadingComplet ? 'inherit' : 'absolute',
+                      zIndex: loadingComplet ? 1 : -1,
+                    }}
+                    src={`/api/images/compress/${images[0]}?qlty=10&width=50&height=50&lossless=true`}
+                    alt={`${
+                      product?.name?.includes('(')
+                        ? product.name.split('(')[0]
+                        : product?.name
+                    } ${variant.artical!}`}
+                    width={50}
+                    height={50}
+                    loading="lazy"
+                    priority={false}
+                    onLoadingComplete={() => setLoadingComplet(true)}
+                  />
                   {!variant.available ? (
                     <div className={styles.not_available_mask}>
                       <div className={styles.inner_not_available_mask}></div>

@@ -32,9 +32,54 @@ export const AddToCart: React.FC<PropsCart> = ({ product, qty, variant }) => {
   // ------------------- end of UI Hooks --------------------
 
   return (
-    <>
-      {!checkIfItemInCart(product, cart!) ? (
-        <motion.button
+    // <>
+    //   {!checkIfItemInCart(product, cart!) ? (
+    //     <motion.button
+    //       onClick={async () => {
+    //         setIsAdding(true);
+    //         try {
+    //           await handleAddToCartBtnClick(
+    //             product,
+    //             dispatch,
+    //             variant!,
+    //             cart!,
+    //           )();
+    //         } finally {
+    //           setIsAdding(false);
+    //         }
+    //       }}
+    //       disabled={countLoading ? true : false}
+    //       title={`Добавить ${product.name} в корзину`}
+    //       type="button"
+    //       className={styles.CartButtonWrapper}
+    //     >
+    //       <motion.div
+    //         initial={{ height: '0%', width: '0%' }}
+    //         animate={{ height: '100%', width: '100%' }}
+    //         transition={{ duration: 0.15 }}
+    //         className={styles.content_wrapper}
+    //       >
+    //         {countLoading && isAdding ? (
+    //           <div className={styles.Loader} />
+    //         ) : (
+    //           <motion.span
+    //             initial={{ opacity: 0 }}
+    //             animate={{ opacity: 1 }}
+    //             transition={{ delay: 0.2 }}
+    //           >
+    //             В КОРЗИНУ
+    //           </motion.span>
+    //         )}
+    //       </motion.div>
+    //       <div className={styles.content_indecator}></div>
+    //     </motion.button>
+    //   ) : (
+    //     <ItemCounter product={product} qty={qty} />
+    //   )}
+    // </>
+    <div style={{ minWidth: '150px' }}>
+      {!checkIfItemInCart(product, cart!, variant) ? (
+        <button
           onClick={async () => {
             setIsAdding(true);
             try {
@@ -48,35 +93,24 @@ export const AddToCart: React.FC<PropsCart> = ({ product, qty, variant }) => {
               setIsAdding(false);
             }
           }}
-          disabled={countLoading ? true : false}
+          disabled={countLoading || !variant?.available ? true : false}
           title={`Добавить ${product.name} в корзину`}
           type="button"
           className={styles.CartButtonWrapper}
         >
-          <motion.div
-            initial={{ height: '0%', width: '0%' }}
-            animate={{ height: '100%', width: '100%' }}
-            transition={{ duration: 0.15 }}
-            className={styles.content_wrapper}
-          >
+          <div className={styles.content_wrapper}>
             {countLoading && isAdding ? (
               <div className={styles.Loader} />
             ) : (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                В КОРЗИНУ
-              </motion.span>
+              <span>{!variant?.available ? 'НЕТ В НАЛИЧИИ' : 'В КОРЗИНУ'}</span>
             )}
-          </motion.div>
+          </div>
           <div className={styles.content_indecator}></div>
-        </motion.button>
+        </button>
       ) : (
-        <ItemCounter product={product} qty={qty} />
+        <ItemCounter product={product} qty={qty} variant={variant} />
       )}
-    </>
+    </div>
   );
 };
 

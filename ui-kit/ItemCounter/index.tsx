@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import color from 'components/store/lib/ui.colors';
 import { motion } from 'framer-motion';
-import { Product } from 'swagger/services';
+import { Product, ProductVariant } from 'swagger/services';
 import { useAppSelector } from 'redux/hooks';
-import { handleItemCountChange } from 'common/helpers/cart.helper';
 import { useAppDispatch } from 'redux/hooks';
 import { TCartState } from 'redux/types';
 import {
-  handleCartBtnClick,
   handleProductCartQty,
   handleRemoveFromCartBtnClick,
 } from 'ui-kit/products/helpers';
@@ -16,9 +14,10 @@ import styles from './ItemCounter.module.css';
 type Props = {
   qty: number;
   product: Product;
+  variant?: ProductVariant;
 };
 
-const ItemCounter: React.FC<Props> = ({ qty, product }) => {
+const ItemCounter: React.FC<Props> = ({ qty, product, variant }) => {
   const dispatch = useAppDispatch();
   const { cart, loading } = useAppSelector<TCartState>((state) => state.cart);
   const timeoutId = useRef<NodeJS.Timeout | null>(null);
@@ -27,23 +26,6 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
   const [incrementPressed, setIncrementPressed] = useState(false);
   const [inputValue, setInputValue] = useState(String(qty));
   const [isEditing, setIsEditing] = useState(false);
-  const [currentVariant, setCurrentVariant]: [any, any] = useState(
-    cart?.orderProducts?.find((productInBasket) =>
-      product.productVariants?.find(
-        (variant) => variant.id === productInBasket.productVariant?.id,
-      ),
-    )?.productVariant,
-  );
-
-  useEffect(() => {
-    setCurrentVariant(
-      cart?.orderProducts?.find((productInBasket) =>
-        product.productVariants?.find(
-          (variant) => variant.id === productInBasket.productVariant?.id,
-        ),
-      )?.productVariant,
-    );
-  }, []);
 
   // Sync local state with prop when not editing
   useEffect(() => {
@@ -58,10 +40,11 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
       if (timeoutId.current) clearTimeout(timeoutId.current);
     };
   }, []);
+
   // -----------------------------------------------
   return (
-    <motion.div
-      onClick={(e) => e.preventDefault()}
+    <div
+      // onClick={(e) => e.preventDefault()}
       className={styles.ItemCounterWrapper}
     >
       <motion.div
@@ -80,7 +63,7 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
               return;
             }
             setInputValue(String(newQty)); // Optimistic update
-            handleProductCartQty(newQty, product, dispatch, cart!);
+            handleProductCartQty(newQty, product, dispatch, cart!, variant);
           }}
           disabled={loading ? true : false}
           initial={{ opacity: 0, x: 45 }}
@@ -151,7 +134,7 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
             }
 
             timeoutId.current = setTimeout(() => {
-              handleProductCartQty(numValue, product, dispatch, cart!);
+              handleProductCartQty(numValue, product, dispatch, cart!, variant);
             }, 500);
           }}
           onFocus={() => setIsEditing(true)}
@@ -163,7 +146,7 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
               setInputValue(String(qty));
               return;
             }
-            handleProductCartQty(numValue, product, dispatch, cart!);
+            handleProductCartQty(numValue, product, dispatch, cart!, variant);
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -180,7 +163,7 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
               return;
             }
             setInputValue(String(newQty)); // Optimistic update
-            handleProductCartQty(newQty, product, dispatch, cart!);
+            handleProductCartQty(newQty, product, dispatch, cart!, variant);
           }}
           disabled={loading ? true : false}
           initial={{ opacity: 0, x: -45 }}
@@ -242,7 +225,7 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
         onClick={handleRemoveFromCartBtnClick(
           product,
           dispatch,
-          currentVariant,
+          variant!,
           cart!,
         )}
         initial={{ opacity: 0 }}
@@ -263,7 +246,6 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
             scale: 1.1,
           }}
           whileTap={{ scale: 1 }}
-          //   variants.fadeInSlideIn
         >
           <path
             d="M32.7214 29.836L13.2763 10.3907C12.7559 9.87025 11.912 9.8693 11.3907 10.3907C10.8693 10.912 10.8702 11.7559 11.3907 12.2763L30.8358 31.7216C31.3562 32.242 32.2 32.243 32.7214 31.7216C33.2428 31.2002 33.2418 30.3564 32.7214 29.836Z"
@@ -275,7 +257,7 @@ const ItemCounter: React.FC<Props> = ({ qty, product }) => {
           />
         </motion.svg>
       </motion.button>
-    </motion.div>
+    </div>
   );
 };
 

@@ -92,6 +92,7 @@ const ProductInfoPage = ({
   useEffect(() => {
     handleHistory(repo.id);
   }, [isClient]);
+  console.log(repo);
 
   return (
     <>
