@@ -133,7 +133,7 @@ const Details: React.FC<Props> = ({
       <div>
         <h3>Характеристики</h3>
       </div>
-      {/* <div className={styles.SpecsContainer}>
+      <div className={styles.SpecsContainer}>
         <ul className={styles.SpecsKeyValueWrapper}>
           {params!.slice(0, 2).map((param) => {
             const suffix = isRussian(param.key)
@@ -225,7 +225,7 @@ const Details: React.FC<Props> = ({
             </button>
           </li>
         </ul>
-      </div> */}
+      </div>
     </div>
   );
 };

@@ -41,7 +41,7 @@ const BestProduct: React.FC<Props> = () => {
               {!loading && bestProduct ? (
                 <>
                   <div className="section-title-wrapper">
-                    <h1>ТОП ТОВАРЫ</h1>
+                    <h1>{`Специально для вас`.toUpperCase()}</h1>
                   </div>
                   <ul className="best-product-grid-wrapper">
                     {bestProduct.map((product, index) => {

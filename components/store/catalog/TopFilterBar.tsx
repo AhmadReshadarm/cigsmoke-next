@@ -371,8 +371,8 @@ const TopFilterBar: React.FC<Props> = ({
                 <RangeFilter
                   key={`filter-${key}`}
                   title={filter.title}
-                  min={filter.min!}
-                  max={filter.max!}
+                  min={Number(filter.min!)}
+                  max={Number(filter.max!)}
                   onChange={
                     filter.onChange as (values: [number, number]) => void
                   }

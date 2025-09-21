@@ -163,9 +163,10 @@ const ProductItem: React.FC<Props> = ({ product, custom }) => {
             prefetch={false}
           >
             <span title={product.name}>
-              {product.name?.length! > 35
+              {/* product.name?.length! > 35
                 ? `${product.name?.slice(0, 35)}...`
-                : product.name}
+                : */}
+              {product.name}
             </span>
           </Link>
           {/* ----------- aritcale ---------- */}

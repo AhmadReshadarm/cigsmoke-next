@@ -393,7 +393,7 @@
   align-items: center;
   justify-content: flex-start;
   cursor: pointer;
-  transition: 250ms;
+  transition: 150ms;
 }
 
 .see_more_specs_btn:hover {
